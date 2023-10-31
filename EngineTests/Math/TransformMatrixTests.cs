@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine;
-using MonoEngine.Math;
-using MonoEngine.Util;
+using Custom2D_Engine;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Util;
 using NUnit.Framework;
 using System;
 using static EngineTests.Math.TestHelper;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Math;
-using MonoEngine.Scenes;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Tilemap
+namespace Custom2D_Engine.Tilemap
 {
     public class Grid : HierarchyObject
     {

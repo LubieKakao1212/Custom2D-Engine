@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace MonoEngine.Math
+namespace Custom2D_Engine.Math
 {
     //TODO Add Origin
     //TODO Add Split ??

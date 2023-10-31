@@ -3,7 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace MonoEngine.Math
+namespace Custom2D_Engine.Math
 {
     /// <summary>
     /// Represents a 3x3 matrix with <see cref="TransformMatrix.rotationScale"/> as upper left 2x2, <see cref="TransformMatrix.translation"/> as bottom left row and 0,0,1 as right column<br/>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Rendering;
+using Custom2D_Engine.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Scenes
+namespace Custom2D_Engine.Scenes
 {
     public class MeshObject : SpecialRenderedObject
     {
@@ -65,6 +65,12 @@ namespace MonoEngine.Scenes
 
             Pipeline.Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, pCount);
             Pipeline.Graphics.DepthStencilState = dss;
+        }
+
+        public void UpdateMesh<T>(T[] verticies, int[] indicies) where T : struct
+        {
+            vb.SetData(verticies);
+            ib.SetData(indicies);
         }
     }
 }

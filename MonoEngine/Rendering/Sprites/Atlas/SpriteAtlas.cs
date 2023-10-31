@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Math;
-using MonoEngine.Util;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace MonoEngine.Rendering.Sprites.Atlas
+namespace Custom2D_Engine.Rendering.Sprites.Atlas
 {
     public class SpriteAtlas<T> : ISpriteAtlas where T : struct
     {
@@ -159,7 +159,7 @@ namespace MonoEngine.Rendering.Sprites.Atlas
                                     var topHeight = spaceHeight - sourceRect.Height;
                                     spaces.AddNested(topHeight, new Rectangle(space[k].X, space[k].Y + sourceRect.Height, sourceRect.Width, topHeight));
                                     //Right
-                                    space[k] = new Rectangle(space[k].X + sourceRect.Height, space[k].Y, space[k].Width - sourceRect.Width, spaceHeight);
+                                    space[k] = new Rectangle(space[k].X + sourceRect.Width, space[k].Y, space[k].Width - sourceRect.Width, spaceHeight);
                                 }
 
                                 flag = false;
@@ -193,6 +193,10 @@ namespace MonoEngine.Rendering.Sprites.Atlas
 
             foreach (var region in regions)
             {
+                var pos = region.destinationPosition;
+                var x = pos.X % size;
+                var idx = pos.X / size;
+
                 #region Fill Atlas
                 var rawData = GetTextureData(region.sourceTexture, region.sourceRect);
                 var data = new T[rawData.Length];
@@ -207,16 +211,13 @@ namespace MonoEngine.Rendering.Sprites.Atlas
                         cArr[i] = new Color(rawData[i]);
                     }
                 }
+
+                atlasPixels.SetRectUnchecked3d(size, size, data, new Rectangle(
+                    x, pos.Y,
+                    region.sourceRect.Width, region.sourceRect.Height), idx);
                 #endregion
 
                 #region SetSprite Data
-                var pos = region.destinationPosition;
-
-                atlasPixels.SetRectUnchecked(size, data, new Rectangle(
-                    pos.X, pos.Y,
-                    region.sourceRect.Width, region.sourceRect.Height));
-                var x = pos.X % size;
-                var idx = pos.X / size;
 
                 region.destinationSprite.TextureRect = new BoundingRect(
                     new Vector2((float)x / size, (float)pos.Y / size), 
@@ -260,10 +261,11 @@ namespace MonoEngine.Rendering.Sprites.Atlas
         private void IncrementTextureCount(ref Rectangle sourceRect, SortedDictionary<int, List<Rectangle>> spaces)
         {
             textureCount++;
-            sourceRect.X = textureCount * size;
+            var newTexIdx = textureCount - 1;
+            sourceRect.X = newTexIdx * size;
             sourceRect.Y = 0;
-            Rectangle right = new Rectangle(textureCount * size + sourceRect.Width, 0, size - sourceRect.Width, size),
-                top = new Rectangle(textureCount * size, sourceRect.Height, sourceRect.Width, size - sourceRect.Height);
+            Rectangle right = new Rectangle(newTexIdx * size + sourceRect.Width, 0, size - sourceRect.Width, size),
+                top = new Rectangle(newTexIdx * size, sourceRect.Height, sourceRect.Width, size - sourceRect.Height);
 
             spaces.AddNested(right.Height, right);
             spaces.AddNested(top.Height, top);

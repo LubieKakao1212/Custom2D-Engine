@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Input.Binding
+namespace Custom2D_Engine.Input.Binding
 {
     public class UnboundInput : IInput
     {

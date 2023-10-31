@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Math;
-using MonoEngine.Util;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;

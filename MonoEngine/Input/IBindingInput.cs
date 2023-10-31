@@ -1,4 +1,4 @@
-﻿namespace MonoEngine.Input
+﻿namespace Custom2D_Engine.Input
 {
     public interface IBindingInput
     {

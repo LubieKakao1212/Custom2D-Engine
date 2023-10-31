@@ -1,12 +1,12 @@
-﻿using MonoEngine.Scenes;
-using MonoEngine.Util;
+﻿using Custom2D_Engine.Scenes;
+using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Util
+namespace Custom2D_Engine.Util
 {
     public struct Ordered<T>
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Math;
+using Custom2D_Engine.Math;
 using NUnit.Framework;
 using System;
-using static MonoEngine.Math.MathUtil;
+using static Custom2D_Engine.Math.MathUtil;
 
 namespace EngineTests.Math
 {
@@ -30,7 +30,7 @@ namespace EngineTests.Math
             var sk = MathF.PI / 8f;
             var sc = new Vector2(2f, 0.5f);
 
-            var mat = MonoEngine.Math.Matrix2x2.RotationShearScale(r, sk, sc);
+            var mat = Custom2D_Engine.Math.Matrix2x2.RotationShearScale(r, sk, sc);
 
             var (r0, sk0, sc0) = mat;
 

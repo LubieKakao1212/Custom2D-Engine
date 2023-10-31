@@ -12,6 +12,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MonoEngine\MonoEngine.csproj" />
+    <ProjectReference Include="..\MonoEngine\Custom2d_Engine.csproj" />
   </ItemGroup>
 </Project>

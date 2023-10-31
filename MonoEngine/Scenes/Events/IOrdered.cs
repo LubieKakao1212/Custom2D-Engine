@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Scenes.Events
+namespace Custom2D_Engine.Scenes.Events
 {
     public interface IOrdered
     {

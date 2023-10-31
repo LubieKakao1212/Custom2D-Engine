@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Math;
-using MonoEngine.Rendering.Sprites;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Rendering.Sprites;
 using System.Data;
 
-namespace MonoEngine.Tilemap
+namespace Custom2D_Engine.Tilemap
 {
     public class Tile
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Input
+namespace Custom2D_Engine.Input
 {
     public enum InputState
     {

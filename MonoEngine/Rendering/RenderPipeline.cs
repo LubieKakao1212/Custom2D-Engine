@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Math;
-using MonoEngine.Rendering.Sprites;
-using MonoEngine.Scenes;
-using MonoEngine.Util;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Rendering.Sprites;
+using Custom2D_Engine.Scenes;
+using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace MonoEngine.Rendering
+namespace Custom2D_Engine.Rendering
 {
     public class RenderPipeline
     {

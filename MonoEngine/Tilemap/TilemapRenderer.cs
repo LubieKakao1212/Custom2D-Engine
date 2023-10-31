@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEngine.Math;
-using MonoEngine.Rendering;
-using MonoEngine.Scenes;
-using MonoEngine.Util;
+using Custom2D_Engine.Math;
+using Custom2D_Engine.Rendering;
+using Custom2D_Engine.Scenes;
+using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace MonoEngine.Tilemap
+namespace Custom2D_Engine.Tilemap
 {
     public class TilemapRenderer : SpecialRenderedObject
     {

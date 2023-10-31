@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Math
+namespace Custom2D_Engine.Math
 {
     public static class Vector2Extensions
     {

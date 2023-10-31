@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Rendering
+namespace Custom2D_Engine.Rendering
 {
     public static class Effects
     {

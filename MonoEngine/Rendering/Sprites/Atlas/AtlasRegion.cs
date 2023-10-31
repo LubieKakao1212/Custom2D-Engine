@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Rendering.Sprites.Atlas
+namespace Custom2D_Engine.Rendering.Sprites.Atlas
 {
     public struct AtlasRegion : IDisposable
     {

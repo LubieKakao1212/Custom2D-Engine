@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MonoEngine.Math
+namespace Custom2D_Engine.Math
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix2x2

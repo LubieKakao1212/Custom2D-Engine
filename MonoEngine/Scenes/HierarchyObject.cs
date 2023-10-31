@@ -1,11 +1,11 @@
-﻿using MonoEngine.Math;
+﻿using Custom2D_Engine.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonoEngine.Scenes
+namespace Custom2D_Engine.Scenes
 {
     public class HierarchyObject
     {

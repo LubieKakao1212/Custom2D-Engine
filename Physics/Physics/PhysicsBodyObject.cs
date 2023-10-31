@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Scenes;
-using MonoEngine.Scenes.Events;
+using Custom2D_Engine.Scenes;
+using Custom2D_Engine.Scenes.Events;
 using nkast.Aether.Physics2D.Common;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Runtime.Serialization;
 
-namespace MonoEngine.Physics
+namespace Custom2D_Engine.Physics
 {
     public class PhysicsBodyObject : HierarchyObject, IUpdatable
     {

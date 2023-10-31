@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Math;
+using Custom2D_Engine.Math;
 using System;
 using System.Data;
 
-namespace MonoEngine.Scenes
+namespace Custom2D_Engine.Scenes
 {
     public class Camera : HierarchyObject
     {

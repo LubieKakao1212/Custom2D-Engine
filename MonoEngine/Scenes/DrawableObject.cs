@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoEngine.Rendering.Sprites;
-using MonoEngine.Scenes.Events;
+using Custom2D_Engine.Rendering.Sprites;
+using Custom2D_Engine.Scenes.Events;
 
-namespace MonoEngine.Scenes
+namespace Custom2D_Engine.Scenes
 {
     using Math;
 

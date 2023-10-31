@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoEngine.Input.Binding;
+using Custom2D_Engine.Input.Binding;
 using System;
 using System.Collections.Generic;
 
-namespace MonoEngine.Input
+namespace Custom2D_Engine.Input
 {
     //TODO Gamepad support
     public class InputManager

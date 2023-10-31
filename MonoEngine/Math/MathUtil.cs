@@ -2,7 +2,7 @@
 using System;
 using static Microsoft.Xna.Framework.MathHelper;
 
-namespace MonoEngine.Math
+namespace Custom2D_Engine.Math
 {
     public static class MathUtil
     {
