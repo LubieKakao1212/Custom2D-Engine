@@ -11,7 +11,7 @@ namespace Custom2D_Engine.Physics
     {
         public float Order { get; set; }
 
-        public Body PhysicsBody { get; private set; }
+        public Body PhysicsBody { get; protected set; }
 
         private bool dirty;
         private bool isUpdating;
@@ -31,6 +31,11 @@ namespace Custom2D_Engine.Physics
 
         public virtual void Update(GameTime time)
         {
+            if (PhysicsBody.World == null)
+            {
+                return;
+            }
+
             if (dirty)
             {
                 var p = Transform.LocalPosition;

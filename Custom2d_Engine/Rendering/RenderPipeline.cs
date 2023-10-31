@@ -8,6 +8,7 @@ using Custom2D_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Custom2D_Engine.Rendering
 {
@@ -30,7 +31,12 @@ namespace Custom2D_Engine.Rendering
 
         private DynamicVertexBuffer instanceBuffer;
        
-        private VertexDeclaration InstanceVertexDeclaration;
+        public readonly VertexDeclaration InstanceVertexDeclaration = new VertexDeclaration(
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
+                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
+                new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
+                new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
+                );
 
         public RenderPipeline()
         {
@@ -71,13 +77,6 @@ namespace Custom2D_Engine.Rendering
             #endregion
 
             #region Instances
-
-            InstanceVertexDeclaration = new VertexDeclaration(
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
-                new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
-                new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
-                );
 
             instanceBuffer = new DynamicVertexBuffer(Graphics, InstanceVertexDeclaration, MaxInstanceCount, BufferUsage.WriteOnly);
 
@@ -156,31 +155,40 @@ namespace Custom2D_Engine.Rendering
             {
                 this.pipeline = pipeline;
             }
-
+            
             /// <summary>
-            /// Draws instances from given buffer as quads, setting camera parameters
+            /// Draws instances from given buffer as quads, setting camera parameters and sprite parameters if needed
             /// </summary>
             /// <param name="InstanceBuffer"></param>
             /// <param name="instanceCount"></param>
             public void DrawInstancedQuads(VertexBuffer InstanceBuffer, int instanceCount)
             {
-                VertexBufferBinding[] bindings = new VertexBufferBinding[]
-                {
-                    new VertexBufferBinding(pipeline.quadVerts),
-                    new VertexBufferBinding(InstanceBuffer, 0, 1)
-                };
-                
+                DrawInstancedQuads(instanceCount, new VertexBufferBinding(InstanceBuffer, 0, 1));
+            }
+
+            /// <summary>
+            /// Draws instances from given buffers as quads, setting camera parameters and sprite parameters if needed
+            /// </summary>
+            /// <param name="instanceCount"></param>
+            /// <param name="vertexBuffers"></param>
+            public void DrawInstancedQuads(int instanceCount, params VertexBufferBinding[] vertexBuffers)
+            {
+                VertexBufferBinding[] bindings = vertexBuffers.Prepend(new VertexBufferBinding(pipeline.quadVerts)).ToArray();
+
                 var graphics = pipeline.Graphics;
                 var effect = pipeline.CurrentState.CurrentEffect;
                 var cameraMatrixInv = pipeline.CurrentState.CurrentProjection;
                 graphics.BlendState = BlendState.AlphaBlend;
 
                 //effect.CurrentTechnique = effect.Techniques["Unlit"];
-                
-                effect.Parameters[Effects.SpriteAtlas].SetValue(pipeline.CurrentState.SpriteAtlas);
-                effect.Parameters[Effects.AtlasSize].SetValue(pipeline.CurrentState.SpriteAtlas.Depth);
+
+                //We don't know if sprite atlas is used
+                effect.Parameters[Effects.SpriteAtlas]?.SetValue(pipeline.CurrentState.SpriteAtlas);
+                effect.Parameters[Effects.AtlasSize]?.SetValue(pipeline.CurrentState.SpriteAtlas.Depth);
+                //Camera parameters are always used
                 effect.Parameters[Effects.CameraRS].SetValue(cameraMatrixInv.RS.Flat);
                 effect.Parameters[Effects.CameraT].SetValue(cameraMatrixInv.T);
+
 
                 effect.CurrentTechnique.Passes[0].Apply();
 
@@ -192,6 +200,7 @@ namespace Custom2D_Engine.Rendering
                 graphics.SetVertexBuffers(bindings);
                 graphics.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, 2, instanceCount);
             }
+
 
             public void DrawSortedLayerQuads<T>(DynamicVertexBuffer buffer, Ordered<T>[] instances) where T : struct
             {
@@ -257,7 +266,7 @@ namespace Custom2D_Engine.Rendering
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct InstanceData
+        public struct InstanceData
         {
             public Sprite sprite 
             { 

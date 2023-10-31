@@ -8,6 +8,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MonoEngine\Custom2d_Engine.csproj" />
+    <ProjectReference Include="..\Custom2d_Engine\Custom2d_Engine.csproj" />
   </ItemGroup>
 </Project>
