@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Custom2D_Engine.Util;
+using Custom2d_Engine.Util;
 
 namespace MarchingSquares.MarchingSquares
 {

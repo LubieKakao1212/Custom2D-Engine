@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Custom2D_Engine.Scenes
+namespace Custom2d_Engine.Scenes
 {
-    using Custom2D_Engine.Scenes.Events;
-    using Util.Debug;
+    using Custom2d_Engine.Scenes.Events;
+    using Util.Debugging;
     using Util;
 
     //TODO Optimise callbacks

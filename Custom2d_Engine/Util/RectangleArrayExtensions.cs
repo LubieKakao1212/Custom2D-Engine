@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Custom2D_Engine.Util
+namespace Custom2d_Engine.Util
 {
     public static class RectangleArrayExtensions
     {

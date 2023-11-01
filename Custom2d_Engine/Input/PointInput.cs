@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Custom2D_Engine.Rendering.RenderPipeline;
+using static Custom2d_Engine.Rendering.RenderPipeline;
 
-namespace Custom2D_Engine.Input
+namespace Custom2d_Engine.Input
 {
     public class PointInput : ValueInputBase<Point>
     {

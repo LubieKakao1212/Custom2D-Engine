@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Input
+namespace Custom2d_Engine.Input
 {
     public abstract class ValueInputBase<T> : IInput
     {

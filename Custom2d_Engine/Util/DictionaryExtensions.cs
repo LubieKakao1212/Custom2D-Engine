@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Custom2D_Engine.Util
+namespace Custom2d_Engine.Util
 {
     //One of my premade utilities
     public static class DictionaryExtensions

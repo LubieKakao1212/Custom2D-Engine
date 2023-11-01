@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Custom2D_Engine.Math;
-using Custom2D_Engine.Util;
+using Custom2d_Engine.Math;
+using Custom2d_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Custom2D_Engine.Rendering.Sprites.Atlas
+namespace Custom2d_Engine.Rendering.Sprites.Atlas
 {
     public class SpriteAtlas<T> : ISpriteAtlas where T : struct
     {

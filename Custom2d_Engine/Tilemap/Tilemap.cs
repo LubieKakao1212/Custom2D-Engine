@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Tilemap
+namespace Custom2d_Engine.Tilemap
 {
     using Util;
     using Math;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Util
+namespace Custom2d_Engine.Util
 {
     //TODO add more
     public static class Tuples

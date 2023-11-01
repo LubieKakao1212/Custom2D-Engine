@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Scenes.Events
+namespace Custom2d_Engine.Scenes.Events
 {
     public interface IUpdatable : IOrdered
     {

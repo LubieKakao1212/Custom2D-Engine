@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Custom2D_Engine.Rendering;
+using Custom2d_Engine.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Scenes
+namespace Custom2d_Engine.Scenes
 {
     public abstract class SpecialRenderedObject : DrawableObject, ISpecialRenderer
     {

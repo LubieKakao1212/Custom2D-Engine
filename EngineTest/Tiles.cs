@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Custom2D_Engine.Math;
-using Custom2D_Engine.Tilemap;
+using Custom2d_Engine.Math;
+using Custom2d_Engine.Tilemap;
 using System;
 using System.Collections.Generic;
 using System.Linq;

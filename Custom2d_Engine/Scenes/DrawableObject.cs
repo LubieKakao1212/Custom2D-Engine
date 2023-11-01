@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Custom2D_Engine.Rendering.Sprites;
-using Custom2D_Engine.Scenes.Events;
+using Custom2d_Engine.Rendering.Sprites;
+using Custom2d_Engine.Scenes.Events;
 
-namespace Custom2D_Engine.Scenes
+namespace Custom2d_Engine.Scenes
 {
     using Math;
 

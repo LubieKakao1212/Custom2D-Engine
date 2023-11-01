@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Input.Binding
+namespace Custom2d_Engine.Input.Binding
 {
     //TODO
     public class Vector2BindingInput : ValueInputBase<Vector2>

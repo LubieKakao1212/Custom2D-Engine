@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Util.Ticking
+namespace Custom2d_Engine.Util.Ticking
 {
     public class SequentialAutoTimeMachine
     {

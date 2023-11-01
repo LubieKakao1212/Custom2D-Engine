@@ -1,12 +1,12 @@
-﻿using Custom2D_Engine.Scenes;
-using Custom2D_Engine.Util;
+﻿using Custom2d_Engine.Scenes;
+using Custom2d_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Util
+namespace Custom2d_Engine.Util
 {
     public struct Ordered<T>
     {

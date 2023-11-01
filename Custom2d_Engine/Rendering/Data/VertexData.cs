@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2D_Engine.Rendering.Data
+namespace Custom2d_Engine.Rendering.Data
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Vertex2DPosition

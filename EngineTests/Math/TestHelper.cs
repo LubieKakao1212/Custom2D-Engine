@@ -1,7 +1,7 @@
-﻿using Custom2D_Engine.Math;
+﻿using Custom2d_Engine.Math;
 using Microsoft.Xna.Framework;
 using NUnit.Framework;
-using Custom2d_Engine.Util.Debug;
+using Custom2d_Engine.Util.Debugging;
 
 namespace EngineTests.Math
 {

@@ -1,11 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Custom2D_Engine.Input
+﻿namespace Custom2d_Engine.Input
 {
     public class BoolInput : ValueInputBase<bool>
     {
