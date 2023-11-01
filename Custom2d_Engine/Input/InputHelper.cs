@@ -67,6 +67,12 @@ namespace Custom2d_Engine.Input
             return new ProcessorInput<I, O>(function, "").Bind(input, true);
         }
 
+        public static T Register<T, V>(this T binding, InputManager manager) where T : ValueInputBase<V>, IBindingInput 
+        {
+            manager.RegisterBinding(binding);
+            return binding;
+        }
+
         public static float DeadzoneHandler(float value, float deadzone)
         {
             return Max(value - deadzone, Min(value + deadzone, 0));
