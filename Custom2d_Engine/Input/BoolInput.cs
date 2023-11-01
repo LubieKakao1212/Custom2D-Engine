@@ -1,15 +1,11 @@
 ﻿namespace Custom2d_Engine.Input
 {
-    public class BoolInput : ValueInputBase<bool>
+    public class BoolInput : SettableValueInputBase<bool>
     {
-        protected override bool Value { get => state; }
-
         public override string FriendlyName => name;
-
-        private bool state;
-
-        private string name;
         
+        private string name;
+
         internal BoolInput(string name)
         {
             this.name = name;
@@ -17,12 +13,9 @@
 
         /// <param name="newState">new State of this input</param>
         /// <returns>was the input changed</returns>
-        internal bool UpdateState(bool newState)
+        protected override bool IsActive(bool value)
         {
-            var changed = state != newState;
-            state = newState;
-            InvokeEvents(newState, changed);
-            return changed;
+            return value;
         }
     }
 }
