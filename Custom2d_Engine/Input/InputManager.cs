@@ -131,34 +131,7 @@ namespace Custom2d_Engine.Input
         {
             return gamePads.GetOrSetToDefaultLazy(player, (player) => new GamePadInputs(player));
         }
-
-        /// <summary>
-        /// Creates a simple (-1, 0, 1) binding input
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="negative"></param>
-        /// <param name="positive"></param>
-        /// <returns>returned binding must still be registered via <see cref="RegisterBinding(IBindingInput)"/></returns>
-        public CompoundAxixBindingInput CreateSimpleAxisBinding(string name, Keys negative, Keys positive)
-        {
-            var binding = new CompoundAxixBindingInput(name);
-            binding.Bind(new AxisBindingInput("").SetValues(0f, 1f).Bind(GetKey(positive)));
-            binding.Bind(new AxisBindingInput("").SetValues(0f, -1f).Bind(GetKey(negative)));
-
-            return binding;
-        }
-
-        public CompoundAxixBindingInput CreateSimpleKeysBinding(string name, params Keys[] bindings)
-        {
-            var binding = new CompoundAxixBindingInput(name);
-            foreach (var key in bindings)
-            { 
-                binding.Bind(new AxisBindingInput("").SetValues(0f, 1f).Bind(GetKey(key)));
-            }
-            
-            return binding;
-        }
-
+        
         private void SetInput(BoolInput input, bool state)
         {
             var changed = input.UpdateState(state);
