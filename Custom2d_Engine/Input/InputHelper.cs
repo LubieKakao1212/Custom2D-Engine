@@ -67,7 +67,7 @@ namespace Custom2d_Engine.Input
             return new ProcessorInput<I, O>(function, "").Bind(input, true);
         }
 
-        public static T Register<T, V>(this T binding, InputManager manager) where T : ValueInputBase<V>, IBindingInput 
+        public static T Register<T>(this T binding, InputManager manager) where T : IBindingInput 
         {
             manager.RegisterBinding(binding);
             return binding;
