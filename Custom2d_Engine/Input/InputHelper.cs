@@ -75,12 +75,13 @@ namespace Custom2d_Engine.Input
 
         public static float DeadzoneHandler(float value, float deadzone)
         {
-            return Max(value - deadzone, Min(value + deadzone, 0));
+            return Max(value - deadzone, Min(value + deadzone, 0)) / (deadzone + 1);
         }
 
         public static Vector2 DeadzoneHandler(Vector2 value, float deadzone)
         {
             var mag = Max(value.Length(), ContinousInputBase<Vector2>.Epsilon);
+            //TODO Normalize
             mag = Max(mag - deadzone, 0) / mag;
 
             return value * mag;
