@@ -1,6 +1,7 @@
 ﻿using Custom2d_Engine.Input.Binding;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
 using static System.MathF;
 
 namespace Custom2d_Engine.Input
@@ -48,17 +49,22 @@ namespace Custom2d_Engine.Input
 
         public static ProcessorInput<float, float> Clamp(this ValueInputBase<float> input, float min = -1f, float max = 1f)
         {
-            return new ProcessorInput<float, float>((value) => MathHelper.Clamp(value, min, max), "").Bind(input);
+            return new ProcessorInput<float, float>((value) => MathHelper.Clamp(value, min, max), "").Bind(input, true);
         }
 
         public static ProcessorInput<float, float> AddDeadzone(this ValueInputBase<float> input, float deadzone)
         {
-            return new ProcessorInput<float, float>((value) => DeadzoneHandler(value, deadzone), "").Bind(input);
+            return new ProcessorInput<float, float>((value) => DeadzoneHandler(value, deadzone), "").Bind(input, true);
         }
 
         public static ProcessorInput<Vector2, Vector2> AddDeadzone(this ValueInputBase<Vector2> input, float deadzone)
         {
-            return new ProcessorInput<Vector2, Vector2>((value) => DeadzoneHandler(value, deadzone), "").Bind(input);
+            return new ProcessorInput<Vector2, Vector2>((value) => DeadzoneHandler(value, deadzone), "").Bind(input, true);
+        }
+
+        public static ProcessorInput<I, O> AddProcessor<I, O>(this ValueInputBase<I> input, Func<I, O> function)
+        {
+            return new ProcessorInput<I, O>(function, "").Bind(input, true);
         }
 
         public static float DeadzoneHandler(float value, float deadzone)
