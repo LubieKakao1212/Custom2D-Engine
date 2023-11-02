@@ -52,6 +52,21 @@ namespace Custom2d_Engine.Input
             return new ProcessorInput<float, float>((value) => MathHelper.Clamp(value, min, max), "").Bind(input, true);
         }
 
+        public static ProcessorInput<float, float> Negate(this ValueInputBase<float> input)
+        {
+            return input.AddProcessor((value) => -value);
+        }
+
+        public static ProcessorInput<Vector2, float> X(this ValueInputBase<Vector2> input)
+        {
+            return input.AddProcessor((value) => value.X);
+        }
+
+        public static ProcessorInput<Vector2, float> Y(this ValueInputBase<Vector2> input)
+        {
+            return input.AddProcessor((value) => value.Y);
+        }
+
         public static ProcessorInput<float, float> AddDeadzone(this ValueInputBase<float> input, float deadzone)
         {
             return new ProcessorInput<float, float>((value) => DeadzoneHandler(value, deadzone), "").Bind(input, true);
