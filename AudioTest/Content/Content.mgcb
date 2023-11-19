@@ -16,6 +16,9 @@
 #begin file.ogg
 /copy:file.ogg
 
+#begin file2.ogg
+/copy:file2.ogg
+
 #begin test.ogg
 /copy:test.ogg
 

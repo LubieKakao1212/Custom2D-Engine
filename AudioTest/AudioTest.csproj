@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Audio\Custom2d_Engine.Audio.csproj" />
+    <ProjectReference Include="..\Custom2d_Engine.FMOD\Custom2d_Engine.FMOD_Audio.csproj" />
     <ProjectReference Include="..\Custom2d_Engine\Custom2d_Engine.csproj" />
   </ItemGroup>
   <ItemGroup>

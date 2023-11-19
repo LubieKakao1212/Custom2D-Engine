@@ -3,8 +3,9 @@ using System;
 
 namespace Custom2d_Engine.Audio.Sounds
 {
-    public class Sound : IDisposable
+    public class SoundInstance : IDisposable
     {
+        public virtual SoundState State => mgSound.State;
         public float Volume
         {
             get => mgSound.Volume;
@@ -20,24 +21,32 @@ namespace Custom2d_Engine.Audio.Sounds
             get=> mgSound.Pitch;
             set => mgSound.Pitch = value;
         }
+        public virtual bool IsLooped
+        {
+            get => mgSound.IsLooped;
+            set => mgSound.IsLooped = value;
+        }
 
         protected SoundEffectInstance mgSound;
+        protected bool isMono;
 
-        internal Sound(SoundEffectInstance mgSound)
+        internal SoundInstance(SoundEffectInstance mgSound)
         {
             this.mgSound = mgSound;
         }
 
-        ~Sound()
+        ~SoundInstance()
         {
             Dispose();
         }
 
-        public void Play() => mgSound.Play();
+        public virtual void Play() => mgSound.Play();
 
-        public void Pause() => mgSound.Pause();
+        public virtual void Pause() => mgSound.Pause();
 
-        public virtual Sound Copy()
+        public virtual void Stop() => mgSound.Stop();
+
+        public virtual SoundInstance Copy()
         {
             return null;
         }
