@@ -1,5 +1,7 @@
 ﻿using Custom2d_Engine.Audio;
 using Custom2d_Engine.Audio.Sounds;
+using Custom2d_Engine.FMOD_Audio;
+using Custom2d_Engine.Util.Debugging;
 using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -13,7 +15,11 @@ namespace AudioTest
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private AudioManager audio;
+        private FMODSystem audio;
+
+        private FSoundBank soundBank1;
+        private FSound sound1;
+        private FSoundInstance sound1Insatnce;
 
         public AudioGame()
         {
@@ -27,28 +33,21 @@ namespace AudioTest
             base.Initialize();
         }
 
-        private SoundInstance sound1;
-        private SoundInstance sound2;
-        private float d = -0.1f;
-
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            audio = new AudioManager();
+            audio = new FMODSystem();
             audio.RootDirectory = Content.RootDirectory;
 
-            sound1 = audio.LoadOgg("test");
-            sound1.Volume = 0.1f;
-            sound1.Play();
-            sound1.Pitch = 0f;
-            sound1.IsLooped = true;
-            sound1.Pan = 1f;
-            /*sound2 = audio.LoadOgg("test");
-            sound2.Volume = 0.1f;
-            sound2.Play();
-            //sound2.Pitch = -0.0001f;
-            sound2.IsLooped = true;
-            sound2.Pan = 1f;*/
+            audio.SampleRate.LogThis("Sample Rate: ");
+            audio.LoadMaster();
+
+            soundBank1 = audio.LoadBank("test");
+            sound1 = soundBank1.GetSound("event:/test");
+
+            sound1Insatnce = sound1.CreateInstance();
+
+            sound1Insatnce.Start();
         }
 
         float timer = 0;
@@ -58,7 +57,9 @@ namespace AudioTest
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            var p = sound1.Pan + d * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            audio.Update();
+
+            //var p = sound1.Pan + d * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             /*if (sound1.State == SoundState.Stopped)
             {
@@ -70,11 +71,11 @@ namespace AudioTest
                 }
             }*/
 
-            if (MathF.Abs(p) >= 1f)
+            /*if (MathF.Abs(p) >= 1f)
             {
                 p = MathHelper.Clamp(p, 0f, 1f);
                 d *= -1;
-            }
+            }*/
             //sound1.Pitch = p;
 
 
