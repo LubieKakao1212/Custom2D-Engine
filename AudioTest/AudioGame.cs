@@ -61,6 +61,10 @@ namespace AudioTest
 
             //var p = sound1.Pan + d * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            float totalTime = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            sound1Insatnce.Pan = MathF.Abs(((totalTime % 10f) / 10f) * 2f - 1f) * 2f - 1f;
+
             /*if (sound1.State == SoundState.Stopped)
             {
                 timer += (float)gameTime.ElapsedGameTime.TotalSeconds;

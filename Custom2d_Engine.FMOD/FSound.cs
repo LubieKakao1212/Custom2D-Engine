@@ -12,8 +12,7 @@ namespace Custom2d_Engine.FMOD_Audio
         public TimeSpan Duration { get; private set; }
         public int Length => length;
         public string Path => path;
-
-
+        
         private int length;
         private string path;
 
@@ -32,6 +31,8 @@ namespace Custom2d_Engine.FMOD_Audio
             var sRate = (double)FSystem.SampleRate;
 
             Duration = TimeSpan.FromSeconds(length / sRate);
+
+            
         }
 
         public FSoundInstance CreateInstance()
