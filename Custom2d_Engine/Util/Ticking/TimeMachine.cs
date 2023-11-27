@@ -61,7 +61,7 @@ namespace Custom2d_Engine.Util.Ticking
         /// <returns>Amount of warps</returns>
         public int RetrieveAll(double interval, int limit = int.MaxValue)
         {
-            int result = (int)Floor((float)(time / interval));
+            int result = (int)Floor(time / interval);
             result = Clamp(result, 0, limit);
             time -= result * interval;
             return result;
