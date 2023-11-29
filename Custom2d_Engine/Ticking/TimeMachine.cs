@@ -1,6 +1,6 @@
 ﻿using static System.Math;
 
-namespace Custom2d_Engine.Util.Ticking
+namespace Custom2d_Engine.Ticking
 {
     public class TimeMachine
     {

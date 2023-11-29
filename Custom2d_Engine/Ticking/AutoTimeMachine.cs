@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Custom2d_Engine.Util.Ticking
+namespace Custom2d_Engine.Ticking
 { 
     public class AutoTimeMachine
     {
@@ -9,7 +9,7 @@ namespace Custom2d_Engine.Util.Ticking
         
         private readonly TimeMachine machine;
         
-        public AutoTimeMachine(Action action, double interval) 
+        public AutoTimeMachine(Action action, double interval)
         {
             Action = action;
             Interval = interval;

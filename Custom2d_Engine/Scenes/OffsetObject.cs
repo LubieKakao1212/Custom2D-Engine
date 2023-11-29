@@ -33,9 +33,9 @@ namespace Custom2d_Engine.Scenes
 
         public void Update(GameTime time)
         {
-            if (Position.HasValue)
+            if (GlobalOffset.HasValue)
             {
-                Transform.GlobalPosition = Parent.Transform.GlobalPosition + Position.Value;
+                Transform.GlobalPosition = Parent.Transform.GlobalPosition + GlobalOffset.Value;
             }
 
             if (Rotation.HasValue)
