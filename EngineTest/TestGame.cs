@@ -163,7 +163,7 @@ namespace EngineTest
 
             sprites = new();
 
-            atlas = new SpriteAtlas<Color>(GraphicsDevice);
+            atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048);
 
             var tex = Content.Load<Texture2D>("Texture");
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Custom2d_Engine.Ticking.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Custom2d_Engine.Ticking
 {
     public class TickManager
     {
-        public Dictionary<object, List<>> actions;
+        public Dictionary<object, List<ITickMachine>> actions;
 
         public TickManager() { }
     }
