@@ -23,7 +23,6 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Audio\Custom2d_Engine.Audio.csproj" />
     <ProjectReference Include="..\Custom2d_Engine.FMOD\Custom2d_Engine.FMOD_Audio.csproj" />
     <ProjectReference Include="..\Custom2d_Engine\Custom2d_Engine.csproj" />
   </ItemGroup>

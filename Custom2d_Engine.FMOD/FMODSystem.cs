@@ -41,9 +41,7 @@ namespace Custom2d_Engine.FMOD_Audio
 
             StudioSystem.create(out studioSys).AssertOk();
             studioSys.getCoreSystem(out coreSys).AssertOk();
-
-            //coreSys.setSoftwareFormat(0, SPEAKERMODE.DEFAULT, 0);
-
+            
             studioSys.initialize(1024, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, nint.Zero);
 
             //TODO Temporary until proper setum is implemented
