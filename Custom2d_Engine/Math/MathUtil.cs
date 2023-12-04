@@ -6,6 +6,7 @@ namespace Custom2d_Engine.Math
 {
     public static class MathUtil
     {
+        public const float epsilon = 1f / 4096f;
 
         /// <summary>
         /// Performs a integer division rounding down
@@ -42,5 +43,28 @@ namespace Custom2d_Engine.Math
             return LoopedDistance(a, b, TwoPi);
         }
 
+        //TODO Optimise
+        public static Vector2 SlerpDirection(Vector2 a, Vector2 b, float t)
+        {
+            var alpha = a.AngleTo(b);
+            var sinAlpha = MathF.Sin(alpha);
+            var sinAlphaInv = 1f / sinAlpha;
+            var sin1TAlpha = MathF.Sin((1 - t) * alpha);
+            var sinTAlpha = MathF.Sin(t * alpha);
+
+            return a * (sin1TAlpha * sinAlphaInv) + b * (sinTAlpha * sinAlphaInv);
+        }
+
+        //TODO Optimise
+        public static Vector2 SphericalStepDirection(Vector2 a, Vector2 b, float theta)
+        {
+            var angle = a.AngleTo(b);
+
+            if (angle < theta || angle < epsilon)
+            {
+                return b;
+            }
+            return SlerpDirection(a, b, theta / angle);
+        }
     }
 }

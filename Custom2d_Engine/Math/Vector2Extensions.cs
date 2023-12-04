@@ -40,5 +40,19 @@ namespace Custom2d_Engine.Math
                 );
         }
 
+        //TODO Optimise
+        public static float AngleTo(this Vector2 a, Vector2 b)
+        {
+            a.Normalize();
+            b.Normalize();
+            float cosAlpha = Vector2.Dot(a, b);
+
+            if (MathF.Abs(cosAlpha) > 1)
+            {
+                return 0;
+            }
+
+            return MathF.Acos(cosAlpha);
+        }
     }
 }
