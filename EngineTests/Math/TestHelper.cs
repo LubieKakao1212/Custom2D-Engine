@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using NUnit.Framework;
 using Custom2d_Engine.Util.Debugging;
 
-namespace EngineTests.Math
+namespace Custom2d_Engine.Tests.Math
 {
     public static class TestHelper
     {

@@ -8,7 +8,6 @@ using Custom2d_Engine.Util;
 
 namespace Custom2d_Engine.Input
 {
-    //TODO Gamepad support
     public class InputManager
     {
         /// <summary>

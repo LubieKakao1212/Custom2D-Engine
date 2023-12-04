@@ -5,13 +5,17 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineTest", "EngineTest\EngineTest.csproj", "{5E7BE2CF-A699-4D24-997E-FCB8752A9D30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineTests", "EngineTests\EngineTests.csproj", "{96BE77B9-89DE-44C8-88C3-8C546AE4862C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.Tests", "EngineTests\Custom2d_Engine.Tests.csproj", "{96BE77B9-89DE-44C8-88C3-8C546AE4862C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarchingSquares", "MarchingSquares\MarchingSquares.csproj", "{F54238DC-735A-4A93-9A39-1DF0B53A209D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Physics", "Physics\Physics.csproj", "{BCC5B9FD-590F-462C-B12D-A3CC50009DDC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine", "Custom2d_Engine\Custom2d_Engine.csproj", "{432E1F3F-B99A-4B75-9A30-77806A7669D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioTest", "AudioTest\AudioTest.csproj", "{49B032E5-964C-4177-9C12-0C286986CB30}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.FMOD_Audio", "Custom2d_Engine.FMOD\Custom2d_Engine.FMOD_Audio.csproj", "{2189382E-31B4-4782-BCAA-A71421A4B7A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.Physics", "Custom2d_Engine.Physics\Custom2d_Engine.Physics.csproj", "{6593BD10-48F7-4412-8147-D9B4B3DC88A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +35,22 @@ Global
 		{F54238DC-735A-4A93-9A39-1DF0B53A209D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F54238DC-735A-4A93-9A39-1DF0B53A209D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F54238DC-735A-4A93-9A39-1DF0B53A209D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCC5B9FD-590F-462C-B12D-A3CC50009DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCC5B9FD-590F-462C-B12D-A3CC50009DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCC5B9FD-590F-462C-B12D-A3CC50009DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCC5B9FD-590F-462C-B12D-A3CC50009DDC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{432E1F3F-B99A-4B75-9A30-77806A7669D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{432E1F3F-B99A-4B75-9A30-77806A7669D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{432E1F3F-B99A-4B75-9A30-77806A7669D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{432E1F3F-B99A-4B75-9A30-77806A7669D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B032E5-964C-4177-9C12-0C286986CB30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B032E5-964C-4177-9C12-0C286986CB30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B032E5-964C-4177-9C12-0C286986CB30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B032E5-964C-4177-9C12-0C286986CB30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2189382E-31B4-4782-BCAA-A71421A4B7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2189382E-31B4-4782-BCAA-A71421A4B7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2189382E-31B4-4782-BCAA-A71421A4B7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2189382E-31B4-4782-BCAA-A71421A4B7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

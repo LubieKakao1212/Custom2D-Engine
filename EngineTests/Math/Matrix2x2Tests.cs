@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System;
 using static Custom2d_Engine.Math.MathUtil;
 
-namespace EngineTests.Math
+namespace Custom2d_Engine.Tests.Math
 {
     [TestFixture]
     internal class Matrix2x2Deconstruct

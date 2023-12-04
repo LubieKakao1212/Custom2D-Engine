@@ -1,0 +1,33 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin file.ogg
+/copy:file.ogg
+
+#begin file2.ogg
+/copy:file2.ogg
+
+#begin Master.bank
+/copy:Master.bank
+
+#begin Master.strings.bank
+/copy:Master.strings.bank
+
+#begin test.bank
+/copy:test.bank
+
+#begin test.ogg
+/copy:test.ogg
+

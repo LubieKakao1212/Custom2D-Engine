@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EngineTests.Scene
+namespace Custom2d_Engine.Tests.Scene
 {
     //TODO
     internal class Ownership

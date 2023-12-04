@@ -4,9 +4,9 @@ using Custom2d_Engine.Math;
 using Custom2d_Engine.Util;
 using NUnit.Framework;
 using System;
-using static EngineTests.Math.TestHelper;
+using static Custom2d_Engine.Tests.Math.TestHelper;
 
-namespace EngineTests.Math
+namespace Custom2d_Engine.Tests.Math
 {
     [TestFixture]
     internal class TransformMatrixTests
