@@ -2,11 +2,11 @@
 
 namespace Custom2d_Engine.Ticking.Actions
 {
-    public abstract class IntervalTickMachineBase : TickMachineBase
+    public abstract class RepeatingTickMachineBase : TickMachineBase
     {
         private Action action;
 
-        public IntervalTickMachineBase(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(cooldown, phase)
+        public RepeatingTickMachineBase(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(cooldown, phase)
         {
             this.action = action;
         }
@@ -21,9 +21,9 @@ namespace Custom2d_Engine.Ticking.Actions
         protected abstract void RollBack();
     }
     
-    public class SimpleIntervalTickMachine : IntervalTickMachineBase
+    public class SimpleRepeatingTickMachine : RepeatingTickMachineBase
     {
-        public SimpleIntervalTickMachine(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(action, cooldown, phase) { }
+        public SimpleRepeatingTickMachine(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(action, cooldown, phase) { }
 
         protected override void RollBack()
         {
@@ -31,9 +31,9 @@ namespace Custom2d_Engine.Ticking.Actions
         }
     }
 
-    public class AccurateIntervalTickMachine : IntervalTickMachineBase
+    public class AccurateRepeatingTickMachine : RepeatingTickMachineBase
     {
-        public AccurateIntervalTickMachine(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(action, cooldown, phase) { }
+        public AccurateRepeatingTickMachine(Action action, TimeSpan cooldown, TimeSpan phase = default) : base(action, cooldown, phase) { }
 
         protected override void RollBack()
         { 

@@ -10,7 +10,9 @@ namespace Custom2d_Engine.Ticking.Actions
     {
         public TimeSpan CurrentTime { get; protected set; }
         public TimeSpan Cooldown { get; protected set; }
-        
+
+        public bool Disposed { get; protected set; } = false;
+
         public TickMachineBase(TimeSpan cooldown, TimeSpan phase = default)
         {
             this.Cooldown = cooldown;
@@ -28,6 +30,11 @@ namespace Custom2d_Engine.Ticking.Actions
                 }
             }
             while (Execute(deltaTime));
+        }
+
+        public void Dispose()
+        {
+            Disposed = true;
         }
 
         protected abstract bool Execute(TimeSpan deltaTime);

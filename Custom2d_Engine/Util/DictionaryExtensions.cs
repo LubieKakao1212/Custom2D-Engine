@@ -64,7 +64,7 @@ namespace Custom2d_Engine.Util
         /// <typeparam name="V"></typeparam>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static IEnumerable<(K, V)> EnumerateNestedEntries<K, V>(this IDictionary<K, List<V>> dict)
+        public static IEnumerable<(K Key, V Value)> EnumerateNestedEntries<K, V>(this IDictionary<K, List<V>> dict)
         {
             foreach (var (key, list) in dict)
             {

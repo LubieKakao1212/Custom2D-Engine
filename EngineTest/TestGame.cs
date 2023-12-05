@@ -18,6 +18,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Custom2d_Engine.Ticking;
 
 namespace EngineTest
 {
@@ -72,6 +73,8 @@ namespace EngineTest
         private World physicsWorld;
 
         private DebugView debug;
+
+        private TickManager tickManager = new TickManager();
 
         public TestGame()
         {
@@ -139,7 +142,7 @@ namespace EngineTest
 
             #endregion
             Camera = new Camera() { ViewSize = 16 };
-            scene = new Hierarchy();
+            scene = new Hierarchy(tickManager);
 
             grid = new Grid(Vector2.One);
 
@@ -213,6 +216,8 @@ namespace EngineTest
             scene.AddObject(mesh);
             scene.AddObject(mesh2);
 
+            scene.AddAccurateRepeatingAction(() => { CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f); }, 0.1f, 10f);
+
             CreateWorld();
         }
 
@@ -247,6 +252,8 @@ namespace EngineTest
             {
                 updatable.Update(gameTime);
             }
+
+            tickManager.Forward(gameTime.ElapsedGameTime);
 
             //grid.Transform.LocalScale = new Vector2(
             //    MathF.Cos((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f,

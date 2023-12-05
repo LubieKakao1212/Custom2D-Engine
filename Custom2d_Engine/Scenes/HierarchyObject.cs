@@ -1,4 +1,5 @@
 ﻿using Custom2d_Engine.Math;
+using Custom2d_Engine.Ticking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Custom2d_Engine.Scenes
 {
-    public class HierarchyObject
+    public class HierarchyObject : IManagedTicker
     {
         public HierarchyObject Parent
         {
@@ -85,6 +86,8 @@ namespace Custom2d_Engine.Scenes
                 return result;
             }
         }
+
+        TickManager IManagedTicker.TickManager => currentScene.TickManager;
 
         //Not optimal for larege amount of children
         private readonly List<HierarchyObject> children = new();

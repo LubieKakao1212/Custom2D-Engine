@@ -8,9 +8,9 @@ namespace Custom2d_Engine.Ticking.Actions
 {
     public class SequenceTickMachine : TickMachineBase
     {
-        private IEnumerator<float> action;
+        private IEnumerator<TimeSpan> action;
 
-        public SequenceTickMachine(IEnumerator<float> action, TimeSpan cooldown, TimeSpan phase = default) : base(cooldown, phase)
+        public SequenceTickMachine(IEnumerator<TimeSpan> action, TimeSpan cooldown, TimeSpan phase = default) : base(cooldown, phase)
         {
             this.action = action;
         }
@@ -18,18 +18,19 @@ namespace Custom2d_Engine.Ticking.Actions
         protected override bool Execute(TimeSpan deltaTime)
         {
             CurrentTime -= Cooldown;
-
             if (!action.MoveNext())
             {
+                Dispose();
                 return false;
             }
             var value = action.Current;
-            if (value < 0)
+            if (value < TimeSpan.Zero)
             {
+                Cooldown = TimeSpan.Zero;
                 return false;
             }
 
-            Cooldown = TimeSpan.FromSeconds(value);
+            Cooldown = value;
 
             return true;
         }

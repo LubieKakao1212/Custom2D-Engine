@@ -6,11 +6,14 @@ namespace Custom2d_Engine.Scenes
     using Custom2d_Engine.Scenes.Events;
     using Util.Debugging;
     using Util;
+    using Custom2d_Engine.Ticking;
 
     //TODO Optimise callbacks
-    public class Hierarchy
+    public class Hierarchy : IManagedTicker
     {
         public IReadOnlyCollection<DrawableObject> Drawables => CustomOrderedInstancesOf<DrawableObject>((obj) => obj.DrawOrder);
+
+        public TickManager TickManager { get; private set; }
 
         private HashSet<HierarchyObject> rootsSet = new HashSet<HierarchyObject>();
         private List<HierarchyObject> roots = new List<HierarchyObject>();
@@ -20,8 +23,9 @@ namespace Custom2d_Engine.Scenes
 
         private bool isUpdating;
 
-        public Hierarchy()
+        public Hierarchy(TickManager tickManager)
         {
+            TickManager = tickManager;
         }
 
         public void AddObject(HierarchyObject obj)
