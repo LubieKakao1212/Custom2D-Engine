@@ -3,6 +3,7 @@ using Custom2d_Engine.Scenes;
 using Custom2d_Engine.Scenes.Events;
 using nkast.Aether.Physics2D.Common;
 using nkast.Aether.Physics2D.Dynamics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Custom2d_Engine.Physics
 {
@@ -64,6 +65,14 @@ namespace Custom2d_Engine.Physics
             drawable.Transform.LocalRotation = rotation;
             drawable.Transform.LocalScale = size;
             return drawable;
+        }
+
+        public Fixture AddRectFixture(Vector2 size, Vector2 offset, float rotation, float density = 1f)
+        {
+            var verts = PolygonTools.CreateRectangle(size.X / 2f, size.Y / 2f);
+            verts.Rotate(rotation);
+            verts.Translate(offset);
+            return PhysicsBody.CreatePolygon(verts, density);
         }
 
         public void RemoveFixture(Fixture fixture)
