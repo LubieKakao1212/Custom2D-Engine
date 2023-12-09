@@ -112,13 +112,23 @@ namespace Custom2d_Engine.Scenes
         private void PrivateSetScene(Hierarchy scene)
         {
             currentScene = scene;
+            if (scene != null)
+            {
+                AddedToScene();
+            }
+
             foreach (var child in children)
             {
                 child.PrivateSetScene(currentScene);
             }
+            
+            if (scene == null)
+            {
+                RemovedFromScene();
+            }
         }
 
-        private void AddChild(HierarchyObject child)
+    private void AddChild(HierarchyObject child)
         {
             if (children.Contains(child))
             {
@@ -134,6 +144,13 @@ namespace Custom2d_Engine.Scenes
                 throw new InvalidOperationException("Invalid Parenting");
             }
             children.Remove(child);
+        }
+
+        protected virtual void AddedToScene() { }
+
+        protected virtual void RemovedFromScene() 
+        {
+            ((IManagedTicker)this).TickManager.RemoveAllTickers(this);
         }
     }
 }
