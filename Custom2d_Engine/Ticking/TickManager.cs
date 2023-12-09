@@ -9,14 +9,17 @@ namespace Custom2d_Engine.Ticking
     public class TickManager
     {
         public Dictionary<object, List<ITickMachine>> actions = new();
+        private List<(object Owner, ITickMachine Ticker)> additionList = new();
+        private bool isUpdating;
 
         public TickManager(bool global = false) 
         {
-            
+            isUpdating = false;
         }
 
         public void Forward(TimeSpan deltaTime)
         {
+            isUpdating = true;
             Dictionary<object, List<ITickMachine>> toRemove = new();
             foreach (var entry in actions.EnumerateNestedEntries())
             {
@@ -27,11 +30,17 @@ namespace Custom2d_Engine.Ticking
                 }
                 ticker.Forward(deltaTime);
             }
+            isUpdating = false;
 
             //May be optimised (if needed) by caching lists from each object
             foreach (var entry in toRemove.EnumerateNestedEntries())
             {
                 actions.RemoveNested(entry.Key, entry.Value);
+            }
+
+            foreach (var entry in additionList)
+            {
+                actions.AddNested(entry.Owner, entry.Ticker);
             }
         }
 
@@ -78,7 +87,14 @@ namespace Custom2d_Engine.Ticking
 
         public TickMachineBase AddTicker(object owner, TickMachineBase ticker)
         {
-            actions.AddNested(owner, ticker);
+            if (isUpdating)
+            {
+                additionList.Add((owner, ticker));
+            }
+            else
+            {
+                actions.AddNested(owner, ticker);
+            }
             return ticker;
         }
     }
