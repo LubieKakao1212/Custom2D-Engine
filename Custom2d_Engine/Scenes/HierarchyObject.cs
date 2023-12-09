@@ -111,9 +111,9 @@ namespace Custom2d_Engine.Scenes
 
         private void PrivateSetScene(Hierarchy scene)
         {
-            currentScene = scene;
             if (scene != null)
             {
+                currentScene = scene;
                 AddedToScene();
             }
 
@@ -125,10 +125,11 @@ namespace Custom2d_Engine.Scenes
             if (scene == null)
             {
                 RemovedFromScene();
+                currentScene = null;
             }
         }
 
-    private void AddChild(HierarchyObject child)
+        private void AddChild(HierarchyObject child)
         {
             if (children.Contains(child))
             {
