@@ -3,7 +3,7 @@ using System;
 
 namespace Custom2d_Engine.Util
 {
-    public static class RectangleArrayExtensions
+    public static class ArrayExtensions
     {
         public static void SetRectUnchecked<T>(this T[] destinationArray, int arrayWidth, T[] source, Rectangle destinationRect)
         {
@@ -39,6 +39,17 @@ namespace Custom2d_Engine.Util
 
                 sourceSpan.CopyTo(destinationSpan);
             }
+        }
+
+        public static T[][] CreateMultiArray<T>(int count1, int count2)
+        {
+            var arr = new T[count1][];
+            for (int i = 0; i < count1; i++)
+            {
+                arr[i] = new T[count2];
+            }
+
+            return arr;
         }
     }
 }

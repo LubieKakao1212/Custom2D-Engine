@@ -10,7 +10,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 {
     public interface ISpriteAtlas : IDisposable
     {
-        Sprite[] AddTextureRects(Texture2D texture, params Rectangle[] regions);
+        Sprite[] AddTextureRects(Texture2D[] textures, params Rectangle[] regions);
 
         public void Compact(int maxSize);
     }

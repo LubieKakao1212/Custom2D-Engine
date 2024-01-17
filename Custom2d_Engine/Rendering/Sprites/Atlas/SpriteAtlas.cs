@@ -11,13 +11,15 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 {
     public class SpriteAtlas<T> : ISpriteAtlas where T : struct
     {
-        public Texture3D AtlasTextures => atlasTextures;
+        public Texture3D[] AtlasTextures => atlasTextures;
 
         private const int maxSizeInternal = 8192;
 
-        private List<AtlasRegion> regions = new List<AtlasRegion>();
+        private List<AtlasRegion> regions = new();
+        private List<Texture2D>[] sourceTextures;
 
-        private Texture3D atlasTextures;
+        private Color[] baseColors;
+        private Texture3D[] atlasTextures;
 
         private int size;
 
@@ -33,8 +35,12 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
         /// 
         /// </summary>
         /// <param name="minimumTextureSize">Currently not used, atlas is always full size</param>
-        public SpriteAtlas(GraphicsDevice graphics, int minimumTextureSize = maxSizeInternal)
+        public SpriteAtlas(GraphicsDevice graphics, int minimumTextureSize = maxSizeInternal, int secondaryTextureCount = 0)
         {
+            sourceTextures = new List<Texture2D>[secondaryTextureCount + 1];
+            atlasTextures = new Texture3D[secondaryTextureCount + 1];
+            baseColors = Enumerable.Repeat(Color.Transparent, secondaryTextureCount + 1).ToArray();
+
             size = minimumTextureSize;
             this.graphics = graphics;
             if (typeof(T) == typeof(Vector4))
@@ -51,7 +57,12 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
             }
         }
 
-        public Sprite[] AddTextureRects(Texture2D texture, params Rectangle[] rects)
+        public void SetBaseColor(int texIdx, Color color)
+        {
+            baseColors[texIdx] = color;
+        }
+
+        public Sprite[] AddTextureRects(Texture2D[] textures, params Rectangle[] rects)
         {
             var output = new Sprite[MathHelper.Max(rects.Length, 1)];
 
@@ -59,26 +70,23 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 
             if (rects.Length == 0)
             {
-                output[0] = new Sprite();
-                regions.Add(new AtlasRegion()
-                {
-                    sourceTexture = texture,
-                    sourceRect = texture.Bounds,
-                    destinationSprite = output[0]
-                });
+                rects = new Rectangle[] { new Rectangle(0, 0, textures[0].Width, textures[0].Height) };
             }
-            else
-                for (int i = 0; i < output.Length; i++)
+                       
+            for (int i = 0; i < output.Length; i++)
+            {
+                output[i] = new Sprite();
+                regions.Add(new AtlasRegion() 
                 {
-                    output[i] = new Sprite();
-                    regions.Add(new AtlasRegion() 
-                    {
-                        sourceTexture = texture,
-                        sourceRect = rects[i],
-                        destinationSprite = output[i]
-                    });
-
+                    sourceTextureIdx = sourceTextures[0].Count,
+                    sourceRect = rects[i],
+                    destinationSprite = output[i]
+                });
+                for (int tex = 0; tex < sourceTextures.Length; tex++)
+                {
+                    sourceTextures[tex].Add(textures[tex]);
                 }
+            }
 
             return output;
         }
@@ -185,11 +193,15 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 
         private void CreateAtlasTextures()
         {
-            atlasTextures = new Texture3D(graphics, size, size, textureCount, false, textureFormat);
+            int atlasCount = atlasTextures.Length;
+            for (int i = 0; i< atlasCount; i++) 
+            {
+                atlasTextures[i] = new Texture3D(graphics, size, size, textureCount, false, textureFormat);
+            }
 
             var texturePixelCount = size * size;
 
-            var atlasPixels = new T[texturePixelCount * textureCount];
+            var atlasPixels = ArrayExtensions.CreateMultiArray<T>(atlasCount, texturePixelCount * textureCount);
 
             foreach (var region in regions)
             {
@@ -198,23 +210,13 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
                 var idx = pos.X / size;
 
                 #region Fill Atlas
-                var rawData = GetTextureData(region.sourceTexture, region.sourceRect);
-                var data = new T[rawData.Length];
-                if (data is Vector4[] vArr)
+                for (int i = 0; i < atlasCount; i++)
                 {
-                    rawData.CopyTo(vArr, 0);
-                }
-                else if(data is Color[] cArr)
-                {
-                    for(int i=0; i<data.Length; i++)
+                    if (sourceTextures[i] != null)
                     {
-                        cArr[i] = new Color(rawData[i]);
+                        sourceTextures[i][region.sourceTextureIdx].TransferPixels3d(atlasPixels[i], size, size, region.sourceRect, x, pos.Y, idx);
                     }
                 }
-
-                atlasPixels.SetRectUnchecked3d(size, size, data, new Rectangle(
-                    x, pos.Y,
-                    region.sourceRect.Width, region.sourceRect.Height), idx);
                 #endregion
 
                 #region SetSprite Data
@@ -230,32 +232,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
                 #endregion
             }
 
-            var fullRect = new Rectangle(0, 0, size, size);
-
             atlasTextures.SetData(atlasPixels);
-        }
-
-        //Can be done better, I think
-        private Vector4[] GetTextureData(Texture2D source, Rectangle sourceRect)
-        {
-            var dataSize = sourceRect.Width * sourceRect.Height;
-
-            if (source.Format == SurfaceFormat.Color)
-            {
-                var pixels = new Color[dataSize];
-                source.GetData(0, sourceRect, pixels, 0, dataSize);
-
-                return pixels.Select((p) => p.ToVector4()).ToArray();
-            }
-            else if (source.Format == SurfaceFormat.Vector4)
-            {
-                var pixels = new Vector4[dataSize];
-                source.GetData(0, sourceRect, pixels, 0, dataSize);
-                return pixels;
-            }
-            else
-                throw new ApplicationException($"Unsuported texture format {source.Format}");
-            
         }
 
         private void IncrementTextureCount(ref Rectangle sourceRect, SortedDictionary<int, List<Rectangle>> spaces)
@@ -273,7 +250,10 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 
         public void Dispose()
         {
-            atlasTextures?.Dispose();
+            foreach (var atlas in atlasTextures)
+            {
+                atlas.Dispose();
+            }
         }
     }
 }
