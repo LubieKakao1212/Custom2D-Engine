@@ -18,7 +18,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
         private List<AtlasRegion> regions = new();
         private List<Texture2D>[] sourceTextures;
 
-        private Color[] baseColors;
+        private T[] baseColors;
         private Texture3D[] atlasTextures;
 
         private int size;
@@ -37,9 +37,9 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
         /// <param name="minimumTextureSize">Currently not used, atlas is always full size</param>
         public SpriteAtlas(GraphicsDevice graphics, int minimumTextureSize = maxSizeInternal, int secondaryTextureCount = 0)
         {
-            sourceTextures = new List<Texture2D>[secondaryTextureCount + 1];
+            sourceTextures = new List<Texture2D>[secondaryTextureCount + 1].Fill(() => new List<Texture2D>());
             atlasTextures = new Texture3D[secondaryTextureCount + 1];
-            baseColors = Enumerable.Repeat(Color.Transparent, secondaryTextureCount + 1).ToArray();
+            baseColors = Enumerable.Repeat(default(T), secondaryTextureCount + 1).ToArray();
 
             size = minimumTextureSize;
             this.graphics = graphics;
@@ -57,7 +57,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
             }
         }
 
-        public void SetBaseColor(int texIdx, Color color)
+        public void SetBaseColor(int texIdx, T color)
         {
             baseColors[texIdx] = color;
         }
@@ -203,6 +203,11 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 
             var atlasPixels = ArrayExtensions.CreateMultiArray<T>(atlasCount, texturePixelCount * textureCount);
 
+            for (int i = 0; i < atlasPixels.Length; i++)
+            {
+                Array.Fill(atlasPixels[i], baseColors[i]);
+            }
+            
             foreach (var region in regions)
             {
                 var pos = region.destinationPosition;
@@ -212,7 +217,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
                 #region Fill Atlas
                 for (int i = 0; i < atlasCount; i++)
                 {
-                    if (sourceTextures[i] != null)
+                    if (sourceTextures[i][region.sourceTextureIdx] != null)
                     {
                         sourceTextures[i][region.sourceTextureIdx].TransferPixels3d(atlasPixels[i], size, size, region.sourceRect, x, pos.Y, idx);
                     }

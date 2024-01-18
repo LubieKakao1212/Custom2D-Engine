@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Custom2d_Engine.Util
 {
@@ -39,6 +40,15 @@ namespace Custom2d_Engine.Util
 
                 sourceSpan.CopyTo(destinationSpan);
             }
+        }
+
+        public static T[] Fill<T>(this T[] arr, Func<T> filler)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = filler();
+            }
+            return arr;
         }
 
         public static T[][] CreateMultiArray<T>(int count1, int count2)

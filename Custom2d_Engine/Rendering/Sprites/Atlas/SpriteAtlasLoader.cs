@@ -28,8 +28,8 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
             Texture2D[] textures = new Texture2D[textureNames.Length];
             for (int i = 0; i < textures.Length; i++)
             {
-                var file = Path.Combine(path, textureNames[i]);
-                if (File.Exists(file + ".xnb"))
+                var file = $"{path}/{textureNames[i]}";
+                if (File.Exists($"{Content.RootDirectory}/{file}.xnb"))
                 {
                     textures[i] = Content.Load<Texture2D>(file);
                 }

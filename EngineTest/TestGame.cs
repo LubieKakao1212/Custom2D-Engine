@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Custom2d_Engine.Ticking;
+using nkast.Aether.Physics2D.Controllers;
 
 namespace EngineTest
 {
@@ -75,6 +76,8 @@ namespace EngineTest
         private DebugView debug;
 
         private TickManager tickManager = new TickManager();
+
+        private int atlasIdx = 0;
 
         public TestGame()
         {
@@ -138,6 +141,13 @@ namespace EngineTest
 
             inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
             inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
+
+            inputManager.GetKey(Keys.Space).Started += (input) =>
+            {
+                atlasIdx++;
+                atlasIdx = atlasIdx % atlas.AtlasTextures.Length;
+                renderer.SpriteAtlas = atlas.AtlasTextures[atlasIdx];
+            };
             #endregion
 
             #endregion
@@ -166,11 +176,22 @@ namespace EngineTest
 
             sprites = new();
 
-            atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048);
+            atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048, 2);
+            atlas.SetBaseColor(2, Color.Black);
 
-            var tex = Content.Load<Texture2D>("Texture");
+            var atlasLoader = new SpriteAtlasLoader<Color>(Content, atlas, "albedo", "normal", "emission");
 
-            for (int i=0; i<16; i++)
+            //var tex = Content.Load<Texture2D>("Texture");
+
+            sprites.AddRange(atlasLoader.Load("sprites/gem",
+                new Rectangle(0, 0, 64, 64),
+                new Rectangle(0, 0, 32, 32),
+                new Rectangle(32, 0, 32, 32),
+                new Rectangle(32, 32, 32, 32),
+                new Rectangle(0, 32, 32, 32)
+                ));
+
+            /*for (int i=0; i<16; i++)
             {
                 var x = Random.Shared.Next(0, tex.Width - 5);
                 var y = Random.Shared.Next(0, tex.Height - 5);
@@ -178,11 +199,11 @@ namespace EngineTest
                 var h = Random.Shared.Next(1, tex.Height - y);
                 
                 sprites.AddRange(atlas.AddTextureRects(tex, new Rectangle(x, y, w, h)));
-            }
+            }*/
 
             atlas.Compact();
 
-            renderer.SpriteAtlas = atlas.AtlasTextures;
+            renderer.SpriteAtlas = atlas.AtlasTextures[0];
             // TODO: use this.Content to load your game content here
             DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
             DepthMarchedColor.Parameters["Color"].SetValue(Color.Green.ToVector4());
