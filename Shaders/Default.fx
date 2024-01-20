@@ -9,53 +9,51 @@
 
 #include "Transforms.fxh"
 #include "Camera.fxh"
-#include "Sprites.fxh"
+#include "StructsPS.fxh"
+#include "StructsVS.fxh"
+#include "UnlitPS.fxh"
+#include "LitPS.fxh"
 
-struct VertexShaderInput
+PSInput MainVS(in VertexShaderInput input, in InstanceData instance)
 {
-	float4 Position : POSITION0;
-	float2 UV : TEXCOORD0;
-};
+	PSInput output;
 
-struct VertexShaderOutput
-{
-	float4 Position : SV_POSITION;
-	float4 Color : COLOR0;
-	//float2 WorldPosition : POSITION1;
-	float2 UV : TEXCOORD0;
-	float3 AtlasPos : TEXCOORD1;
-};
+	float3x3 LtV = LocalToView(instance.RotScale, instance.Pos);
 
-VertexShaderOutput MainVS(in VertexShaderInput input,
-	float4 rotScale : POSITION1,
-	float2 pos : POSITION2,
-	float4 color : COLOR0,
-	float4 atlasPos : TEXCOORD1)
-{
-	VertexShaderOutput output;
+	float4 screenPos = float4(mul(LtV, float3(input.Position.xy, 1.0f)).xy, 0.0f, 1.0f);
+	output.Position = screenPos;
+	output.ScreenPos = screenPos.xy;
 
-	float3x3 LtV = LocalToView(rotScale, pos);
+	output.Color = instance.Color;
 
-	output.Position = float4(mul(LtV, float3(input.Position.xy, 1.0f)).xy, 0.0f, 1.0f);
-	output.Color = color;
-
-	output.AtlasPos = ProcessSpritePos(atlasPos, input.UV);
+	output.AtlasPos = ProcessSpritePos(instance.AtlasPos, input.UV);
 
 	output.UV = input.UV;
 
 	return output;
 }
 
-float4 MainPS(VertexShaderOutput input) : COLOR
-{
-	return SpriteAtlas.SampleLevel(AtlasSampler, input.AtlasPos, 0) * input.Color;
-}
 
 technique Unlit
 {
 	pass Pass0
 	{
 		VertexShader = compile VS_SHADERMODEL MainVS();
-		PixelShader = compile PS_SHADERMODEL MainPS();
+		PixelShader = compile PS_SHADERMODEL UnlitPS();
 	}
 };
+
+technique Lit
+{
+	pass Pass0
+	{
+		VertexShader = compile VS_SHADERMODEL MainVS();
+		PixelShader = compile PS_SHADERMODEL LitNormal();
+	}
+
+	pass Pass1
+	{
+		VertexShader = compile VS_SHADERMODEL MainVS();
+		PixelShader = compile PS_SHADERMODEL LitFinalPS();
+	}
+}

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Custom2d_Engine.Scenes
 {
-    public class MeshObject : SpecialRenderedObject
+    public class UnlitMeshObject : SpecialRenderedObject
     {
         private Effect effect;
         private DepthStencilState depthStencilState;
@@ -19,9 +19,9 @@ namespace Custom2d_Engine.Scenes
         private VertexBuffer vb;
         private int pCount;
         
-        public static MeshObject CreateNew<T>(RenderPipeline pipeline, VertexDeclaration vertexDeclaration, T[] verticies, int[] indicies, Color color, float drawOrder, Effect effect, DepthStencilState depthStencilState) where T : struct
+        public static UnlitMeshObject CreateNew<T>(RenderPipeline pipeline, VertexDeclaration vertexDeclaration, T[] verticies, int[] indicies, Color color, float drawOrder, Effect effect, DepthStencilState depthStencilState) where T : struct
         {
-            var mo = new MeshObject(pipeline, color, drawOrder);
+            var mo = new UnlitMeshObject(pipeline, color, drawOrder);
             mo.vb = new VertexBuffer(pipeline.Graphics, vertexDeclaration, verticies.Length, BufferUsage.WriteOnly);
             mo.vb.SetData(verticies);
             
@@ -36,16 +36,17 @@ namespace Custom2d_Engine.Scenes
             return mo;
         }
 
-        private MeshObject(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
+        private UnlitMeshObject(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
         {
+            SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.CustomDraw);
         }
         
-        public override void Render(Camera camera)
+        protected override void RenderFinal(Texture2D _)
         {
             effect.CurrentTechnique = effect.Techniques[0];
 
             //TODO integrate into pipeline
-            var proj = camera.ProjectionMatrix;
+            var proj = Pipeline.CurrentState.CurrentProjection;
             effect.Parameters[Effects.CameraRS].SetValue(proj.RS.Flat);
             effect.Parameters[Effects.CameraT].SetValue(proj.T);
 

@@ -1,4 +1,7 @@
-//Requires Transforms.fxh
+#ifndef CAMERA
+#define CAMERA
+
+#include "Transforms.fxh"
 
 float4 CameraRS;
 float2 CameraT;
@@ -16,3 +19,5 @@ float3x3 LocalToView(float4 rotScale, float2 pos)
 
 	return mul(camWorldToView, trs);
 }
+
+#endif

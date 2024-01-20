@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Custom2d_Engine.Tilemap
 {
+    [Obsolete("Broken, Rewrite Needed")]
     public class TilemapRenderer : SpecialRenderedObject
     {
         private static VertexDeclaration TileInstanceDeclaration { get; } = new VertexDeclaration(
@@ -43,9 +44,9 @@ namespace Custom2d_Engine.Tilemap
             instanceBuffer = new DynamicVertexBuffer(pipeline.Graphics, TileInstanceDeclaration, RenderPipeline.MaxInstanceCount, BufferUsage.WriteOnly);
         }
 
-        public override void Render(Camera camera)
+        protected override void RenderNormals()
         {
-            var gridWtL = Matrix2x2.Scale(grid.CellSize).Inverse() * grid.Transform.WorldToLocal;
+            /*var gridWtL = Matrix2x2.Scale(grid.CellSize).Inverse() * grid.Transform.WorldToLocal;
             var camVtW = camera.ProjectionMatrix.Inverse();
 
             var VtG = gridWtL * camVtW;
@@ -112,7 +113,7 @@ namespace Custom2d_Engine.Tilemap
             using var effectScope = new RenderPipeline.EffectScope(Pipeline, effect);
             using var cameraScope = new RenderPipeline.CameraScope(Pipeline, GtV);
 
-            Pipeline.Rendering.DrawSortedLayerQuads(instanceBuffer, ordersList.ToArray());
+            Pipeline.Rendering.DrawSortedLayerQuads(instanceBuffer, ordersList.ToArray());*/
         }
 
         [StructLayout(LayoutKind.Sequential)]

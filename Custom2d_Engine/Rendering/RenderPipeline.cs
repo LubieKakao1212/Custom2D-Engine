@@ -1,36 +1,43 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Custom2d_Engine.Math;
+﻿using Custom2d_Engine.Math;
 using Custom2d_Engine.Rendering.Sprites;
+using Custom2d_Engine.Rendering.Sprites.Atlas;
 using Custom2d_Engine.Scenes;
 using Custom2d_Engine.Util;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Custom2d_Engine.Rendering
 {
     public class RenderPipeline
     {
-        public Texture3D SpriteAtlas
+        public const int RenderPassCount = 3;
+
+        /*public Texture3D SpriteAtlas
         {
-            get => CurrentState.SpriteAtlas;
-            set => CurrentState.SpriteAtlas = value;
-        }
-        private State CurrentState;
+            get => currentState.SpriteAtlas;
+            set => currentState.SpriteAtlas = value;
+        }*/
+
+        public State CurrentState => currentState;
         public Renderer Rendering { get; }
         public GraphicsDevice Graphics { get; private set; }
+        public Target RenderTarget { get; }
 
+        private State currentState;
         public const int MaxInstanceCount = 4096 * 4;
 
-        private Vector2 quadScale = new Vector2(0.5f, 0.5f);
+        private Vector2 quadScale = new Vector2(1f, 1f);
         private VertexBuffer quadVerts;
         private IndexBuffer quadInds;
 
         private DynamicVertexBuffer instanceBuffer;
-       
+
+
         public readonly VertexDeclaration InstanceVertexDeclaration = new VertexDeclaration(
                 new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
                 new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
@@ -40,13 +47,16 @@ namespace Custom2d_Engine.Rendering
 
         public RenderPipeline()
         {
-            CurrentState = new State();
+            currentState = new State();
             Rendering = new Renderer(this);
+            RenderTarget = new Target(this);
         }
 
-        public void Init(GraphicsDevice graphicsDevice)
+        public void Init(GraphicsDevice graphicsDevice, int screenWidth, int screenHeight)
         {
             Graphics = graphicsDevice;
+
+            Resize(screenWidth, screenHeight);
 
             //CurrentState.CurrentEffect = Effects.Default;
 
@@ -96,55 +106,106 @@ namespace Custom2d_Engine.Rendering
             #endregion
         }
 
-        public void RenderScene(Hierarchy scene, Camera camera)
+        public void SetLitAtlases(Texture3D color, Texture3D normal, Texture3D emission)
+        {
+            currentState.ColorAtlas = color;
+            currentState.NormalAtlas = normal;
+            currentState.EmissionAtlas = emission;
+        }
+
+        [Obsolete("Experimental and not stable")]
+        public void SetUnlitAtlas(Texture3D color)
+        {
+            currentState.ColorAtlas = color;
+        }
+
+        public void Resize(int screenWidth, int screenHeight)
+        {
+            RenderTarget.Resize(screenWidth, screenHeight);
+        }
+
+        public void RenderScene(Hierarchy scene, Camera camera, Color baseColor)
         {
             using var camScope = new CameraScope(this, camera);
             using var effectScope = new EffectScope(this, Effects.Default);
-            foreach (var instanceCount in SetupSceneInstances(scene, camera))
-            {
-                Rendering.DrawInstancedQuads(instanceBuffer, instanceCount);
-            }
+
+            RenderTarget.Swap();
+
+            var result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
+            result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+            result = RenderPass(scene, RenderPasses.Final, result, baseColor);
+            
+            FinishDraw(result);
         }
 
-        //TODO find a better name or merge with render scene
-        public IEnumerable<int> SetupSceneInstances(Hierarchy scene, Camera camera)
+        private IEnumerable<int> SetupSceneInstances(Hierarchy scene, RenderPasses pass, Texture2D prevPassTexture)
         {
-            int i = 0;
+            int countInBatch = 0;
             var drawables = scene.Drawables;
             var instances = new InstanceData[MathHelper.Min(drawables.Count, MaxInstanceCount)];
+
+            var passId = (byte)pass;
+
             foreach (var drawable in drawables)
             {
-                if(drawable.InteruptQueue) 
+                switch (drawable.PassQueueBehaviours[passId]) 
                 {
-                    if (i != 0)
-                    {
-                        instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
-                        yield return i;
-                        i = 0;
-                    }
-
-                    if (drawable is SpecialRenderedObject special)
-                    {
-                        special.Render(camera);
+                    case QueueBehaviour.BatchRender:
+                        var ltw = drawable.Transform.LocalToWorld;
+                        InstanceData data = new InstanceData(ltw, drawable.Color) { sprite = drawable.Sprite };
+                        instances[countInBatch++] = data;
+                        if (countInBatch == MaxInstanceCount)
+                        {
+                            yield return FlushToBuffer(instances, ref countInBatch);
+                        }
+                        break;
+                    case QueueBehaviour.Interupt:
+                        yield return FlushToBuffer(instances, ref countInBatch);
+                        break;
+                    case QueueBehaviour.CustomDraw:
+                        yield return FlushToBuffer(instances, ref countInBatch);
+                        if (drawable is SpecialRenderedObject special)
+                        {
+                            special.Render(pass, prevPassTexture);
+                            continue;
+                        }
+                        break;
+                    case QueueBehaviour.Skip:
                         continue;
-                    }
-                }
-                var ltw = drawable.Transform.LocalToWorld;
-                InstanceData data = new InstanceData(ltw, drawable.Color) { sprite = drawable.Sprite };
-                instances[i++] = data;
-                if (i == MaxInstanceCount)
-                {
-                    instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
-                    yield return i;
-                    i = 0;
+                    default:
+                        continue;
                 }
             }
-            if (i != 0)
+            if (countInBatch != 0)
             {
-                instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
-                yield return i;
+                instanceBuffer.SetData(instances, 0, countInBatch, SetDataOptions.None);
+                yield return countInBatch;
             }
             yield break;
+        }
+
+        private int FlushToBuffer(InstanceData[] instances, ref int count)
+        {
+            instanceBuffer.SetData(instances, 0, count, SetDataOptions.None);
+            var ret = count;
+            count = 0;
+            return ret;
+        }
+
+        private Texture2D RenderPass(Hierarchy scene, RenderPasses pass, Texture2D prevPassTexture, Color clearColor)
+        { 
+            Graphics.Clear(clearColor);
+            foreach (var instanceCount in SetupSceneInstances(scene, pass, prevPassTexture))
+            {
+                Rendering.DrawInstancedQuads(instanceBuffer, instanceCount, (byte)pass);
+            }
+            return RenderTarget.FinishPass();
+        }
+
+        private void FinishDraw(Texture2D frame)
+        {
+            Graphics.SetRenderTarget(null);
+            Rendering.DrawFull(frame);
         }
 
         public class Renderer
@@ -155,15 +216,43 @@ namespace Custom2d_Engine.Rendering
             {
                 this.pipeline = pipeline;
             }
-            
+
+            /// <summary>
+            /// Draws a full screen <paramref name="texture"/> using <see cref="Effects.RawTex"/> effect
+            /// </summary>
+            /// <param name="texture">Texture to draw</param>
+            public void DrawFull(Texture2D texture)
+            {
+                DrawFull(texture, Effects.RawTex);
+            }
+
+            /// <summary>
+            /// Draws a full screen <paramref name="texture"/> using given <paramref name="effect"/>
+            /// </summary>
+            /// <param name="texture">Texture to draw</param>
+            /// <param name="effect">Effect to use</param>
+            public void DrawFull(Texture2D texture, Effect effect)
+            {
+                effect.Parameters[Effects.Tex].SetValue(texture);
+                effect.CurrentTechnique.Passes[0].Apply();
+
+                var graphics = pipeline.Graphics;
+
+                graphics.SetVertexBuffer(pipeline.quadVerts);
+                graphics.Indices = pipeline.quadInds;
+
+                graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
+            }
+
             /// <summary>
             /// Draws instances from given buffer as quads, setting camera parameters and sprite parameters if needed
             /// </summary>
             /// <param name="InstanceBuffer"></param>
             /// <param name="instanceCount"></param>
-            public void DrawInstancedQuads(VertexBuffer InstanceBuffer, int instanceCount)
+            /// <param name="pass">Effect pass to use</param>
+            public void DrawInstancedQuads(VertexBuffer InstanceBuffer, int instanceCount, int pass = 0)
             {
-                DrawInstancedQuads(instanceCount, new VertexBufferBinding(InstanceBuffer, 0, 1));
+                DrawInstancedQuads(instanceCount, pass, new VertexBufferBinding(InstanceBuffer, 0, 1));
             }
 
             /// <summary>
@@ -171,26 +260,31 @@ namespace Custom2d_Engine.Rendering
             /// </summary>
             /// <param name="instanceCount"></param>
             /// <param name="vertexBuffers"></param>
-            public void DrawInstancedQuads(int instanceCount, params VertexBufferBinding[] vertexBuffers)
+            /// <param name="pass">Effect pass to use</param>
+            public void DrawInstancedQuads(int instanceCount, int pass = 0, params VertexBufferBinding[] vertexBuffers)
             {
                 VertexBufferBinding[] bindings = vertexBuffers.Prepend(new VertexBufferBinding(pipeline.quadVerts)).ToArray();
 
                 var graphics = pipeline.Graphics;
-                var effect = pipeline.CurrentState.CurrentEffect;
-                var cameraMatrixInv = pipeline.CurrentState.CurrentProjection;
+                var effect = pipeline.currentState.CurrentEffect;
+                var cameraMatrixInv = pipeline.currentState.CurrentProjection;
                 graphics.BlendState = BlendState.AlphaBlend;
 
                 //effect.CurrentTechnique = effect.Techniques["Unlit"];
 
                 //We don't know if sprite atlas is used
-                effect.Parameters[Effects.SpriteAtlas]?.SetValue(pipeline.CurrentState.SpriteAtlas);
-                effect.Parameters[Effects.AtlasSize]?.SetValue(pipeline.CurrentState.SpriteAtlas.Depth);
+                effect.Parameters[Effects.ColorAtlas]?.SetValue(pipeline.currentState.ColorAtlas);
+                effect.Parameters[Effects.NormalAtlas]?.SetValue(pipeline.currentState.NormalAtlas);
+                effect.Parameters[Effects.EmissionAtlas]?.SetValue(pipeline.currentState.EmissionAtlas);
+                //We assume all atlases have the same depth
+                effect.Parameters[Effects.AtlasSize]?.SetValue(pipeline.currentState.ColorAtlas.Depth);
+
                 //Camera parameters are always used
                 effect.Parameters[Effects.CameraRS].SetValue(cameraMatrixInv.RS.Flat);
                 effect.Parameters[Effects.CameraT].SetValue(cameraMatrixInv.T);
 
 
-                effect.CurrentTechnique.Passes[0].Apply();
+                effect.CurrentTechnique.Passes[pass].Apply();
 
                 graphics.Indices = pipeline.quadInds;
 
@@ -252,7 +346,9 @@ namespace Custom2d_Engine.Rendering
             public TransformMatrix CurrentProjection { get; set; }
             public Effect CurrentEffect { get; set; }
 
-            public Texture3D SpriteAtlas { get; set; }
+            public Texture3D ColorAtlas { get; set; }
+            public Texture3D NormalAtlas { get; set; }
+            public Texture3D EmissionAtlas { get; set; }
 
             public void SetCamera(Camera cam)
             {
@@ -302,13 +398,13 @@ namespace Custom2d_Engine.Rendering
             public CameraScope(RenderPipeline pipeline, TransformMatrix cam)
             {
                 renderPipeline = pipeline;
-                restoreProj = renderPipeline.CurrentState.CurrentProjection;
-                renderPipeline.CurrentState.CurrentProjection = cam;
+                restoreProj = renderPipeline.currentState.CurrentProjection;
+                renderPipeline.currentState.CurrentProjection = cam;
             }
 
             public void Dispose()
             {
-                renderPipeline.CurrentState.CurrentProjection = restoreProj;
+                renderPipeline.currentState.CurrentProjection = restoreProj;
             }
         }
 
@@ -319,14 +415,61 @@ namespace Custom2d_Engine.Rendering
 
             public EffectScope(RenderPipeline pipeline, Effect effect)
             {
-                oldEffect = pipeline.CurrentState.CurrentEffect;
-                pipeline.CurrentState.CurrentEffect = effect;
+                oldEffect = pipeline.currentState.CurrentEffect;
+                pipeline.currentState.CurrentEffect = effect;
                 renderPipeline = pipeline;
             }
 
             public void Dispose()
             {
-                renderPipeline.CurrentState.CurrentEffect = oldEffect;
+                renderPipeline.currentState.CurrentEffect = oldEffect;
+            }
+        }
+
+        public class Target
+        {
+            private RenderTarget2D[] renderTargets = new RenderTarget2D[2];
+            private RenderTarget2D passResult;
+            private RenderPipeline pipeline;
+
+            private int currentRT = 0;
+
+            internal Target(RenderPipeline pipeline)
+            {
+                renderTargets = new RenderTarget2D[2];
+                this.pipeline = pipeline;
+            }
+            
+            /// <returns>TExture containing scene rendered up to this point</returns>
+            public Texture2D Swap()
+            {
+                var newRT = (currentRT + 1) & 1;
+                var oldRTTex = renderTargets[currentRT];
+                pipeline.Graphics.SetRenderTarget(renderTargets[newRT]);
+                pipeline.Rendering.DrawFull(oldRTTex);
+                currentRT = newRT;
+                return oldRTTex;
+            }
+
+            internal Texture2D FinishPass()
+            {
+                var current = renderTargets[currentRT];
+                pipeline.Graphics.SetRenderTarget(passResult);
+                pipeline.Rendering.DrawFull(current);
+                pipeline.Graphics.SetRenderTarget(current);
+                return passResult;
+            }
+
+            //TODO Unhardcode HDR
+            public void Resize(int width, int height)
+            {
+                for (int i = 0; i < renderTargets.Length; i++)
+                {
+                    renderTargets[i]?.Dispose();
+                    renderTargets[i] = new RenderTarget2D(pipeline.Graphics, width, height, false, SurfaceFormat.Vector4, DepthFormat.Depth16);
+                }
+                passResult?.Dispose();
+                passResult = new RenderTarget2D(pipeline.Graphics, width, height, false, SurfaceFormat.Vector4, DepthFormat.Depth16);
             }
         }
 

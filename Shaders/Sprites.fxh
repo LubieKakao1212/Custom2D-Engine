@@ -1,20 +1,21 @@
+#ifndef SPRITES
+#define SPRITES
 
-int AtlasSize;
+#include "SpritesCommon.fxh"
 
-Texture3D SpriteAtlas : register(t0);
-
-SamplerState AtlasSampler : register(s0);
+// Texture3D ColorAtlas : register(t0);
+// SamplerState ColorAtlasSampler : register(s0)
 // {
-//     Texture = (SpriteAtlas);
-//     Filter = POINT;
-//     AddressU = Wrap;
-//     AddressV = Wrap;
+// 	Texture = <ColorAtlas>;
 // };
+ 
+sampler3D ColorAtlasSampler : register(s0) = sampler_state
+{
+	Texture = <ColorAtlas>;
+};
 
-float3 ProcessSpritePos(float4 atlasPos, float2 UV) {
-    float2 spriteSize = atlasPos.zw;
-	float2 spritePos = float2(frac(atlasPos.x), atlasPos.y);
-	float atlasIdx = floor(atlasPos.x);
-
-	return float3(spritePos + (UV * spriteSize), atlasIdx / AtlasSize);
+float4 color(float3 spritePos)
+{
+    return tex3D(ColorAtlasSampler, spritePos);//ColorAtlas.SampleLevel(ColorAtlasSampler, spritePos, 0);
 }
+#endif

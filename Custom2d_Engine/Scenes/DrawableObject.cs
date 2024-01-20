@@ -4,7 +4,9 @@ using Custom2d_Engine.Scenes.Events;
 
 namespace Custom2d_Engine.Scenes
 {
+    using Custom2d_Engine.Rendering;
     using Math;
+    using System;
 
     public class DrawableObject : HierarchyObject
     {
@@ -15,14 +17,10 @@ namespace Custom2d_Engine.Scenes
         public Sprite Sprite { get; set; } = new Sprite() { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.Zero) };
 
         /// <summary>
-        /// Can this object be batched with other Objects?
+        /// Controls queue behaviour for this object
         /// </summary>
-        public bool InteruptQueue
-        {
-            get;
-            protected set;
-        }
-
+        protected internal QueueBehaviour[] PassQueueBehaviours;
+        
         //All
         private long drawLayerMask = -1;
 
@@ -30,11 +28,19 @@ namespace Custom2d_Engine.Scenes
         {
             Color = color;
             DrawOrder = drawOrder;
+            PassQueueBehaviours = new QueueBehaviour[3];
+            SetQueueBehaviour(RenderPasses.Normals, QueueBehaviour.BatchRender);
+            SetQueueBehaviour(RenderPasses.Lights, QueueBehaviour.Skip);
+            SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.BatchRender);
         }
 
-        public virtual DrawableObject SetInterupQueue(bool interuptQueue)
+        public virtual DrawableObject SetQueueBehaviour(RenderPasses pass, QueueBehaviour behaviour)
         {
-            InteruptQueue = interuptQueue;
+            if (behaviour == QueueBehaviour.CustomDraw)
+            {
+                throw new ArgumentException($"Attempting to set {nameof(QueueBehaviour)} of non-special object to {nameof(QueueBehaviour.CustomDraw)}");
+            }
+            this.PassQueueBehaviours[(byte)pass] = behaviour;
             return this;
         }
     }

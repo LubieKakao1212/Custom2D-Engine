@@ -13,12 +13,40 @@ namespace Custom2d_Engine.Scenes
     {
         protected RenderPipeline Pipeline { get; }
 
+        public bool AllowFrameAccess { get; protected set; }
+
         public SpecialRenderedObject(RenderPipeline pipeline, Color color, float drawOrder) : base(color, drawOrder) 
         { 
             this.Pipeline = pipeline;
-            this.SetInterupQueue(true);
+            SetQueueBehaviour(RenderPasses.Normals, QueueBehaviour.Skip);
+            SetQueueBehaviour(RenderPasses.Lights, QueueBehaviour.Skip);
+            SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.Skip);
         }
 
-        public abstract void Render(Camera camera);
+        protected virtual void RenderFinal(Texture2D sceneLights) { }
+        protected virtual void RenderNormals() { }
+        protected virtual void RenderLights(Texture2D sceneNormals) { }
+
+        public override DrawableObject SetQueueBehaviour(RenderPasses pass, QueueBehaviour behaviour)
+        {
+            this.PassQueueBehaviours[(byte)pass] = behaviour;
+            return this;
+        }
+
+        public void Render(RenderPasses pass, Texture2D previousPassResultTexture)
+        {
+            switch (pass)
+            {
+                case RenderPasses.Normals:
+                    RenderNormals();
+                    break;
+                case RenderPasses.Lights:
+                    RenderLights(previousPassResultTexture);
+                    break;
+                case RenderPasses.Final:
+                    RenderFinal(previousPassResultTexture);
+                    break;
+            }
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace Custom2d_Engine.Rendering
 {
     public interface ISpecialRenderer
     {
-        void Render(Camera camera);
+        /// <summary>
+        /// Camera assigned automaticly
+        /// </summary>
+        void Render(RenderPasses pass, Texture2D previousPassResultTexture);
     }
 }

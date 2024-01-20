@@ -101,7 +101,7 @@ namespace EngineTest
 
         protected override void Initialize()
         {
-            renderer.Init(GraphicsDevice);
+            renderer.Init(GraphicsDevice, 512, 512);
 
             #region Inputs
             inputManager = new InputManager(Window);
@@ -142,12 +142,12 @@ namespace EngineTest
             inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
             inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
 
-            inputManager.GetKey(Keys.Space).Started += (input) =>
+            /*inputManager.GetKey(Keys.Space).Started += (input) =>
             {
                 atlasIdx++;
                 atlasIdx = atlasIdx % atlas.AtlasTextures.Length;
                 renderer.SpriteAtlas = atlas.AtlasTextures[atlasIdx];
-            };
+            };*/
             #endregion
 
             #endregion
@@ -177,7 +177,7 @@ namespace EngineTest
             sprites = new();
 
             atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048, 2);
-            atlas.SetBaseColor(2, Color.Black);
+            //atlas.SetBaseColor(2, Color.Black);
 
             var atlasLoader = new SpriteAtlasLoader<Color>(Content, atlas, "albedo", "normal", "emission");
 
@@ -203,7 +203,12 @@ namespace EngineTest
 
             atlas.Compact();
 
-            renderer.SpriteAtlas = atlas.AtlasTextures[0];
+            //renderer.SpriteAtlas = atlas.AtlasTextures[0];
+            renderer.SetLitAtlases(
+                atlas.AtlasTextures[0],
+                atlas.AtlasTextures[1],
+                atlas.AtlasTextures[2]);
+
             // TODO: use this.Content to load your game content here
             DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
             DepthMarchedColor.Parameters["Color"].SetValue(Color.Green.ToVector4());
@@ -224,13 +229,13 @@ namespace EngineTest
 
             Marcher2D.MarchDepthGrid(scalars, out var verts, out var inds);
            
-            var mesh = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10, DepthMarchedColor, marchingDSS);
+            var mesh = UnlitMeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10, DepthMarchedColor, marchingDSS);
             
             //Yellow
             scalars.Fill((v) => (v - new Vector2(15.5f, 15.5f)).Length() / 16f - 0.9f + random.NextSingle() * 0.5f - 0.25f);
             Marcher2D.MarchDepthGrid(scalars, out verts, out inds);
 
-            var mesh2 = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10, effect2, marchingDSS);
+            var mesh2 = UnlitMeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10, effect2, marchingDSS);
 
             mesh2.Transform.LocalPosition = new Vector2(5f, 5f);
 
@@ -284,8 +289,7 @@ namespace EngineTest
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Cyan);
-            renderer.RenderScene(scene, Camera);
+            renderer.RenderScene(scene, Camera, Color.Cyan);
 
             //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
 

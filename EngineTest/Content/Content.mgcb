@@ -25,6 +25,12 @@
 /processorParam:DebugMode=Auto
 /build:../../Shaders/DepthMarchedColor.fx;DepthMarchedColor.fx
 
+#begin ../../Shaders/RawTex.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/RawTex.fx;RawTex.fx
+
 #begin ../../Shaders/Tilemap.fx
 /importer:EffectImporter
 /processor:EffectProcessor
