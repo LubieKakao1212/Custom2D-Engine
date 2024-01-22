@@ -22,8 +22,9 @@ namespace Custom2d_Engine.Rendering
         public const string ObjT = "ObjT";
 
         //TODO refactor to RSS
-        public const string GridRS = "GridRS";
-        public const string GridT = "GridT";
+        public const string ChunkRS = "ChunkRS";
+        public const string ChunkT = "ChunkT";
+        public const string Spacing = "Spacing";
 
         internal const string Tex = "Tex";
 

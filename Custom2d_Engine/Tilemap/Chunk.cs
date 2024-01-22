@@ -5,49 +5,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Custom2d_Engine.Rendering.Sprites;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Custom2d_Engine.Tilemap
 {
     /// <summary>
     /// Represents a tilemap chunk
     /// </summary>
-    public class Chunk
+    public class Chunk<T>
     {
-        public const int chunkSize = 32;
-        public const int chunkSizeMask = 31;
+        public const int chunkSize = 64;
+        public const int chunkSizeMask = 63;
         public const int tileCount = chunkSize * chunkSize;
 
         public Point ChunkPos { get; private init; }
 
-        public TileInstance[] ChunkData => chunkData;
+        /// <summary>
+        /// Not null only possible when using <see cref="Chunk{T}"/> with <typeparamref name="T"/> = <see cref="Rendering.RenderPipeline.InstanceSpriteData"/>, There should be a better Place to put this
+        /// </summary>
+        internal ChunkRenderData RenderData { get; set; }
 
-        private TileInstance[] chunkData;
+        public T[] ChunkData => chunkData;
+
+        private T[] chunkData;
 
         public Chunk(Point chunkPos)
         {
-            chunkData = new TileInstance[tileCount];
+            chunkData = new T[tileCount];
             ChunkPos = chunkPos;
         }
 
-        public TileInstance GetTile(Point pos)
+        public T GetTile(Point pos)
         {
             return chunkData[PosToIndex(pos)];
         }
 
-        public void SetTile(Point pos, TileInstance tile)
+        public void SetTile(Point pos, T tile)
         {
             chunkData[PosToIndex(pos)] = tile;
         }
 
         /// <summary>
         /// Sets a rectangle of tiles in chunk
-        /// Much faster than multiple <see cref="Chunk.SetTile(Point, TileInstance)"/> calls
+        /// Much faster than multiple <see cref="Chunk.SetTile(Point, Sprite)"/> calls
         /// Does perform bounds and data size checks
         /// </summary>
         /// <param name="start"></param>
         /// <param name="count"></param>
         /// <param name="slice"></param>
-        public void SetTilesRect(Rectangle area, in ReadOnlySpan<TileInstance> data)
+        public void SetTilesRect(Rectangle area, in ReadOnlySpan<T> data)
         {
             var x = area.X;
             var y = area.Y;
@@ -87,18 +94,17 @@ namespace Custom2d_Engine.Tilemap
         /// <param name="start"></param>
         /// <param name="count"></param>
         /// <param name="slice"></param>
-        internal void SetSliceUnsafe(Point start, in ReadOnlySpan<TileInstance> slice)
+        internal void SetSliceUnsafe(Point start, in ReadOnlySpan<T> slice)
         {
             SetSliceUnsafe(PosToIndex(start), slice);
         }
 
         /// <inheritdoc cref="SetSliceUnsafe(Point, in ReadOnlySpan{TileInstance})"/>
-        internal void SetSliceUnsafe(int startIdx, in ReadOnlySpan<TileInstance> slice)
+        internal void SetSliceUnsafe(int startIdx, in ReadOnlySpan<T> slice)
         {
-            var dstSpan = new Span<TileInstance>(chunkData, startIdx, slice.Length);
+            var dstSpan = new Span<T>(chunkData, startIdx, slice.Length);
             slice.CopyTo(dstSpan);
         }
-
 
         public static int PosToIndex(Point pos)
         {

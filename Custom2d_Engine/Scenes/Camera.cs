@@ -21,7 +21,7 @@ namespace Custom2d_Engine.Scenes
 
         public static BoundingRect CullingRect { get; } = BoundingRect.Normal
             //For debugging
-            //.Scaled(0.2f);
+            //.Scaled(0.2f)
             ;
 
         public TransformMatrix ProjectionMatrix
@@ -30,7 +30,7 @@ namespace Custom2d_Engine.Scenes
             {
                 if (!projectionMatrix.HasValue)
                 {
-                    projectionMatrix = /*TransformMatrix.TranslationRotationShearScale(Vector2.One * 8f, MathF.PI / 2f, 0f, Vector2.One * 8f).Inverse();*/(Transform.LocalToWorld * Matrix2x2.Scale(new Vector2(ViewSize * aspectRatio, ViewSize))).Inverse();
+                    projectionMatrix = (Transform.LocalToWorld * Matrix2x2.Scale(new Vector2(ViewSize * aspectRatio, ViewSize))).Inverse();
                 }
                 return projectionMatrix.Value;
             }
@@ -58,9 +58,18 @@ namespace Custom2d_Engine.Scenes
         {
             rect = rect.Transformed(ProjectionMatrix);
 
-            rect.Intersects(CullingRect);
+            return rect.Intersects(CullingRect);
+        }
 
-            return false;
+        public static BoundingRect CullReverse(in TransformMatrix projectionMatrix, in TransformMatrix WtL)
+        {
+            var VtW = projectionMatrix.Inverse();
+            //First View to World than World to (Object)Local
+            var VtL = WtL * VtW;
+
+            var rect = CullingRect;
+            rect.Transform(VtL);
+            return rect;
         }
 
         public Vector2 ViewToWorldPos(Vector2 viewPos)

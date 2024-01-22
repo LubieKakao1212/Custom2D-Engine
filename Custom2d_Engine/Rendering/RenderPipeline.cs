@@ -38,14 +38,6 @@ namespace Custom2d_Engine.Rendering
 
         private DynamicVertexBuffer instanceBuffer;
 
-
-        public readonly VertexDeclaration InstanceVertexDeclaration = new VertexDeclaration(
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
-                new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
-                new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
-                );
-
         public RenderPipeline()
         {
             currentState = new State();
@@ -89,7 +81,7 @@ namespace Custom2d_Engine.Rendering
 
             #region Instances
 
-            instanceBuffer = new DynamicVertexBuffer(Graphics, InstanceVertexDeclaration, MaxInstanceCount, BufferUsage.WriteOnly);
+            instanceBuffer = new DynamicVertexBuffer(Graphics, InstanceData.VertexDeclaration, MaxInstanceCount, BufferUsage.WriteOnly);
 
             /*InstanceData[] instanceData = new InstanceData[MaxInstanceCount];
 
@@ -154,7 +146,7 @@ namespace Custom2d_Engine.Rendering
                 {
                     case QueueBehaviour.BatchRender:
                         var ltw = drawable.Transform.LocalToWorld;
-                        InstanceData data = new InstanceData(ltw, drawable.Color) { sprite = drawable.Sprite };
+                        InstanceData data = new InstanceData(ltw, drawable.Color, drawable.Sprite);
                         instances[countInBatch++] = data;
                         if (countInBatch == MaxInstanceCount)
                         {
@@ -369,34 +361,65 @@ namespace Custom2d_Engine.Rendering
             {
                 CurrentProjection = cam.ProjectionMatrix;
             }
-
-            public void SetCameraMatrix(TransformMatrix cam)
-            {
-                CurrentProjection = cam.Inverse();
-            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct InstanceData
         {
-            public Sprite sprite 
-            { 
-                init
-                {
-                    atlasPos = new Vector4(value.TextureRect.X + value.TextureIndex, value.TextureRect.Y, value.TextureRect.Width, value.TextureRect.Height);
-                } 
-            }
+            public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
+                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
+                new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
+                new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
+                );
 
             public Vector4 rotScale;
             public Vector2 pos;
             public Vector4 color;
             public Vector4 atlasPos;
 
-            public InstanceData(TransformMatrix transform, Color color)
+            public InstanceData(TransformMatrix transform, Color color, Sprite sprite)
             {
                 this.rotScale = transform.RS.Flat;
                 this.pos = transform.T;
                 this.color = color.ToVector4();
+                this.atlasPos = sprite.AtlasPos;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct InstanceTransformData
+        {
+            public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
+                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2)
+                );
+
+            public Vector4 rotScale;
+            public Vector2 pos;
+
+            public InstanceTransformData(TransformMatrix transform)
+            {
+                this.rotScale = transform.RS.Flat;
+                this.pos = transform.T;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct InstanceSpriteData
+        {
+            public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
+                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
+                );
+
+            public Vector4 color;
+            public Vector4 atlasPos;
+
+            public InstanceSpriteData(Color color, Sprite sprite)
+            {
+                this.color = color.ToVector4();
+                atlasPos = sprite.AtlasPos;
             }
         }
 
@@ -405,16 +428,14 @@ namespace Custom2d_Engine.Rendering
             private TransformMatrix restoreProj;
             private RenderPipeline renderPipeline;
 
-            public CameraScope(RenderPipeline pipeline, Camera cam) : this(pipeline, cam.ProjectionMatrix)
-            {
+            public CameraScope(RenderPipeline pipeline, Camera cam) : this(pipeline, cam.ProjectionMatrix) { }
 
-            }
 
-            public CameraScope(RenderPipeline pipeline, TransformMatrix cam)
+            public CameraScope(RenderPipeline pipeline, TransformMatrix proj)
             {
                 renderPipeline = pipeline;
                 restoreProj = renderPipeline.currentState.CurrentProjection;
-                renderPipeline.currentState.CurrentProjection = cam;
+                renderPipeline.currentState.CurrentProjection = proj;
             }
 
             public void Dispose()

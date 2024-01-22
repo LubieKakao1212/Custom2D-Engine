@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Custom2d_Engine.Physics\Custom2d_Engine.Physics.csproj" />
+    <ProjectReference Include="..\Custom2d_Engine.TMX\Custom2d_Engine.TMX.csproj" />
     <ProjectReference Include="..\Custom2d_Engine\Custom2d_Engine.csproj" />
     <ProjectReference Include="..\MarchingSquares\MarchingSquares.csproj" />
   </ItemGroup>

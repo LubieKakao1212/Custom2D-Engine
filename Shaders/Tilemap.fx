@@ -14,27 +14,26 @@
 #include "Include/UnlitPS.fxh"
 #include "Include/LitPS.fxh"
 
-float4 GridRS;
-float2 GridT;
+float4 ChunkRS;
+float2 ChunkT;
+float2 Spacing;
 
 PSInput MainVS(in VertexShaderInput input, in InstanceData instance)
 {
 	PSInput output;
 
-    float3x3 GridToWorld = ComposeTransform(GridRS, GridT);
-    float3x3 LocalToTile = ComposeTransform(instance.RotScale, float2(0.0f, 0.0f));
+	float3x3 projection = Projection();
+    float3x3 chunkToWorld = ComposeTransform(ChunkRS, ChunkT);
+    float3x3 tileToChunk = ComposeTransform(instance.RotScale, instance.Pos * Spacing);
 
-    float3x3 LtG = LocalToTile;
+    float3x3 TtW = mul(chunkToWorld, tileToChunk);
+	float3x3 TtV = mul(projection, TtW);
 
-    float3x3 GtV = mul(Projection(), GridToWorld);
-
-	float3 position = mul(LtG, float3(input.Position.xy, 1.0f));
-	position.xy += instance.Pos;
-
-	float4 screenPos = float4(mul(GtV, position).xy, 0.0f, 1.0f);
+	float4 screenPos = float4(mul(TtV, float3(input.Position.xy, 1.0f)).xy, 0.0f, 1.0f);
 	output.Position = screenPos;
 	output.ScreenPos = screenPos.xy;
-	output.Tangents = mul(float2x2(GridRS), float2x2(instance.RotScale));
+
+	output.Tangents = TtW._m00_m01_m10_m11;//mul(float2x2(GridRS), float2x2(instance.RotScale));
 
 	output.Color = instance.Color;
 

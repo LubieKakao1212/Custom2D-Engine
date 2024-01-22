@@ -12,5 +12,7 @@ namespace Custom2d_Engine.Rendering.Sprites
     {
         public BoundingRect TextureRect { get; set; }
         public int TextureIndex { get; set; }
+        
+        public Vector4 AtlasPos => new Vector4(TextureRect.X + TextureIndex, TextureRect.Y, TextureRect.Width, TextureRect.Height);
     }
 }

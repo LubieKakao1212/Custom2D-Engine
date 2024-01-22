@@ -11,7 +11,7 @@ namespace EngineTest
 {
     public static class Tiles
     {
-        public static readonly Tile Green = new Tile() { Order = -1f, Tint = Color.Green };
+        /*public static readonly Tile Green = new Tile() { Order = -1f, Tint = Color.Green };
         public static readonly Tile OversizedRed = new Tile() { Order = 0.1f, Tint = Color.Red };
         public static readonly Tile OversizedTransparentYellow = new Tile() { Order = 0.2f, Tint = new Color(1f, 1f, 0f, 0.5f) };
 
@@ -25,6 +25,6 @@ namespace EngineTest
                 new TileInstance(OversizedRed, OversizedRedTransform),
                 new TileInstance(OversizedTransparentYellow, OversizedTransparentYellowTransform),
                 //new TileInstance(null, Matrix2x2.Scale(new Vector2(1f)))
-            };
+            };*/
     }
 }

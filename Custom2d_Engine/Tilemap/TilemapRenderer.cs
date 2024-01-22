@@ -2,131 +2,113 @@
 using Microsoft.Xna.Framework.Graphics;
 using Custom2d_Engine.Math;
 using Custom2d_Engine.Rendering;
-using Custom2d_Engine.Util;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Custom2d_Engine.Scenes.Drawable;
+
+using static Custom2d_Engine.Rendering.RenderPipeline;
+using System.Collections.Generic;
+using Custom2d_Engine.Scenes;
 
 namespace Custom2d_Engine.Tilemap
 {
-    [Obsolete("Broken, Rewrite Needed")]
     public class TilemapRenderer : SpecialRenderedObject
     {
-        private static VertexDeclaration TileInstanceDeclaration { get; } = new VertexDeclaration(
-            
-            new VertexElement(sizeof(float) * 0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1), //2x2 RotScale
-            new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2), //2 Position
+        //TODO make this non static
+        private static VertexBuffer chunkTransformBuffer;
+        private static VertexBufferBinding chunkTransformBufferBinding;
 
-            new VertexElement(sizeof(float) * (4 + 2), VertexElementFormat.Vector4, VertexElementUsage.Position, 3), //2x2 TileRotScale
-            new VertexElement(sizeof(float) * (4 + 2 + 4), VertexElementFormat.Vector2, VertexElementUsage.Position, 4), //2 TileOffset
-            
-            new VertexElement(sizeof(float) * (4 + 2 + 4 + 2), VertexElementFormat.Vector4, VertexElementUsage.Color, 0), //4 Tint
-            
-            new VertexElement(sizeof(float) * (4 + 2 + 4 + 2 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 0) //[2, 2] Texture Rext
-            );
-
-        private Tilemap tilemap;
+        private Tilemap<InstanceSpriteData> tilemap;
         private Grid grid;
 
-        private DynamicVertexBuffer instanceBuffer;
+        public Vector2 spacing { get; set; } = Vector2.One; 
 
-        #region Preallocations
-        private TileInstanceRenderData[] renderDataArray = new TileInstanceRenderData[RenderPipeline.MaxInstanceCount];
-        private List<Ordered<TileInstanceRenderData>> ordersList = new(RenderPipeline.MaxInstanceCount);
-        #endregion
-
-        public TilemapRenderer(Tilemap tilemap, Grid grid, RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
+        public TilemapRenderer(Tilemap<InstanceSpriteData> tilemap, Grid grid, RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
         {
             this.tilemap = tilemap;
             this.grid = grid;
-            instanceBuffer = new DynamicVertexBuffer(pipeline.Graphics, TileInstanceDeclaration, RenderPipeline.MaxInstanceCount, BufferUsage.WriteOnly);
+            if (chunkTransformBuffer == null)
+            {
+                CreateCTB();
+            }
+
+            SetQueueBehaviour(RenderPasses.Normals, QueueBehaviour.CustomDraw);
+            SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.CustomDraw);
+        }
+
+        private void RenderChunks(RenderPasses pass, Texture2D sceneLights)
+        { 
+            var gridWtL = Matrix2x2.Scale(grid.CellSize).Inverse() * grid.Transform.WorldToLocal;
+
+            var state = Pipeline.CurrentState;
+            var projection = state.CurrentProjection;
+
+            var bounds = Camera.CullReverse(projection, gridWtL);
+            
+            var effect = Effects.TilemapDefault;
+
+            var parameters = effect.Parameters;
+            parameters[Effects.Spacing].SetValue(spacing);
+            parameters[Effects.ChunkRS].SetValue(grid.Transform.LocalToWorld.RS.Flat);
+            if (sceneLights != null)
+            {
+                parameters[Effects.SceneLights]?.SetValue(sceneLights);
+            }
+
+            using var effectScope = new EffectScope(Pipeline, effect);
+
+            var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
+            foreach (var chunk in tilemap.GetChunksAt(bounds.ToInt(), false))
+            {
+                var crd = chunk.RenderData;
+                if (crd == null)
+                {
+                    crd = new ChunkRenderData(chunk, Pipeline);
+                    chunk.RenderData = crd;
+                }
+                //TODO detect changes instead of constantly flushing
+                crd.Flush();
+
+                var cPos = chunk.ChunkPos.ToVector2() * spacing * chunkSize;
+                cPos = grid.Transform.LocalToWorld.TransformPoint(cPos);
+
+                parameters[Effects.ChunkT].SetValue(cPos);
+
+                Pipeline.Rendering.DrawInstancedQuads(chunkSize * chunkSize, pass.GetShaderPasssIdx(), crd.Binding, chunkTransformBufferBinding);
+            }
+        }
+
+        protected override void RenderFinal(Texture2D sceneLights)
+        {
+            RenderChunks(RenderPasses.Final, sceneLights);
         }
 
         protected override void RenderNormals()
         {
-            /*var gridWtL = Matrix2x2.Scale(grid.CellSize).Inverse() * grid.Transform.WorldToLocal;
-            var camVtW = camera.ProjectionMatrix.Inverse();
-
-            var VtG = gridWtL * camVtW;
-
-            var rect = Camera.CullingRect.Transformed(VtG);
-
-            var GtV = VtG.Inverse();
-
-            ordersList.Clear();
-
-            foreach (var chunk in tilemap.GetChunksAt(rect.ToInt(), false))
-            {
-                ////TODO Cache Tiles
-                if(ordersList.Capacity - ordersList.Count < Chunk.tileCount)
-                {
-                    ordersList.Capacity += Chunk.tileCount;
-                }
-
-                var chunkPos = chunk.ChunkPos;
-                var chunkGridPos = Tilemap.ChunkToGridPos(chunkPos);
-
-                var i = 0;
-                
-                ordersList.AddRange(chunk.ChunkData.SelectMany((tile) =>
-                {
-                    i++;
-                    if (tile.Tile == null)
-                    {
-                        return Enumerable.Empty<Ordered<TileInstanceRenderData>>();
-                    }
-                    var pos = Chunk.IndexToPos(i - 1);
-                    var position = pos.ToVector2() + chunkGridPos.ToVector2();
-                    position *= grid.CellSize;
-                    position += grid.CellSize / 2f;
-
-                    //TODO
-                    #region Tmp
-                    var tint = tile.Tile.Tint.ToVector4();
-
-                    tint.X *= tint.W;
-                    tint.Y *= tint.W;
-                    tint.Z *= tint.W;
-                    #endregion
-
-                    return Enumerable.Repeat(new Ordered<TileInstanceRenderData>() { Value = new TileInstanceRenderData()
-                    {
-                        RotScale = tile.Transform.Flat,
-                        Position = position,
-                        TileRotScale = tile.Tile.Transform.RS.Flat,
-                        TilePosition = tile.Tile.Transform.T,
-                        Color = tint,
-                        TexCoord = tile.Tile.Sprite.TextureRect.Flat
-                    }, Order = tile.Tile.Order }
-                    , 1);
-                }));
-            }
-
-            var effect = Effects.TilemapDefault;
-
-            effect.CurrentTechnique = effect.Techniques["Unlit"];
-            effect.Parameters[Effects.GridRS].SetValue(grid.Transform.LocalToWorld.RS.Flat);
-            effect.Parameters[Effects.GridT].SetValue(grid.Transform.LocalToWorld.T);
-
-            using var effectScope = new RenderPipeline.EffectScope(Pipeline, effect);
-            using var cameraScope = new RenderPipeline.CameraScope(Pipeline, GtV);
-
-            Pipeline.Rendering.DrawSortedLayerQuads(instanceBuffer, ordersList.ToArray());*/
+            RenderChunks(RenderPasses.Normals, null);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct TileInstanceRenderData
+        public void CreateCTB()
         {
-            public Vector4 RotScale;
-            public Vector2 Position;
-            
-            public Vector4 TileRotScale;
-            public Vector2 TilePosition;
-            
-            public Vector4 Color;
-            public Vector4 TexCoord;
+            var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
+            var tileCount = chunkSize * chunkSize;
+            var rotScale = new Matrix2x2(1f).Flat;
+
+            var bufferData = new InstanceTransformData[tileCount];
+
+            for (int y = 0; y < chunkSize; y++)
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    var data = default(InstanceTransformData);
+                    data.rotScale = rotScale;
+                    data.pos = new Vector2(x, y);
+                    bufferData[y * chunkSize + x] = data;
+                }
+
+            chunkTransformBuffer = new VertexBuffer(Pipeline.Graphics, InstanceTransformData.VertexDeclaration, tileCount, BufferUsage.WriteOnly);
+            chunkTransformBuffer.SetData(bufferData);
+
+            chunkTransformBufferBinding = new VertexBufferBinding(chunkTransformBuffer, 0, 1);
         }
     }
 }

@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.FMOD_Audio"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.Physics", "Custom2d_Engine.Physics\Custom2d_Engine.Physics.csproj", "{6593BD10-48F7-4412-8147-D9B4B3DC88A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Custom2d_Engine.TMX", "Custom2d_Engine.TMX\Custom2d_Engine.TMX.csproj", "{F1512713-E93A-4638-9F52-47FC72BFDB2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6593BD10-48F7-4412-8147-D9B4B3DC88A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1512713-E93A-4638-9F52-47FC72BFDB2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1512713-E93A-4638-9F52-47FC72BFDB2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1512713-E93A-4638-9F52-47FC72BFDB2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1512713-E93A-4638-9F52-47FC72BFDB2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,6 +23,9 @@ using nkast.Aether.Physics2D.Controllers;
 using Custom2d_Engine.Scenes.Drawable;
 using Custom2d_Engine.Scenes.Drawable.Lights;
 
+using static Custom2d_Engine.Rendering.RenderPipeline;
+using Custom2d_Engine.Util.Debugging;
+
 namespace EngineTest
 {
     public class TestGame : Game
@@ -59,7 +62,7 @@ namespace EngineTest
 
         private List<Sprite> sprites;
 
-        private Tilemap tilemap;
+        private Tilemap<InstanceSpriteData> tilemap;
         private Grid grid;
 
         private SpriteAtlas<Color> atlas;
@@ -142,7 +145,7 @@ namespace EngineTest
 
 
             inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
-            inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
+            //inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
 
             /*inputManager.GetKey(Keys.Space).Started += (input) =>
             {
@@ -160,10 +163,8 @@ namespace EngineTest
 
             scene.AddObject(grid);
 
-            tilemap = new Tilemap();
-
-            //FIllTilemap(tilemap, new Rectangle(-128, -128, 256, 256));
-
+            tilemap = new Tilemap<InstanceSpriteData>();
+            
             var mapRenderer = new TilemapRenderer(tilemap, grid, renderer, Color.White, -11f);
 
             mapRenderer.Parent = grid;
@@ -213,7 +214,10 @@ namespace EngineTest
                 atlas.AtlasTextures[1],
                 atlas.AtlasTextures[2]);
 
+            FIllTilemap(tilemap, new Rectangle(-1024, -1024, 2048, 2048));
+
             Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];
+            Effects.TilemapDefault.CurrentTechnique = Effects.TilemapDefault.Techniques["Lit"];
 
             // TODO: use this.Content to load your game content here
             /*DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
@@ -308,7 +312,9 @@ namespace EngineTest
 
         protected override void Draw(GameTime gameTime)
         {
+            TimeLogger.Instance.Push("Draw");
             renderer.RenderScene(scene, Camera, Color.Cyan);
+            TimeLogger.Instance.Pop("Draw");
 
             //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
 
@@ -392,12 +398,12 @@ namespace EngineTest
             return tip;
         }
 
-        public void FIllTilemap(Tilemap tilemap, Rectangle bounds)
+        public void FIllTilemap(Tilemap<InstanceSpriteData> tilemap, Rectangle bounds)
         {
             for(int x = 0; x < bounds.Width; x++)
                 for(int y = 0; y < bounds.Height; y++)
                 {
-                    tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y), Tiles.bucket[Random.Shared.Next(Tiles.bucket.Length)]);
+                    tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y), new InstanceSpriteData(Color.White, sprites[Random.Shared.Next(0, sprites.Count)]));
                 }
         }
 
