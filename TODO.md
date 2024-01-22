@@ -2,7 +2,7 @@
 
 ## Modules to add
 
-- Networking (using Lindgren)
+- Networking (using Lindgren or something else)
 - Data loading and storage (YAML)
 
 ## Features to add
@@ -19,6 +19,7 @@
     - Rename Transform to MatrixTransform
     - Add SimpleTransoform
     - Add AnchorTransform
+- Add mixing Lit and Unlit
 
 
 ## Bugs
