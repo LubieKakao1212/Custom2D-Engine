@@ -37,8 +37,11 @@ namespace Custom2d_Engine.Tilemap
         }
 
         private void RenderChunks(RenderPasses pass, Texture2D sceneLights)
-        { 
-            var gridWtL = Matrix2x2.Scale(grid.CellSize).Inverse() * grid.Transform.WorldToLocal;
+        {
+            var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
+            
+            var gridWtL = Matrix2x2.Scale(grid.CellSize * 2f).Inverse() * grid.Transform.WorldToLocal;
+            gridWtL = gridWtL.Translate(Vector2.One * (chunkSize / 4f));
 
             var state = Pipeline.CurrentState;
             var projection = state.CurrentProjection;
@@ -57,7 +60,6 @@ namespace Custom2d_Engine.Tilemap
 
             using var effectScope = new EffectScope(Pipeline, effect);
 
-            var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
             foreach (var chunk in tilemap.GetChunksAt(bounds.ToInt(), false))
             {
                 var crd = chunk.RenderData;
@@ -69,7 +71,7 @@ namespace Custom2d_Engine.Tilemap
                 //TODO detect changes instead of constantly flushing
                 crd.Flush();
 
-                var cPos = chunk.ChunkPos.ToVector2() * spacing * chunkSize;
+                var cPos = chunk.ChunkPos.ToVector2() * spacing * (chunkSize * 2f);
                 cPos = grid.Transform.LocalToWorld.TransformPoint(cPos);
 
                 parameters[Effects.ChunkT].SetValue(cPos);
@@ -96,12 +98,14 @@ namespace Custom2d_Engine.Tilemap
 
             var bufferData = new InstanceTransformData[tileCount];
 
+            var offset = new Vector2(chunkSize / 2f, chunkSize / 2f); 
+
             for (int y = 0; y < chunkSize; y++)
                 for (int x = 0; x < chunkSize; x++)
                 {
                     var data = default(InstanceTransformData);
                     data.rotScale = rotScale;
-                    data.pos = new Vector2(x, y);
+                    data.pos = (new Vector2(x, y) * 2f) - offset;
                     bufferData[y * chunkSize + x] = data;
                 }
 
