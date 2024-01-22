@@ -7,12 +7,12 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-#include "Transforms.fxh"
-#include "Camera.fxh"
-#include "StructsPS.fxh"
-#include "StructsVS.fxh"
-#include "UnlitPS.fxh"
-#include "LitPS.fxh"
+#include "Include/Transforms.fxh"
+#include "Include/Camera.fxh"
+#include "Include/StructsPS.fxh"
+#include "Include/StructsVS.fxh"
+#include "Include/UnlitPS.fxh"
+#include "Include/LitPS.fxh"
 
 float4 GridRS;
 float2 GridT;
@@ -22,7 +22,7 @@ PSInput MainVS(in VertexShaderInput input, in InstanceData instance)
 	PSInput output;
 
     float3x3 GridToWorld = ComposeTransform(GridRS, GridT);
-    float3x3 LocalToTile = ComposeTransform(instance.RotScale, float2(0,0));
+    float3x3 LocalToTile = ComposeTransform(instance.RotScale, float2(0.0f, 0.0f));
 
     float3x3 LtG = LocalToTile;
 
@@ -34,7 +34,7 @@ PSInput MainVS(in VertexShaderInput input, in InstanceData instance)
 	float4 screenPos = float4(mul(GtV, position).xy, 0.0f, 1.0f);
 	output.Position = screenPos;
 	output.ScreenPos = screenPos.xy;
-
+	output.Tangents = mul(float2x2(GridRS), float2x2(instance.RotScale));
 
 	output.Color = instance.Color;
 
@@ -60,7 +60,7 @@ technique Lit
 	pass Pass0
 	{
 		VertexShader = compile VS_SHADERMODEL MainVS();
-		PixelShader = compile PS_SHADERMODEL LitNormal();
+		PixelShader = compile PS_SHADERMODEL LitNormalPS();
 	}
 
 	pass Pass1

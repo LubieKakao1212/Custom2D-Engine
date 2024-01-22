@@ -1,5 +1,6 @@
 ﻿using Custom2d_Engine.Math;
 using Custom2d_Engine.Rendering.Sprites;
+using Custom2d_Engine.Scenes.Drawable;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -38,7 +39,7 @@ namespace Custom2d_Engine.Scenes
 
     namespace Factory
     {
-        public static class HierarchyUtils
+        public static partial class HierarchyUtils
         {
             public static HierarchyObject CreateChild(this HierarchyObject thisObj, Vector2 localPosition = default, float localRotation = 0f, Vector2? localScale = default)
             {

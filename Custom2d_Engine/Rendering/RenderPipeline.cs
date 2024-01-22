@@ -2,6 +2,7 @@
 using Custom2d_Engine.Rendering.Sprites;
 using Custom2d_Engine.Rendering.Sprites.Atlas;
 using Custom2d_Engine.Scenes;
+using Custom2d_Engine.Scenes.Drawable;
 using Custom2d_Engine.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -133,6 +134,7 @@ namespace Custom2d_Engine.Rendering
 
             var result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
             result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+            Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
             result = RenderPass(scene, RenderPasses.Final, result, baseColor);
             
             FinishDraw(result);
@@ -186,6 +188,10 @@ namespace Custom2d_Engine.Rendering
 
         private int FlushToBuffer(InstanceData[] instances, ref int count)
         {
+            if (count <= 0)
+            {
+                return 0;
+            }
             instanceBuffer.SetData(instances, 0, count, SetDataOptions.None);
             var ret = count;
             count = 0;
@@ -197,7 +203,11 @@ namespace Custom2d_Engine.Rendering
             Graphics.Clear(clearColor);
             foreach (var instanceCount in SetupSceneInstances(scene, pass, prevPassTexture))
             {
-                Rendering.DrawInstancedQuads(instanceBuffer, instanceCount, (byte)pass);
+                if (instanceCount == 0)
+                {
+                    continue;
+                }
+                Rendering.DrawInstancedQuads(instanceBuffer, instanceCount, pass.GetShaderPasssIdx());
             }
             return RenderTarget.FinishPass();
         }
@@ -205,7 +215,7 @@ namespace Custom2d_Engine.Rendering
         private void FinishDraw(Texture2D frame)
         {
             Graphics.SetRenderTarget(null);
-            Rendering.DrawFull(frame);
+            Rendering.DrawFullTex(frame);
         }
 
         public class Renderer
@@ -221,9 +231,9 @@ namespace Custom2d_Engine.Rendering
             /// Draws a full screen <paramref name="texture"/> using <see cref="Effects.RawTex"/> effect
             /// </summary>
             /// <param name="texture">Texture to draw</param>
-            public void DrawFull(Texture2D texture)
+            public void DrawFullTex(Texture2D texture)
             {
-                DrawFull(texture, Effects.RawTex);
+                DrawFullTex(texture, Effects.RawTex, 0);
             }
 
             /// <summary>
@@ -231,9 +241,14 @@ namespace Custom2d_Engine.Rendering
             /// </summary>
             /// <param name="texture">Texture to draw</param>
             /// <param name="effect">Effect to use</param>
-            public void DrawFull(Texture2D texture, Effect effect)
+            public void DrawFullTex(Texture2D texture, Effect effect, int pass = 0)
             {
                 effect.Parameters[Effects.Tex].SetValue(texture);
+                DrawFull(effect, pass);
+            }
+
+            public void DrawFull(Effect effect, int pass = 0)
+            {
                 effect.CurrentTechnique.Passes[0].Apply();
 
                 var graphics = pipeline.Graphics;
@@ -283,12 +298,12 @@ namespace Custom2d_Engine.Rendering
                 effect.Parameters[Effects.CameraRS].SetValue(cameraMatrixInv.RS.Flat);
                 effect.Parameters[Effects.CameraT].SetValue(cameraMatrixInv.T);
 
-
                 effect.CurrentTechnique.Passes[pass].Apply();
 
                 graphics.Indices = pipeline.quadInds;
 
                 pipeline.Graphics.SamplerStates[1] = SamplerState.PointClamp;
+                pipeline.Graphics.SamplerStates[2] = SamplerState.PointClamp;
                 //pipeline.Graphics.Textures[0] = pipeline.CurrentState.SpriteAtlas;
 
                 graphics.SetVertexBuffers(bindings);
@@ -446,7 +461,7 @@ namespace Custom2d_Engine.Rendering
                 var newRT = (currentRT + 1) & 1;
                 var oldRTTex = renderTargets[currentRT];
                 pipeline.Graphics.SetRenderTarget(renderTargets[newRT]);
-                pipeline.Rendering.DrawFull(oldRTTex);
+                pipeline.Rendering.DrawFullTex(oldRTTex);
                 currentRT = newRT;
                 return oldRTTex;
             }
@@ -455,7 +470,7 @@ namespace Custom2d_Engine.Rendering
             {
                 var current = renderTargets[currentRT];
                 pipeline.Graphics.SetRenderTarget(passResult);
-                pipeline.Rendering.DrawFull(current);
+                pipeline.Rendering.DrawFullTex(current);
                 pipeline.Graphics.SetRenderTarget(current);
                 return passResult;
             }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Scenes
+namespace Custom2d_Engine.Scenes.Drawable
 {
     public abstract class SpecialRenderedObject : DrawableObject, ISpecialRenderer
     {
@@ -15,9 +15,9 @@ namespace Custom2d_Engine.Scenes
 
         public bool AllowFrameAccess { get; protected set; }
 
-        public SpecialRenderedObject(RenderPipeline pipeline, Color color, float drawOrder) : base(color, drawOrder) 
-        { 
-            this.Pipeline = pipeline;
+        public SpecialRenderedObject(RenderPipeline pipeline, Color color, float drawOrder) : base(color, drawOrder)
+        {
+            Pipeline = pipeline;
             SetQueueBehaviour(RenderPasses.Normals, QueueBehaviour.Skip);
             SetQueueBehaviour(RenderPasses.Lights, QueueBehaviour.Skip);
             SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.Skip);
@@ -29,7 +29,7 @@ namespace Custom2d_Engine.Scenes
 
         public override DrawableObject SetQueueBehaviour(RenderPasses pass, QueueBehaviour behaviour)
         {
-            this.PassQueueBehaviours[(byte)pass] = behaviour;
+            PassQueueBehaviours[(byte)pass] = behaviour;
             return this;
         }
 

@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Custom2d_Engine.Ticking;
 using nkast.Aether.Physics2D.Controllers;
+using Custom2d_Engine.Scenes.Drawable;
+using Custom2d_Engine.Scenes.Drawable.Lights;
 
 namespace EngineTest
 {
@@ -177,7 +179,7 @@ namespace EngineTest
             sprites = new();
 
             atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048, 2);
-            //atlas.SetBaseColor(2, Color.Black);
+            //atlas.SetBaseColor(2, Color.Blue);
 
             var atlasLoader = new SpriteAtlasLoader<Color>(Content, atlas, "albedo", "normal", "emission");
 
@@ -190,6 +192,8 @@ namespace EngineTest
                 new Rectangle(32, 32, 32, 32),
                 new Rectangle(0, 32, 32, 32)
                 ));
+
+            var debugCirce = atlasLoader.Load("sprites/normal_test")[0];
 
             /*for (int i=0; i<16; i++)
             {
@@ -209,8 +213,10 @@ namespace EngineTest
                 atlas.AtlasTextures[1],
                 atlas.AtlasTextures[2]);
 
+            Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];
+
             // TODO: use this.Content to load your game content here
-            DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
+            /*DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
             DepthMarchedColor.Parameters["Color"].SetValue(Color.Green.ToVector4());
 
             var marchingDSS = new DepthStencilState();
@@ -220,8 +226,6 @@ namespace EngineTest
 
             var effect2 = DepthMarchedColor.Clone();
             effect2.Parameters["Color"].SetValue(Color.YellowGreen.ToVector4());
-
-            var random = new Random(1337);
 
             //Green
             var scalars = new FiniteGrid<float>(new Point(32, 32));
@@ -240,9 +244,24 @@ namespace EngineTest
             mesh2.Transform.LocalPosition = new Vector2(5f, 5f);
 
             scene.AddObject(mesh);
-            scene.AddObject(mesh2);
+            scene.AddObject(mesh2);*/
 
-            scene.AddAccurateRepeatingAction(() => { CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f); }, 0.1f, 10f);
+            var random = new Random(1337);
+
+            //scene.AddAccurateRepeatingAction(() => { CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f); }, 0.1f, 10f);
+
+            var light = new GlobalLight(renderer, Color.White, 1000f);
+            light.Transform.LocalRotation = 0f;
+            light.LightHeight = 1f;
+            light.Intensity = 1f;
+            scene.AddObject(light);
+
+            var debugCircleObj = new DrawableObject(Color.White, 5f);
+            debugCircleObj.Sprite = debugCirce;
+            debugCircleObj.Transform.LocalScale = new Vector2(2f, 2f);
+            //debugCircleObj.Transform.LocalShear = 0.1f;
+            scene.AddObject(debugCircleObj);
+            //debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
 
             CreateWorld();
         }

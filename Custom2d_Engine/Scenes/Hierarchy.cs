@@ -7,6 +7,7 @@ namespace Custom2d_Engine.Scenes
     using Util.Debugging;
     using Util;
     using Custom2d_Engine.Ticking;
+    using Custom2d_Engine.Scenes.Drawable;
 
     //TODO Optimise callbacks
     public class Hierarchy : IManagedTicker

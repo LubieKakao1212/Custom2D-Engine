@@ -30,11 +30,12 @@ namespace Custom2d_Engine.Rendering
         public const string AtlasSize = "AtlasSize";
         //dafuq???
         //public const string SpriteAtlas = "AtlasSampler+SpriteAtlas";
-        public const string ColorAtlas = "ColorAtlas";
-        public const string NormalAtlas = "ColorAtlas";
-        public const string EmissionAtlas = "EmissionAtlas";
+        public const string ColorAtlas = "AtlasSampler+ColorAtlas";
+        public const string NormalAtlas = "AtlasSampler+NormalAtlas";
+        public const string EmissionAtlas = "AtlasSampler+EmissionAtlas";
 
         public const string SceneLights = "SceneLights";
+        public const string SceneNormals = "SceneNormals";
 
         private const string TilemapDefaultEffectPath = "Tilemap";
         private const string DefaultEffectPath = "Default";
@@ -45,6 +46,19 @@ namespace Custom2d_Engine.Rendering
             TilemapDefault = content.Load<Effect>(TilemapDefaultEffectPath);
             Default = content.Load<Effect>(DefaultEffectPath);
             RawTex = content.Load<Effect>(RawTexPath);
+            Lights.GlobalLight = content.Load<Effect>(Lights.GlobalLightPath);
+        }
+
+        public static class Lights
+        {
+            public static Effect GlobalLight { get; internal set; }
+
+            public const string Intensity = "Intensity";
+            public const string Tint = "Tint";
+            public const string Height = "Height";
+            public const string Direction = "Direction";
+
+            internal const string GlobalLightPath = "Lights/GlobalLight";
         }
     }
 }

@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Custom2d_Engine.Math;
 using Custom2d_Engine.Rendering;
-using Custom2d_Engine.Scenes;
 using Custom2d_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Custom2d_Engine.Scenes.Drawable;
 
 namespace Custom2d_Engine.Tilemap
 {

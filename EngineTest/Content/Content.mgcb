@@ -25,6 +25,12 @@
 /processorParam:DebugMode=Auto
 /build:../../Shaders/DepthMarchedColor.fx;DepthMarchedColor.fx
 
+#begin ../../Shaders/Lights/GlobalLight.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Lights/GlobalLight.fx;Lights/GlobalLight.fx
+
 #begin ../../Shaders/RawTex.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -49,6 +55,18 @@
 /processorParam:TextureFormat=Color
 /build:sprites/gem/albedo.png
 
+#begin sprites/gem/emission.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/gem/emission.png
+
 #begin sprites/gem/normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -60,6 +78,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sprites/gem/normal.png
+
+#begin sprites/normal_test/albedo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/normal_test/albedo.png
+
+#begin sprites/normal_test/normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/normal_test/normal.png
 
 #begin Texture.png
 /importer:TextureImporter

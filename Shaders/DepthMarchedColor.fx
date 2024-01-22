@@ -7,8 +7,8 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-#include "Transforms.fxh"
-#include "Camera.fxh"
+#include "Include/Transforms.fxh"
+#include "Include/Camera.fxh"
 
 float4 ObjRSS;
 float2 ObjT;

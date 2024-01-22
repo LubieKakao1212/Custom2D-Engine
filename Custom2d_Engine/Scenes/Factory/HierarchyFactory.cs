@@ -1,4 +1,5 @@
 ﻿using Custom2d_Engine.Rendering.Sprites;
+using Custom2d_Engine.Scenes.Drawable;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Custom2d_Engine.Scenes.Factory
 {
-    public static class HierarchyFactory
+    public static partial class HierarchyFactory
     {
         public static HierarchyObject HierarchyObject()
         {

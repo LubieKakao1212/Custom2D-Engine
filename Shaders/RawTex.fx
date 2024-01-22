@@ -16,7 +16,7 @@ sampler2D TexSampler = sampler_state
 
 struct VertexShaderInput
 {
-	float2 Position : POSITION0;
+	float4 Position : POSITION0;
 	float2 UV : TEXCOORD0;
 };
 
@@ -30,7 +30,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
-	output.Position = float4(input.Position, 0, 1);
+	output.Position = float4(input.Position.xy, 0.0f, 1.0f);
 	output.UV = input.UV;
 
 	return output;
@@ -41,7 +41,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	return tex2D(TexSampler, input.UV);
 }
 
-technique Unlit
+technique Simple
 {
 	pass Pass0
 	{

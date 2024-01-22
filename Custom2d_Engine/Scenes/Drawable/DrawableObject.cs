@@ -2,9 +2,10 @@
 using Custom2d_Engine.Rendering.Sprites;
 using Custom2d_Engine.Scenes.Events;
 
-namespace Custom2d_Engine.Scenes
+namespace Custom2d_Engine.Scenes.Drawable
 {
     using Custom2d_Engine.Rendering;
+    using Custom2d_Engine.Scenes;
     using Math;
     using System;
 
@@ -13,14 +14,14 @@ namespace Custom2d_Engine.Scenes
         public Color Color { get; set; }
         public float DrawOrder { get; set; }
         public long DrawLayerMask => drawLayerMask;
-        
+
         public Sprite Sprite { get; set; } = new Sprite() { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.Zero) };
 
         /// <summary>
         /// Controls queue behaviour for this object
         /// </summary>
         protected internal QueueBehaviour[] PassQueueBehaviours;
-        
+
         //All
         private long drawLayerMask = -1;
 
@@ -40,7 +41,7 @@ namespace Custom2d_Engine.Scenes
             {
                 throw new ArgumentException($"Attempting to set {nameof(QueueBehaviour)} of non-special object to {nameof(QueueBehaviour.CustomDraw)}");
             }
-            this.PassQueueBehaviours[(byte)pass] = behaviour;
+            PassQueueBehaviours[(byte)pass] = behaviour;
             return this;
         }
     }

@@ -12,4 +12,15 @@ namespace Custom2d_Engine.Rendering
         Lights = 1,
         Final = 2,
     }
+
+    public static class RenderPassesExtensions
+    {
+        public static int GetShaderPasssIdx(this RenderPasses pass) => pass switch
+        {
+            RenderPasses.Normals => 0,
+            RenderPasses.Lights => -1,
+            RenderPasses.Final => 1,
+            _ => -1
+        };
+    }
 }
