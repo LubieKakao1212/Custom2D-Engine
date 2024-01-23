@@ -44,6 +44,7 @@ namespace Custom2d_Engine.Tilemap
         public void SetTile(Point pos, T tile)
         {
             chunkData[PosToIndex(pos)] = tile;
+            RenderData?.SetChunkDirty();
         }
 
         /// <summary>
@@ -92,7 +93,6 @@ namespace Custom2d_Engine.Tilemap
         /// DOES NOT perform any bounds checks
         /// </summary>
         /// <param name="start"></param>
-        /// <param name="count"></param>
         /// <param name="slice"></param>
         internal void SetSliceUnsafe(Point start, in ReadOnlySpan<T> slice)
         {
@@ -104,6 +104,8 @@ namespace Custom2d_Engine.Tilemap
         {
             var dstSpan = new Span<T>(chunkData, startIdx, slice.Length);
             slice.CopyTo(dstSpan);
+
+            RenderData?.SetChunkDirty();
         }
 
         public static int PosToIndex(Point pos)

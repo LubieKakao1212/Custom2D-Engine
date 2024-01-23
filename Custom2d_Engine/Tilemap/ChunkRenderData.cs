@@ -16,6 +16,7 @@ namespace Custom2d_Engine.Tilemap
         public VertexBufferBinding Binding => new VertexBufferBinding(tilesBuffer, 0, 1);
         private VertexBuffer tilesBuffer;
         private Chunk<InstanceSpriteData> chunk;
+        private bool dirty = true;
 
         public ChunkRenderData(Chunk<InstanceSpriteData> chunk, RenderPipeline pipeline)
         {
@@ -26,7 +27,16 @@ namespace Custom2d_Engine.Tilemap
 
         public void Flush()
         {
-            tilesBuffer.SetData(chunk.ChunkData);
+            if (dirty)
+            {
+                tilesBuffer.SetData(chunk.ChunkData);
+                dirty = false;
+            }
+        }
+
+        public void SetChunkDirty()
+        {
+            dirty = true;
         }
 
         public void Dispose()

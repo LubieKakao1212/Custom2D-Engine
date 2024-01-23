@@ -214,7 +214,7 @@ namespace EngineTest
                 atlas.AtlasTextures[1],
                 atlas.AtlasTextures[2]);
 
-            FIllTilemap(tilemap, new Rectangle(-1024, -1024, 2048, 2048));
+            FIllTilemap(tilemap, new Rectangle(-2048, -2048, 4096, 4096));
 
             Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];
             Effects.TilemapDefault.CurrentTechnique = Effects.TilemapDefault.Techniques["Lit"];
@@ -272,6 +272,7 @@ namespace EngineTest
 
         protected override void Update(GameTime gameTime)
         {
+            TimeLogger.Instance.Push("Update");
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -308,30 +309,32 @@ namespace EngineTest
             //    MathF.Cos((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f,
             //    MathF.Sin((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f);
             base.Update(gameTime);
+
+            TimeLogger.Instance.Pop("Update");
         }
 
         protected override void Draw(GameTime gameTime)
         {
             TimeLogger.Instance.Push("Draw");
             renderer.RenderScene(scene, Camera, Color.Cyan);
-            TimeLogger.Instance.Pop("Draw");
-
+            
             //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
 
-            //var newStamp = timer.Elapsed;
+            var newStamp = timer.Elapsed;
 
-            //var delta = newStamp - lastFrameStamp;
+            var delta = newStamp - lastFrameStamp;
 
-            //lastFrameStamp = newStamp;
+            lastFrameStamp = newStamp;
 
-            //smoothDelta = smoothDelta * 0.95 + delta.TotalSeconds * 0.05;
+            smoothDelta = smoothDelta * 0.95 + delta.TotalSeconds * 0.05;
 
-            //delta.TotalMilliseconds.LogThis("Frame Duration: ");
+            delta.TotalMilliseconds.LogThis("Frame Duration: ");
 
-            /*Console.WriteLine($"Smooth Fps: {1.0 / smoothDelta}");
-            Console.WriteLine($"Fps: {1.0 / delta.TotalSeconds}");*/
+            Console.WriteLine($"Smooth Fps: {1.0 / smoothDelta}");
+            Console.WriteLine($"Fps: {1.0 / delta.TotalSeconds}");
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
+            TimeLogger.Instance.Pop("Draw");
         }
 
         private void CreateWorld()
