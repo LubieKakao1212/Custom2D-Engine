@@ -25,6 +25,7 @@ using Custom2d_Engine.Scenes.Drawable.Lights;
 
 using static Custom2d_Engine.Rendering.RenderPipeline;
 using Custom2d_Engine.Util.Debugging;
+using Custom2d_Engine.TMX;
 
 namespace EngineTest
 {
@@ -195,6 +196,13 @@ namespace EngineTest
                 ));
 
             var debugCirce = atlasLoader.Load("sprites/normal_test")[0];
+            var debugSprite = atlasLoader.Load("sprites/debug")[0];
+
+            var tmxLoader = new TMXLoader<Color>(Content, atlasLoader);
+
+            var map1 = tmxLoader.LoadedMap("tmx/map");
+            var map2 = tmxLoader.LoadedMap("tmx/fullTest");
+
 
             /*for (int i=0; i<16; i++)
             {
@@ -215,6 +223,9 @@ namespace EngineTest
                 atlas.AtlasTextures[2]);
 
             FIllTilemap(tilemap, new Rectangle(-2048, -2048, 4096, 4096));
+
+            map1.ProcessTileLayer("Tiles", CommonMapProcessors.FillTilemap(tilemap, Point.Zero, NullTileHandling.Empty));
+            map2.ProcessTileLayer("Tiles", CommonMapProcessors.FillTilemap(tilemap, new Point(-5, -5), NullTileHandling.Skip));
 
             Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];
             Effects.TilemapDefault.CurrentTechnique = Effects.TilemapDefault.Techniques["Lit"];
@@ -262,10 +273,18 @@ namespace EngineTest
 
             var debugCircleObj = new DrawableObject(Color.White, 5f);
             debugCircleObj.Sprite = debugCirce;
-            debugCircleObj.Transform.LocalScale = new Vector2(2f, 2f);
-            //debugCircleObj.Transform.LocalShear = 0.1f;
+            debugCircleObj.Transform.LocalScale = new Vector2(5f, 2f);
+            debugCircleObj.Transform.LocalShear = 0.2f;
+            var obj1 = new DrawableObject(Color.White, 6f);
+            obj1.Sprite = Sprite.Empty;//new Sprite() { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.One) };//sprites[0];
+
+            obj1.Transform.LocalScale = Vector2.One * 16;
+
+            scene.AddObject(obj1);
             scene.AddObject(debugCircleObj);
-            //debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
+            debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
+
+
 
             CreateWorld();
         }
@@ -406,7 +425,7 @@ namespace EngineTest
             for(int x = 0; x < bounds.Width; x++)
                 for(int y = 0; y < bounds.Height; y++)
                 {
-                    tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y), new InstanceSpriteData(Color.White, sprites[Random.Shared.Next(0, sprites.Count)]));
+                    tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y), new InstanceSpriteData(Color.White, sprites[1/*Random.Shared.Next(0, sprites.Count)*/]));
                 }
         }
 

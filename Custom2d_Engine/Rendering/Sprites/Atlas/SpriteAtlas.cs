@@ -12,6 +12,7 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
     public class SpriteAtlas<T> : ISpriteAtlas where T : struct
     {
         public Texture3D[] AtlasTextures => atlasTextures;
+        public GraphicsDevice Graphics => graphics;
 
         private const int maxSizeInternal = 8192;
 
@@ -70,7 +71,8 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
 
             if (rects.Length == 0)
             {
-                rects = new Rectangle[] { new Rectangle(0, 0, textures[0].Width, textures[0].Height) };
+                var t = textures.Where((t) => t != null).First();
+                rects = new Rectangle[] { new Rectangle(0, 0, t.Width, t.Height) };
             }
                        
             for (int i = 0; i < output.Length; i++)
@@ -194,9 +196,9 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
         private void CreateAtlasTextures()
         {
             int atlasCount = atlasTextures.Length;
-            for (int i = 0; i< atlasCount; i++) 
+            for (int i = 0; i< atlasCount; i++)
             {
-                atlasTextures[i] = new Texture3D(graphics, size, size, textureCount, false, textureFormat);
+                atlasTextures[i] = new Texture3D(Graphics, size, size, textureCount, false, textureFormat);
             }
 
             var texturePixelCount = size * size;

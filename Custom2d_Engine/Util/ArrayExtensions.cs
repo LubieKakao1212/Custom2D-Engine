@@ -33,8 +33,10 @@ namespace Custom2d_Engine.Util
 
             for (int y = 0; y < h; y++)
             {
+                //Temporary fix to flipped sprites
                 var sourceIdx = y * w;
-                var destinationIdx = ((depth * arrayHeight) + targetY + y) * arrayWidth + targetX;
+                var y1 = w - y - 1;
+                var destinationIdx = ((depth * arrayHeight) + targetY + y1) * arrayWidth + targetX;
                 var sourceSpan = new Span<T>(source, sourceIdx, w);
                 var destinationSpan = new Span<T>(destinationArray, destinationIdx, w);
 

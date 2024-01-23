@@ -8,7 +8,7 @@
 float4 LitNormalPS(PSInput input) : COLOR 
 {
 	float2x2 tangents = float2x2(input.Tangents);
-	tangents = tangents / determinant(tangents);
+	tangents = tangents / sqrt(determinant(tangents));
 	tangents = transpose(tangents);
 	float4 rawNormal = normal(input.AtlasPos);
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="4" height="4" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="SingleImage1" tilewidth="16" tileheight="16" tilecount="16" columns="4">
+  <properties>
+   <property name="Sprite" value="sprites/gem"/>
+  </properties>
+  <image source="../Custom2D-Engine/EngineTest/Content/sprites/gem/albedo.png" width="64" height="64"/>
+  <tile id="5">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.170986" y="8.80577">
+     <polygon points="0,0 4.18915,-4.61662 15.8162,-4.61662 15.7307,6.92493 -0.256479,6.92493"/>
+    </object>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <layer id="1" name="Tiles" width="4" height="4">
+  <data encoding="base64" compression="zlib">
+   eJxjY2BgYGdAAFYgZoOKcQAxJxBzATE3EPMAMS8Q8wExPxALADEADfQAjA==
+  </data>
+ </layer>
+</map>

@@ -14,10 +14,7 @@ namespace Custom2d_Engine.TMX
     {
         private ContentManager Content;
         private SpriteAtlasLoader<TPixel> SpriteLoader;
-
-        private Dictionary<string, Tileset> tilesetCache = new Dictionary<string, Tileset>();
-
-        private Dictionary<string, TilesetSprites> tilesetSpritesCache = new Dictionary<string, TilesetSprites>();
+        private TMXCache cache = new TMXCache();
 
         public TMXLoader(ContentManager content, SpriteAtlasLoader<TPixel> spriteLoader) 
         {
@@ -29,7 +26,7 @@ namespace Custom2d_Engine.TMX
         {
             filename = Path.Combine(Content.RootDirectory, filename);
             var path = Path.GetDirectoryName(filename);
-            using (var stream = File.OpenRead(filename))
+            using (var stream = File.OpenRead(filename + ".tmx"))
             {
                 using StreamReader streamReader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, 1024, leaveOpen: true);
                 var map = streamReader.ReadTmxMap();
@@ -49,8 +46,9 @@ namespace Custom2d_Engine.TMX
                     });
                 }
 
-                foreach (var ts in map.Tilesets.OfType<ExternalTileset>())
-                    ts.LoadTileset();
+                //Redundant?
+                /*foreach (var ts in map.Tilesets.OfType<ExternalTileset>())
+                    ts.LoadTileset();*/
 
                 return map;
             }
@@ -58,9 +56,10 @@ namespace Custom2d_Engine.TMX
 
         public Tileset LoadTileset(string filename)
         {
-            if (!tilesetCache.TryGetValue(filename, out var tileset))
+            if (!cache.TryGetTileset(filename, out var tileset))
             {
-                tileset = Tileset.FromStream(File.OpenRead(GetLoadingPath(filename)));
+                tileset = Tileset.FromStream(File.OpenRead(GetLoadingPath(filename) + ".tsx"));
+                cache.AddLoadedTileset(filename, tileset, LoadTilesetSprites(tileset));
             }
             return tileset;
         }
@@ -74,7 +73,7 @@ namespace Custom2d_Engine.TMX
 
             var rects = new Rectangle[source.TileCount];
 
-            //TODO Probably Y is inverted
+            //TODO Probably Y is inverted (Somehow it is not)
             for (int x = 0; x < source.Columns; x++)
                 for (int y = 0; y < source.Rows; y++)
                 {
@@ -83,15 +82,24 @@ namespace Custom2d_Engine.TMX
 
             return SpriteLoader.Load(spritePath, rects);
         }
-
-
+        
+        public LoadedMap<TPixel> LoadedMap(string filename)
+        {
+            return new LoadedMap<TPixel>(LoadMap(filename), cache, this);
+        }
 
         private string GetContentPath(string path)
         {
             if (!Path.IsPathRooted(path))
             {
-                path = Path.Combine(Content.RootDirectory, path);
+                if (!path.StartsWith(Content.RootDirectory))
+                {
+                    path = Path.Combine(Content.RootDirectory, path);
+                }
             }
+
+            path = Path.ChangeExtension(path, null);
+
             return Path.GetRelativePath(Content.RootDirectory, path);//Path.IsPathRooted(path) ? path : Path.Combine(Path.GetDirectoryName(filename), path);
         }
 

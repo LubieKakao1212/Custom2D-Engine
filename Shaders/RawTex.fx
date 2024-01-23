@@ -31,7 +31,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	VertexShaderOutput output;
 
 	output.Position = float4(input.Position.xy, 0.0f, 1.0f);
-	output.UV = input.UV;
+	output.UV = float2(input.UV.x, input.UV.y);
 
 	return output;
 }

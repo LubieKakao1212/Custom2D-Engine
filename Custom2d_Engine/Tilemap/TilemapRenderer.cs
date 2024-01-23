@@ -21,7 +21,7 @@ namespace Custom2d_Engine.Tilemap
         private Tilemap<InstanceSpriteData> tilemap;
         private Grid grid;
 
-        public Vector2 spacing { get; set; } = Vector2.One; 
+        public Vector2 spacing { get; set; } = Vector2.One;
 
         public TilemapRenderer(Tilemap<InstanceSpriteData> tilemap, Grid grid, RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
         {

@@ -43,6 +43,18 @@
 /processorParam:DebugMode=Auto
 /build:../../Shaders/Tilemap.fx;Tilemap.fx
 
+#begin sprites/debug/emission.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/debug/emission.png
+
 #begin sprites/gem/albedo.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -114,4 +126,13 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture.png
+
+#begin tmx/fullTest.tmx
+/copy:tmx/fullTest.tmx
+
+#begin tmx/map.tmx
+/copy:tmx/map.tmx
+
+#begin tmx/SingleImage1.tsx
+/copy:tmx/SingleImage1.tsx
 

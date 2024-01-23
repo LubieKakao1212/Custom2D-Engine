@@ -21,6 +21,20 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
             this.Content = content;
             this.textureNames = textureNames;
             this.atlas = atlas;
+
+
+            if (Sprite.Empty == null)
+            {
+                var transparent = new Texture2D(atlas.Graphics, 1, 1);
+                transparent.SetData(new Color[] { Color.Transparent });
+                var white = new Texture2D(atlas.Graphics, 1, 1);
+                white.SetData(new Color[] { Color.White });
+                var black = new Texture2D(atlas.Graphics, 1, 1);
+                black.SetData(new Color[] { Color.Black });
+
+                Sprite.Empty = atlas.AddTextureRects(new Texture2D[] { transparent, transparent, transparent })[0];
+                Sprite.Unlit = atlas.AddTextureRects(new Texture2D[] { black, white, white })[0];
+            }
         }
 
         public Sprite[] Load(string path, params Rectangle[] rects)
