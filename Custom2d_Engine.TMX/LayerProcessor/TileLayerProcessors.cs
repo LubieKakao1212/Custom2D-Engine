@@ -8,21 +8,22 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using TiledLib.Layer;
+using TiledLib.Objects;
 using static Custom2d_Engine.Rendering.RenderPipeline;
 
-namespace Custom2d_Engine.TMX
+namespace Custom2d_Engine.TMX.LayerProcessor
 {
-    public static class CommonMapProcessors
+    public static class TileLayerProcessors<TPixel> where TPixel : struct
     {
-        public static LoadedMap<Color>.TileLayerHandler FillTilemap(Tilemap<InstanceSpriteData> tilemap, Point offset, NullTileHandling nullHandling)
+        public static LoadedMap<TPixel>.TileLayerHandler FillTilemap(Tilemap<InstanceSpriteData> tilemap, Point offset, NullTileHandling nullHandling)
         {
             return (map, position, gid) =>
             {
                 var isd = new InstanceSpriteData();
                 if (gid == 0)
                 {
-                    switch(nullHandling)
+                    switch (nullHandling)
                     {
                         case NullTileHandling.Skip:
                             return;
@@ -39,6 +40,7 @@ namespace Custom2d_Engine.TMX
                 tilemap.SetTile(position + offset, isd);
             };
         }
+
     }
 
     public enum NullTileHandling

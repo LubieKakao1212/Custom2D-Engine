@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="32" height="32" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="32" height="32" tilewidth="1" tileheight="1" infinite="0" nextlayerid="5" nextobjectid="18">
  <tileset firstgid="1" source="SingleImage1.tsx"/>
  <layer id="1" name="Tiles" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztzbkNACAQxMBL+BH03y1LE2yAR3LsCAAAAOBvSWVVVDX8m+pqqGn4X0tt0xvAGwe5CwBi
+   eJztlu1qwzAMRfXHrh2H7f3fdhno0BPDaNc1LYxcEHFjRR9XstyI21g3WTYZm1w2afn8fl9zvUin5fpR1LTd096SPrDdpj3iaNN3RXHVO3Ikr64YyLdqf5FOk5+WftcUv1+11yff5Nbjyh1+ar4vyrfmmhzJF25G7PlClzoSH76xv8of9b1Id453pL57wPawBW/wYfvkNNtvsecjUjdi3x9Fvxd9A59de9TRUtKf7bfY1599gC3yxQZ5wQu5oWd+XYM22ad+5sx9Ttz4wSfnr0wxuSe7xHCNDJ+HPvFo28TnPK3jnpn5BOizDnFFb9P/1LhIOIvzOYGLEbfnwAz6idzIy3B+PImJ/Ef8DfQDvRCKw/MGHv4j6I2fev0ZuOfeYla6p37bV48Av0Vrn8ejwbnjHDIXqMPR8PnzrGd2HQ3fkZ7vzKij4bvEdXjGfDlxBf8p4PnV4J7lbn0HPjb5fJPvEydOvAZfbRkLjg==
   </data>
  </layer>
+ <objectgroup id="4" name="WorldCollisions">
+  <object id="1" x="23.7511" y="25.817" width="4.70833" height="6.5625" rotation="318.561"/>
+  <object id="13" x="3" y="6">
+   <polyline points="0,0 4,4 8,-1 13,6 2,8"/>
+  </object>
+  <object id="14" gid="10" x="22.3111" y="15.6889" width="3" height="3"/>
+  <object id="15" x="24" y="8" width="5" height="5">
+   <ellipse/>
+  </object>
+  <object id="16" x="11" y="23">
+   <properties>
+    <property name="fill" type="bool" value="true"/>
+   </properties>
+   <polygon points="0,0 3,2 6,-4"/>
+  </object>
+ </objectgroup>
 </map>

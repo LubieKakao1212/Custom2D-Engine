@@ -18,13 +18,15 @@ PSInput MainVS(in VertexShaderInput input, in InstanceData instance)
 {
 	PSInput output;
 
-	float3x3 LtV = LocalToView(instance.RotScale, instance.Pos);
+	float4 rs = instance.RotScale;
+
+	float3x3 LtV = LocalToView(rs, instance.Pos);
 
 	float4 screenPos = float4(mul(LtV, float3(input.Position.xy, 1.0f)).xy, 0.0f, 1.0f);
 	output.Position = screenPos;
 	output.ScreenPos = screenPos.xy;
 
-	output.Tangents = instance.RotScale; //LtV._m00_m01_m10_m11;
+	output.Tangents = rs;//float4(rs.x, -rs.y, rs.z, -rs.w); //LtV._m00_m01_m10_m11;
 
 	output.Color = instance.Color;
 

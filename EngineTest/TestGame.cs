@@ -26,6 +26,7 @@ using Custom2d_Engine.Scenes.Drawable.Lights;
 using static Custom2d_Engine.Rendering.RenderPipeline;
 using Custom2d_Engine.Util.Debugging;
 using Custom2d_Engine.TMX;
+using Custom2d_Engine.TMX.LayerProcessor;
 
 namespace EngineTest
 {
@@ -224,8 +225,8 @@ namespace EngineTest
 
             FIllTilemap(tilemap, new Rectangle(-2048, -2048, 4096, 4096));
 
-            map1.ProcessTileLayer("Tiles", CommonMapProcessors.FillTilemap(tilemap, Point.Zero, NullTileHandling.Empty));
-            map2.ProcessTileLayer("Tiles", CommonMapProcessors.FillTilemap(tilemap, new Point(-5, -5), NullTileHandling.Skip));
+            map1.ProcessTileLayer("Tiles", TileLayerProcessors<Color>.FillTilemap(tilemap, new Point(Chunk<Color>.chunkSize / 4), NullTileHandling.Empty));
+            map2.ProcessTileLayer("Tiles", TileLayerProcessors<Color>.FillTilemap(tilemap, new Point(-5, -5), NullTileHandling.Skip));
 
             Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];
             Effects.TilemapDefault.CurrentTechnique = Effects.TilemapDefault.Techniques["Lit"];
@@ -271,10 +272,18 @@ namespace EngineTest
             light.Intensity = 1f;
             scene.AddObject(light);
 
+            CreateWorld();
+
+            var colliders = new PhysicsBodyObject(physicsWorld.CreateBody());
+
+            map1.ProcessObjectLayer("WorldCollisions", ObjectLayerProcessorsPhysics.ShapesToCollisions(colliders));
+            
+            scene.AddObject(colliders);
+
             var debugCircleObj = new DrawableObject(Color.White, 5f);
             debugCircleObj.Sprite = debugCirce;
-            debugCircleObj.Transform.LocalScale = new Vector2(5f, 2f);
-            debugCircleObj.Transform.LocalShear = 0.2f;
+            debugCircleObj.Transform.LocalScale = new Vector2(2f, 2f);
+            debugCircleObj.Transform.LocalShear = 0f;
             var obj1 = new DrawableObject(Color.White, 6f);
             obj1.Sprite = Sprite.Empty;//new Sprite() { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.One) };//sprites[0];
 
@@ -283,10 +292,6 @@ namespace EngineTest
             scene.AddObject(obj1);
             scene.AddObject(debugCircleObj);
             debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
-
-
-
-            CreateWorld();
         }
 
         protected override void Update(GameTime gameTime)
@@ -337,7 +342,7 @@ namespace EngineTest
             TimeLogger.Instance.Push("Draw");
             renderer.RenderScene(scene, Camera, Color.Cyan);
             
-            //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
+            debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity, Matrix.Identity);
 
             var newStamp = timer.Elapsed;
 
@@ -361,6 +366,8 @@ namespace EngineTest
             physicsWorld = new(new Vector2(0, 0f));
 
             debug = new DebugView(physicsWorld);
+
+            debug.AppendFlags(DebugViewFlags.PolygonPoints);
 
             debug.LoadContent(GraphicsDevice, Content);
             

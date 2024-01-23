@@ -14,6 +14,9 @@ namespace Custom2d_Engine.TMX
         public delegate void TileLayerHandler(LoadedMap<TPixel> map, Point position, int gid);
         public delegate void ObjectLayerHandler(LoadedMap<TPixel> map, BaseObject obj);
 
+        public int Width => map.Width;
+        public int Height => map.Height;
+
         private Map map;
         private Dictionary<string, BaseLayer> layerCache = new Dictionary<string, BaseLayer>();
         private Dictionary<Tileset, Sprite[]> embeddedTilesetsSpriteCache = new Dictionary<Tileset, Sprite[]>();

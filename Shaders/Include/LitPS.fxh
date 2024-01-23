@@ -15,6 +15,7 @@ float4 LitNormalPS(PSInput input) : COLOR
 	clip(rawNormal.a - 0.5f);
 
 	float3 surfaceNormal = (rawNormal.xyz * 2.0f) - 1.0f;
+	surfaceNormal.y = -surfaceNormal.y;
 	surfaceNormal = float3(mul(tangents, surfaceNormal.xy), surfaceNormal.z);
 	surfaceNormal = (surfaceNormal + 1.0f) * 0.5f;
 

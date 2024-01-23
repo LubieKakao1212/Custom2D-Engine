@@ -128,7 +128,7 @@ namespace Custom2d_Engine.Rendering
             result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
             Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
             result = RenderPass(scene, RenderPasses.Final, result, baseColor);
-            
+
             FinishDraw(result);
         }
 
