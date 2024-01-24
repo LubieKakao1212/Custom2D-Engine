@@ -17,22 +17,30 @@ namespace Custom2d_Engine.Scenes
             {
                 parent?.RemoveChild(value);
 
+                if (IsRootInHierarcy && value != null)
+                {
+                    CurrentHierarchy.RemoveObject(this);
+                }
+                
                 parent = value;
                 if (parent != null)
                 {
+                    PrivateSetScene(parent.currentHierarchy);
                     transform.Parent = parent.Transform;
                     parent.AddChild(this);
                 }
                 else
-                { 
+                {
                     transform.Parent = null;
                 }
             }
         }
 
-        public Hierarchy CurrentScene
+        public bool IsRootInHierarcy => Parent == null && CurrentHierarchy != null;
+
+        public Hierarchy CurrentHierarchy
         {
-            get => currentScene;
+            get => currentHierarchy;
             internal set
             {
                 PrivateSetScene(value);
@@ -87,12 +95,12 @@ namespace Custom2d_Engine.Scenes
             }
         }
 
-        TickManager IManagedTicker.TickManager => currentScene.TickManager;
+        TickManager IManagedTicker.TickManager => currentHierarchy.TickManager;
 
         //Not optimal for larege amount of children
         private readonly List<HierarchyObject> children = new();
 
-        private Hierarchy currentScene;
+        private Hierarchy currentHierarchy;
         private HierarchyObject parent = null;
         private readonly Transform transform = new();
 
@@ -111,21 +119,26 @@ namespace Custom2d_Engine.Scenes
 
         private void PrivateSetScene(Hierarchy scene)
         {
+            if (scene == currentHierarchy)
+            {
+                return;
+            }
+
             if (scene != null)
             {
-                currentScene = scene;
+                currentHierarchy = scene;
                 AddedToScene();
             }
 
             foreach (var child in children)
             {
-                child.PrivateSetScene(currentScene);
+                child.PrivateSetScene(currentHierarchy);
             }
             
             if (scene == null)
             {
                 RemovedFromScene();
-                currentScene = null;
+                currentHierarchy = null;
             }
         }
 
@@ -149,7 +162,7 @@ namespace Custom2d_Engine.Scenes
 
         protected virtual void AddedToScene() { }
 
-        protected virtual void RemovedFromScene() 
+        protected virtual void RemovedFromScene()
         {
             ((IManagedTicker)this).TickManager.RemoveAllTickers(this);
         }

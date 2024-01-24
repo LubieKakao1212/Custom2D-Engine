@@ -40,7 +40,7 @@ namespace Custom2d_Engine.Tilemap
         {
             var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
             
-            var gridWtL = Matrix2x2.Scale(grid.CellSize * 2f).Inverse() * grid.Transform.WorldToLocal;
+            var gridWtL = Matrix2x2.Scale((grid.CellSize * spacing) * 2f).Inverse() * grid.Transform.WorldToLocal;
             gridWtL = gridWtL.Translate(Vector2.One * (chunkSize / 4f));
 
             var state = Pipeline.CurrentState;

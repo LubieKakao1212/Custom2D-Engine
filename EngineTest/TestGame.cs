@@ -170,6 +170,12 @@ namespace EngineTest
             var mapRenderer = new TilemapRenderer(tilemap, grid, renderer, Color.White, -11f);
 
             mapRenderer.Parent = grid;
+            var val = new Reference<float>(0f);
+            mapRenderer.AddAccurateRepeatingAction(() => {
+                val.Value += MathF.Tau / 120f;
+                mapRenderer.spacing = new Vector2(MathF.Cos(val), MathF.Sin(val)) + (Vector2.One * 2f);
+            }, 1f / 60f);
+
             timer.Start();
 
             base.Initialize();
