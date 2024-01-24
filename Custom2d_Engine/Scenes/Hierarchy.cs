@@ -64,9 +64,9 @@ namespace Custom2d_Engine.Scenes
                 Console.Out.WriteLine("Assigning object to scene it is alredy assigned, this may be a mistake");
                 return;
             }
-            obj.CurrentScene?.RemoveObjectInternal(obj);
+            obj.CurrentHierarchy?.RemoveObjectInternal(obj);
 
-            obj.CurrentScene = this;
+            obj.CurrentHierarchy = this;
             rootsSet.Add(obj);
             roots.Insert(order, obj);
         }
@@ -95,7 +95,7 @@ namespace Custom2d_Engine.Scenes
             }
             RemoveObjectInternal(obj);
 
-            obj.CurrentScene = null;
+            obj.CurrentHierarchy = null;
         }
 
         public IReadOnlyCollection<T> AllInstancesOf<T>()
