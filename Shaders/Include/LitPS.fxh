@@ -31,7 +31,9 @@ float4 LitFinalPS(PSInput input) : COLOR
 
 	float3 lights = lightMap(screenPosUV);
 
-	return float4(lights * col.rgb + emit, col.a);
+	float4 tint = input.Color;
+
+	return float4((lights * col.rgb + emit) * tint.rgb, col.a * tint.a);
 }
 
 #endif
