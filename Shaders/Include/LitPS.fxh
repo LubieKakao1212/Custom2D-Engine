@@ -33,7 +33,7 @@ float4 LitFinalPS(PSInput input) : COLOR
 
 	float4 tint = input.Color;
 
-	return float4((lights * col.rgb + emit) * tint.rgb, col.a * tint.a);
+	return float4((lights * col.rgb + emit) * tint.rgb * tint.a, col.a * tint.a);
 }
 
 #endif

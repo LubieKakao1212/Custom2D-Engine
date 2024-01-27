@@ -15,7 +15,7 @@ namespace Custom2d_Engine.Scenes
             get => parent;
             set
             {
-                parent?.RemoveChild(value);
+                parent?.RemoveChild(this);
 
                 if (IsRootInHierarcy && value != null)
                 {
@@ -31,6 +31,7 @@ namespace Custom2d_Engine.Scenes
                 }
                 else
                 {
+                    PrivateSetScene(null);
                     transform.Parent = null;
                 }
             }
