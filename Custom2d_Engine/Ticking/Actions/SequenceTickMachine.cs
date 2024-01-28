@@ -17,7 +17,11 @@ namespace Custom2d_Engine.Ticking.Actions
 
         protected override bool Execute(TimeSpan deltaTime)
         {
-            CurrentTime -= Cooldown;
+            CurrentTime -= deltaTime;
+            if(CurrentTime >= TimeSpan.Zero)
+            {
+                return true;
+            }
             if (!action.MoveNext())
             {
                 Dispose();
