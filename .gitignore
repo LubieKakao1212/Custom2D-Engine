@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Custom2d_Engine.FMOD/fmod.dll
+Custom2d_Engine.FMOD/fmodstudio.dll
