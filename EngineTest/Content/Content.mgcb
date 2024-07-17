@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin ../../Shaders/CorrectHDR.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/CorrectHDR.fx;CorrectHDR.fx
+
 #begin ../../Shaders/Default.fx
 /importer:EffectImporter
 /processor:EffectProcessor

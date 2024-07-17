@@ -24,9 +24,9 @@ float4 normal(float3 spritePos)
     return NormalAtlas.SampleLevel(AtlasSampler, spritePos, 0);//tex3D(NormalAtlasSampler, spritePos).rgb;
 }
 
-float3 emission(float3 spritePos)
+float4 emission(float3 spritePos)
 {
-    return EmissionAtlas.SampleLevel(AtlasSampler, spritePos, 0).rgb;//tex3D(EmissionAtlasSampler, spritePos).rgb;
+    return EmissionAtlas.SampleLevel(AtlasSampler, spritePos, 0).rgba;//tex3D(EmissionAtlasSampler, spritePos).rgb;
     //return EmissionAtlas.SampleLevel(EmissionAtlasSampler, spritePos, 0).rgb;
 }
 

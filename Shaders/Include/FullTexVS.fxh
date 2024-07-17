@@ -1,0 +1,21 @@
+struct VertexShaderInput
+{
+	float4 Position : POSITION0;
+	float2 UV : TEXCOORD0;
+};
+
+struct VertexShaderOutput
+{
+	float4 Position : SV_POSITION;
+	float2 UV : TEXCOORD0;
+};
+
+VertexShaderOutput MainVS(in VertexShaderInput input)
+{
+	VertexShaderOutput output;
+
+	output.Position = float4(input.Position.xy, 0.0f, 1.0f);
+	output.UV = float2(input.UV.x, input.UV.y);
+
+	return output;
+}

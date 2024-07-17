@@ -13,6 +13,7 @@ namespace Custom2d_Engine.Rendering
         public static Effect TilemapDefault { get; private set; }
         public static Effect Default { get; private set; }
         public static Effect RawTex { get; private set; }
+        public static Effect CorrectHdr { get; private set; }
 
         //TODO refactor to RSS
         public const string CameraRS = "CameraRS";
@@ -41,12 +42,14 @@ namespace Custom2d_Engine.Rendering
         private const string TilemapDefaultEffectPath = "Tilemap";
         private const string DefaultEffectPath = "Default";
         private const string RawTexPath = "RawTex";
+        private const string CorrectHdrPath = "CorrectHDR";
         
         public static void Init(ContentManager content)
         {
             TilemapDefault = content.Load<Effect>(TilemapDefaultEffectPath);
             Default = content.Load<Effect>(DefaultEffectPath);
             RawTex = content.Load<Effect>(RawTexPath);
+            CorrectHdr = content.Load<Effect>(CorrectHdrPath);
 
             Lights.GlobalLight = content.Load<Effect>(Lights.GlobalLightPath);
             Lights.PointLight = content.Load<Effect>(Lights.PointLightPath);

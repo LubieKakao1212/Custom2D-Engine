@@ -24,14 +24,22 @@ float4 LitNormalPS(PSInput input) : COLOR
 
 float4 LitFinalPS(PSInput input) : COLOR
 {
-	float3 emit = emission(input.AtlasPos);
-	float4 col = color(input.AtlasPos);
+	float4 emit = emission(input.AtlasPos);
+	float4 albedo = color(input.AtlasPos);
 
 	float2 screenPosUV = (input.ScreenPos + 1.0f) * 0.5f;
 
 	float3 lights = lightMap(screenPosUV);
 
-	return float4((lights * col.rgb + emit) * input.Color.rgb * input.Color.a, col.a * input.Color.a);
+	//Premultiplied
+	float3 litMul = lights * albedo.rgb;
+	float3 unlitMul = emit.rgb;
+	
+	//Emit over albedo
+	float alpha = emit.a + albedo.a * (1.0f - emit.a);
+	float3 color = unlitMul + litMul * (1.0f - emit.a);
+
+	return float4(color * input.Color.rgb, alpha * input.Color.a);
 }
 
 #endif

@@ -32,6 +32,8 @@ namespace Custom2d_Engine.Rendering
 
         private DynamicVertexBuffer instanceBuffer;
 
+        public List<Effect> PostProcessing { get; } = new();
+
         public RenderPipeline()
         {
             currentState = new State();
@@ -120,9 +122,21 @@ namespace Custom2d_Engine.Rendering
 
             var col = new Color(128, 128, 255);
             var result = RenderPass(scene, RenderPasses.Normals, null, Color.Black);
-            result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+
+            using (var _ = new BlendStateScope(this, BlendState.Additive)) {
+                result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+            }
             Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
             result = RenderPass(scene, RenderPasses.Final, result, baseColor);
+
+            using (var _ = new BlendStateScope(this, BlendState.Opaque)) {
+                foreach (var pp in PostProcessing) {
+                    using var _1 = new EffectScope(this, pp);
+
+                    Rendering.DrawFullTex(result, 0);
+                    result = RenderTarget.FinishPass();
+                }
+            }
 
             FinishDraw(result);
         }
@@ -475,6 +489,22 @@ namespace Custom2d_Engine.Rendering
             }
         }
 
+        public class BlendStateScope : IDisposable {
+            private BlendState oldState;
+            private RenderPipeline pipeline;
+            
+            public BlendStateScope(RenderPipeline pipeline, BlendState blendState) {
+                this.oldState = pipeline.Graphics.BlendState;
+                this.pipeline = pipeline;
+                
+                pipeline.Graphics.BlendState = blendState;
+            }
+
+            public void Dispose() {
+                pipeline.Graphics.BlendState = oldState;
+            }
+        }
+        
         public class Target
         {
             private RenderTarget2D[] renderTargets = new RenderTarget2D[2];

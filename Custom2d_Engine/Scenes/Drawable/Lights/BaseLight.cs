@@ -73,7 +73,7 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
             parameters[Effects.SceneNormals]?.SetValue(sceneNormals);
 
             using var effectScope = new RenderPipeline.EffectScope(Pipeline, effect);
-
+            
             DoLight(effect);
         }
 

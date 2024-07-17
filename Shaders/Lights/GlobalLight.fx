@@ -21,7 +21,7 @@ float4 MainPS(PSInput input) : COLOR
 {
     float fromNormal = dotNormal(input.UVPos.xy, Direction);
 	float light = fromNormal * Intensity;
-	return float4((Tint * light).xyz, 0.0f);//float4(sceneNormal, 1.0f);//float4((Tint * light).xyz, 0.0f);
+	return float4((Tint * light).xyz, 1.0f);//float4(sceneNormal, 1.0f);//float4((Tint * light).xyz, 0.0f);
 }
 
 technique GlobalLight

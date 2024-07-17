@@ -155,6 +155,13 @@ namespace EngineTest
                 atlasIdx = atlasIdx % atlas.AtlasTextures.Length;
                 renderer.SpriteAtlas = atlas.AtlasTextures[atlasIdx];
             };*/
+            var space = inputManager.GetKey(Keys.Space);
+            space.Started += _ => {
+                renderer.PostProcessing.Add(Effects.CorrectHdr);
+            };
+            space.Canceled += _ => {
+                renderer.PostProcessing.Clear();
+            };
             #endregion
 
             #endregion
@@ -275,8 +282,8 @@ namespace EngineTest
             var globalLight = new GlobalLight(renderer, Color.White, 1000f);
             globalLight.Transform.LocalRotation = 0f;
             globalLight.LightHeight = 1f;
-            globalLight.Intensity = 1f;
-            //scene.AddObject(globalLight);
+            globalLight.Intensity = 0.1f;
+            scene.AddObject(globalLight);
 
             var pointLight = new PointLight(renderer, Color.White, 1000f);
             pointLight.Transform.LocalPosition = new Vector2(0f, 0f);
