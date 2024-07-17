@@ -10,8 +10,8 @@
 #include "Include/Transforms.fxh"
 #include "Include/Camera.fxh"
 
-float4 ObjRSS;
-float2 ObjT;
+float4 RotScale;
+float2 Pos;
 
 float4 Color;
 
@@ -33,7 +33,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
 	VertexShaderOutput output;
 
-	float3x3 LtV = LocalToView(ObjRSS, ObjT);
+	float3x3 LtV = LocalToView(RotScale, Pos);
 
 	output.Position = float4(mul(LtV, float3(input.Position.xy, 1.0f)).xy, input.Position.z / 512.0f + 0.5f, 1.0f);
 	output.Color = Color;

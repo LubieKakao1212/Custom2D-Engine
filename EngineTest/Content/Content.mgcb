@@ -31,6 +31,12 @@
 /processorParam:DebugMode=Auto
 /build:../../Shaders/Lights/GlobalLight.fx;Lights/GlobalLight.fx
 
+#begin ../../Shaders/Lights/PointLight.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Lights/PointLight.fx;Lights/PointLight.fx
+
 #begin ../../Shaders/RawTex.fx
 /importer:EffectImporter
 /processor:EffectProcessor

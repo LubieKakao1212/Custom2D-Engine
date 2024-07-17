@@ -18,12 +18,6 @@ namespace Custom2d_Engine.Rendering
     {
         public const int RenderPassCount = 3;
 
-        /*public Texture3D SpriteAtlas
-        {
-            get => currentState.SpriteAtlas;
-            set => currentState.SpriteAtlas = value;
-        }*/
-
         public State CurrentState => currentState;
         public Renderer Rendering { get; }
         public GraphicsDevice Graphics { get; private set; }
@@ -124,7 +118,8 @@ namespace Custom2d_Engine.Rendering
 
             RenderTarget.Swap();
 
-            var result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
+            var col = new Color(128, 128, 255);
+            var result = RenderPass(scene, RenderPasses.Normals, null, Color.Black);
             result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
             Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
             result = RenderPass(scene, RenderPasses.Final, result, baseColor);
@@ -225,7 +220,8 @@ namespace Custom2d_Engine.Rendering
             /// <param name="texture">Texture to draw</param>
             public void DrawFullTex(Texture2D texture)
             {
-                DrawFullTex(texture, Effects.RawTex, 0);
+                using var _ = new EffectScope(pipeline, Effects.RawTex);
+                DrawFullTex(texture, 0);
             }
 
             /// <summary>
@@ -233,15 +229,18 @@ namespace Custom2d_Engine.Rendering
             /// </summary>
             /// <param name="texture">Texture to draw</param>
             /// <param name="effect">Effect to use</param>
-            public void DrawFullTex(Texture2D texture, Effect effect, int pass = 0)
+            public void DrawFullTex(Texture2D texture, int pass = 0)
             {
+                var state = pipeline.currentState;
+                var effect = state.CurrentEffect;
                 effect.Parameters[Effects.Tex].SetValue(texture);
-                DrawFull(effect, pass);
+                Draw(pass);
             }
 
-            public void DrawFull(Effect effect, int pass = 0)
+            public void Draw(int pass = 0)
             {
-                effect.CurrentTechnique.Passes[0].Apply();
+                var state = pipeline.currentState;
+                state.CurrentEffect.CurrentTechnique.Passes[pass].Apply();
 
                 var graphics = pipeline.Graphics;
 
@@ -249,6 +248,20 @@ namespace Custom2d_Engine.Rendering
                 graphics.Indices = pipeline.quadInds;
 
                 graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
+            }
+
+            public void DrawQuad(TransformMatrix localToWorld, int pass = 0)
+            {
+                var state = pipeline.currentState;
+                var effect = state.CurrentEffect;
+                effect.Parameters[Effects.RotScale].SetValue(localToWorld.RS.Flat);
+                effect.Parameters[Effects.Pos].SetValue(localToWorld.T);
+
+                var proj = state.CurrentProjection;
+                effect.Parameters[Effects.CameraRS].SetValue(proj.RS.Flat);
+                effect.Parameters[Effects.CameraT].SetValue(proj.T);
+
+                Draw(pass);
             }
 
             /// <summary>

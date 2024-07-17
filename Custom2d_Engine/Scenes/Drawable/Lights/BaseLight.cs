@@ -71,10 +71,22 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
                 UpdateParams(effect.Parameters);
             }
             parameters[Effects.SceneNormals]?.SetValue(sceneNormals);
+
+            using var effectScope = new RenderPipeline.EffectScope(Pipeline, effect);
+
             DoLight(effect);
         }
 
         protected abstract void DoLight(Effect effect);
+
+        /// <summary>
+        /// Returns <see cref="true"/> if this light should be drawn
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool Cull()
+        {
+            return true;
+        }
 
         protected override void RemovedFromScene()
         {

@@ -170,11 +170,11 @@ namespace EngineTest
             var mapRenderer = new TilemapRenderer(tilemap, grid, renderer, Color.White, -11f);
 
             mapRenderer.Parent = grid;
-            var val = new Reference<float>(0f);
+            /*var val = new Reference<float>(0f);
             mapRenderer.AddAccurateRepeatingAction(() => {
                 val.Value += MathF.Tau / 120f;
                 mapRenderer.spacing = new Vector2(MathF.Cos(val), MathF.Sin(val)) + (Vector2.One * 2f);
-            }, 1f / 60f);
+            }, 1f / 60f);*/
 
             timer.Start();
 
@@ -272,11 +272,32 @@ namespace EngineTest
 
             //scene.AddAccurateRepeatingAction(() => { CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f); }, 0.1f, 10f);
 
-            var light = new GlobalLight(renderer, Color.White, 1000f);
-            light.Transform.LocalRotation = 0f;
-            light.LightHeight = 1f;
-            light.Intensity = 1f;
-            scene.AddObject(light);
+            var globalLight = new GlobalLight(renderer, Color.White, 1000f);
+            globalLight.Transform.LocalRotation = 0f;
+            globalLight.LightHeight = 1f;
+            globalLight.Intensity = 1f;
+            //scene.AddObject(globalLight);
+
+            var pointLight = new PointLight(renderer, Color.White, 1000f);
+            pointLight.Transform.LocalPosition = new Vector2(0f, 0f);
+            pointLight.OuterRadius = 10f;
+            pointLight.InnerRadius = 3f;
+            pointLight.LightHeight = 2f;
+            pointLight.OuterAngle = MathF.PI * 2f;
+            pointLight.InnerAngle = MathF.PI * 2f - 0.1f;
+            pointLight.Transform.LocalRotation = MathHelper.Pi;
+            
+            var pointLight2 = new PointLight(renderer, Color.White, 1000f);
+            pointLight2.Transform.LocalPosition = new Vector2(2f,2f);
+            pointLight2.OuterRadius = 0f;
+            pointLight2.InnerRadius = 0f;
+            scene.AddObject(pointLight);
+            scene.AddObject(pointLight2);
+
+            pointLight.AddAccurateRepeatingAction(() => {
+                pointLight.Transform.LocalRotation += MathHelper.Pi / 360;
+                pointLight.Transform.GlobalPosition = MousePosWorld();
+            }, 1 / 60f);
 
             CreateWorld();
 
@@ -297,7 +318,8 @@ namespace EngineTest
 
             scene.AddObject(obj1);
             scene.AddObject(debugCircleObj);
-            debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
+
+            //debugCircleObj.AddAccurateRepeatingAction(() => debugCircleObj.Transform.LocalRotation += MathHelper.TwoPi / 360, 1 / 60f);
         }
 
         protected override void Update(GameTime gameTime)

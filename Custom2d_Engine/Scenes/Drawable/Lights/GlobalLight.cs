@@ -15,19 +15,20 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
         {
 
         }
-
-        protected override Effect InitEffect()
-        {
-            return Effects.Lights.GlobalLight.Clone();
-        }
-
+        
         //TODO Transform Objects normal Map
         protected override void DoLight(Effect effect)
         {
             var dir = Transform.Up;
             dir = Pipeline.CurrentState.CurrentProjection.TransformDirection(dir);
             effect.Parameters[Effects.Lights.Direction]?.SetValue(dir);
-            Pipeline.Rendering.DrawFull(effect);
+            Pipeline.Rendering.Draw();
         }
+
+        protected override Effect InitEffect()
+        {
+            return Effects.Lights.GlobalLight.Clone();
+        }
+
     }
 }

@@ -18,9 +18,9 @@ namespace Custom2d_Engine.Rendering
         public const string CameraRS = "CameraRS";
         public const string CameraT = "CameraT";
 
-        public const string ObjRSS = "ObjRSS";
-        public const string ObjT = "ObjT";
-
+        public const string RotScale = "RotScale";
+        public const string Pos = "Pos";
+        
         //TODO refactor to RSS
         public const string ChunkRS = "ChunkRS";
         public const string ChunkT = "ChunkT";
@@ -47,19 +47,27 @@ namespace Custom2d_Engine.Rendering
             TilemapDefault = content.Load<Effect>(TilemapDefaultEffectPath);
             Default = content.Load<Effect>(DefaultEffectPath);
             RawTex = content.Load<Effect>(RawTexPath);
+
             Lights.GlobalLight = content.Load<Effect>(Lights.GlobalLightPath);
+            Lights.PointLight = content.Load<Effect>(Lights.PointLightPath);
         }
 
         public static class Lights
         {
             public static Effect GlobalLight { get; internal set; }
+            public static Effect PointLight { get; internal set; }
 
             public const string Intensity = "Intensity";
             public const string Tint = "Tint";
             public const string Height = "Height";
             public const string Direction = "Direction";
+            public const string InnerRadiusRatio = "InnerRadiusRatio";
+            public const string OutInAngleRatio = "OutInAngleRatio";
+            public const string ObjWorldPos = "ObjWorldPos";
+
 
             internal const string GlobalLightPath = "Lights/GlobalLight";
+            internal const string PointLightPath = "Lights/PointLight";
         }
     }
 }

@@ -8,48 +8,23 @@
 	#define PS_SHADERMODEL ps_4_0
 #endif
 
-sampler2D SceneNormalsSampler = sampler_state
-{
-	Texture = <SceneNormals>;
-};
+
+#include "../Include/Simple.fxh"
+#include "Include/LightNormals.fxh"
 
 float Intensity;
 float4 Tint;
+
 float2 Direction;
-float Height;
-
-struct VSInput
-{
-	float4 Position : POSITION0;
-	float2 UV : TEXCOORD0;
-};
-
-struct PSInput
-{
-	float4 Position : SV_POSITION;
-	float2 UV : TEXCOORD0;
-};
-
-PSInput MainVS(in VSInput input)
-{
-	PSInput output;
-
-	output.Position = float4(input.Position.xy, 0.0f, 1.0f);
-	output.UV = input.UV;
-
-	return output;
-}
 
 float4 MainPS(PSInput input) : COLOR
 {
-    float3 sceneNormal = normalize(tex2D(SceneNormalsSampler, input.UV).xyz);
-    sceneNormal = (sceneNormal * 2.0f) - 1.0f;
-    float3 lightDir = normalize(float3(Direction, -Height));
-    float light = dot(sceneNormal, -lightDir) * Intensity;
+    float fromNormal = dotNormal(input.UVPos.xy, Direction);
+	float light = fromNormal * Intensity;
 	return float4((Tint * light).xyz, 0.0f);//float4(sceneNormal, 1.0f);//float4((Tint * light).xyz, 0.0f);
 }
 
-technique Simple
+technique GlobalLight
 {
 	pass Pass0
 	{

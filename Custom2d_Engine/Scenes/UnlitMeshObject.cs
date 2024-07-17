@@ -52,8 +52,8 @@ namespace Custom2d_Engine.Scenes
             effect.Parameters[Effects.CameraT].SetValue(proj.T);
 
             var ltw = Transform.LocalToWorld;
-            effect.Parameters[Effects.ObjRSS].SetValue(ltw.RS.Flat);
-            effect.Parameters[Effects.ObjT].SetValue(ltw.T);
+            effect.Parameters[Effects.RotScale].SetValue(ltw.RS.Flat);
+            effect.Parameters[Effects.Pos].SetValue(ltw.T);
 
             var dss = Pipeline.Graphics.DepthStencilState;
             
