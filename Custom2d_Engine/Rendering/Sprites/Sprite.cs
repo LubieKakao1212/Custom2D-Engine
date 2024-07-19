@@ -12,6 +12,7 @@ namespace Custom2d_Engine.Rendering.Sprites
     {
         public static Sprite Empty { get; internal set; }
         public static Sprite Unlit { get; internal set; }
+        public static Sprite UnlitNoNormal { get; internal set; }
         public BoundingRect TextureRect { get; set; }
         public int TextureIndex { get; set; }
         

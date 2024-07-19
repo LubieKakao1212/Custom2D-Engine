@@ -31,9 +31,12 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas
                 white.SetData(new Color[] { Color.White });
                 var black = new Texture2D(atlas.Graphics, 1, 1);
                 black.SetData(new Color[] { Color.Black });
+                var normalZ = new Texture2D(atlas.Graphics, 1, 1);
+                normalZ.SetData(new Color[] { new Color(128, 128, 255, 255) });
 
                 Sprite.Empty = atlas.AddTextureRects(new Texture2D[] { transparent, transparent, transparent })[0];
-                Sprite.Unlit = atlas.AddTextureRects(new Texture2D[] { black, white, white })[0];
+                Sprite.Unlit = atlas.AddTextureRects(new Texture2D[] { black, normalZ, white })[0];
+                Sprite.UnlitNoNormal = atlas.AddTextureRects(new Texture2D[] { black, transparent, white })[0];
             }
         }
 
