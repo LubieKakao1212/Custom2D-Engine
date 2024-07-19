@@ -13,6 +13,30 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin ../../Shaders/Blur/Blur3.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Blur/Blur3.fx;Blur/Blur3.fx
+
+#begin ../../Shaders/Blur/Blur31.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Blur/Blur31.fx;Blur/Blur31.fx
+
+#begin ../../Shaders/Blur/Blur5.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Blur/Blur5.fx;Blur/Blur5.fx
+
+#begin ../../Shaders/Blur/Blur7.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:../../Shaders/Blur/Blur7.fx;Blur/Blur7.fx
+
 #begin ../../Shaders/CorrectHDR.fx
 /importer:EffectImporter
 /processor:EffectProcessor

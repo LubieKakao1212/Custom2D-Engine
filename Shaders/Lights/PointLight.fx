@@ -49,29 +49,50 @@ float doRadialFalloff(float2 dir)
 	return slope(theta / (OutRatio * 3.1415f), InRatio);
 }
 
-float4 MainPS(PSInput input) : COLOR
-{
-    float2 UV = input.UV;
-    float2 screenPos = input.ScreenPos;
+float4 doLight(in PSInput input, float mul) {
+    float2 worldPos = input.WorldPos;
+	float2 localPos = worldPos - ObjWorldPos;
+
+	float2 screenPos = input.ScreenPos;
     float2 screenPosUV = (screenPos + 1.0f) / 2.0f;
+
+	float2 lightDir = localPos;//;normalize(localPos);
+
+	float tmp = mul * dotNormal(screenPosUV, lightDir);
+
+    return float4(Tint.rgb * tmp * Intensity, 0.0);
+}
+
+float4 RadialPS(PSInput input) : COLOR
+{
 	float2 worldPos = input.WorldPos;
 	
 	float2 localPos = worldPos - ObjWorldPos;
     float2 lightDir = normalize(localPos);
 
-	float linFall = doLinearFalloff(UV);
+	float linFall = doLinearFalloff(input.UV);
 	float radFall = doRadialFalloff(lightDir);
+	return doLight(input, linFall * radFall);//linFall * radFall * float4(lightDir, 0, 1);//(tmp.xxx, 0.0f);//float4((Tint * light).xyz, 0.0f);
+}
 
-	float tmp = linFall * radFall * dotNormal(screenPosUV, lightDir);
-
-    return float4(tmp,tmp,tmp,1);//linFall * radFall * float4(lightDir, 0, 1);//(tmp.xxx, 0.0f);//float4((Tint * light).xyz, 0.0f);
+float4 MainPS(PSInput input) : COLOR
+{
+	float linFall = doLinearFalloff(input.UV);
+    return doLight(input, linFall);//linFall * radFall * float4(lightDir, 0, 1);//(tmp.xxx, 0.0f);//float4((Tint * light).xyz, 0.0f);
 }
 
 technique PointLight
 {
+	//Full 360
 	pass Pass0
 	{
 		VertexShader = compile VS_SHADERMODEL MainVS();
 		PixelShader = compile PS_SHADERMODEL MainPS();
+	}
+	//Cone
+	pass Pass1
+	{
+		VertexShader = compile VS_SHADERMODEL MainVS();
+		PixelShader = compile PS_SHADERMODEL RadialPS();
 	}
 };

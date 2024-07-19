@@ -46,6 +46,8 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
         public BaseLight(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
         {
             SetQueueBehaviour(RenderPasses.Lights, QueueBehaviour.CustomDraw);
+            SetQueueBehaviour(RenderPasses.Normals, QueueBehaviour.Skip);
+            SetQueueBehaviour(RenderPasses.Final, QueueBehaviour.Skip);
         }
 
         protected abstract Effect InitEffect();

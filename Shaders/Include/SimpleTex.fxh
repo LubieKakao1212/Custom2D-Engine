@@ -1,3 +1,10 @@
+Texture2D Tex;
+
+sampler2D TexSampler = sampler_state
+{
+	Texture = <Tex>;
+};
+
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;

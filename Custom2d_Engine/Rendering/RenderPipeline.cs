@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Custom2d_Engine.Rendering.PostProcess;
 
 namespace Custom2d_Engine.Rendering
 {
@@ -32,7 +33,7 @@ namespace Custom2d_Engine.Rendering
 
         private DynamicVertexBuffer instanceBuffer;
 
-        public List<Effect> PostProcessing { get; } = new();
+        public List<IPostProcess> PostProcessing { get; } = new();
 
         public RenderPipeline()
         {
@@ -121,9 +122,9 @@ namespace Custom2d_Engine.Rendering
             RenderTarget.Swap();
 
             var col = new Color(128, 128, 255);
-            var result = RenderPass(scene, RenderPasses.Normals, null, Color.Black);
+            var result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
 
-            using (var _ = new BlendStateScope(this, BlendState.Additive)) {
+            using (var _ = new BlendStateScope(this, BlendState.AlphaBlend)) {
                 result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
             }
             Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
@@ -131,10 +132,7 @@ namespace Custom2d_Engine.Rendering
 
             using (var _ = new BlendStateScope(this, BlendState.Opaque)) {
                 foreach (var pp in PostProcessing) {
-                    using var _1 = new EffectScope(this, pp);
-
-                    Rendering.DrawFullTex(result, 0);
-                    result = RenderTarget.FinishPass();
+                    result = pp.Render(this, result);
                 }
             }
 

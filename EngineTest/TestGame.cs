@@ -18,6 +18,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Custom2d_Engine.Rendering.PostProcess;
 using Custom2d_Engine.Ticking;
 using nkast.Aether.Physics2D.Controllers;
 using Custom2d_Engine.Scenes.Drawable;
@@ -156,12 +157,12 @@ namespace EngineTest
                 renderer.SpriteAtlas = atlas.AtlasTextures[atlasIdx];
             };*/
             var space = inputManager.GetKey(Keys.Space);
-            space.Started += _ => {
-                renderer.PostProcessing.Add(Effects.CorrectHdr);
+            /*space.Started += _ => {
+                renderer.PostProcessing.Add(correctHdr);
             };
             space.Canceled += _ => {
-                renderer.PostProcessing.Clear();
-            };
+                renderer.PostProcessing.Remove(correctHdr);
+            };*/
             #endregion
 
             #endregion
@@ -191,7 +192,12 @@ namespace EngineTest
         protected override void LoadContent()
         {
             Effects.Init(Content);
-
+            BlurPostProcess.Effects.Init(Content, "Blur/Blur31");
+            
+            renderer.PostProcessing.Add(new BlurPostProcess() { Sigma = 1f, KernelRadius = 31});
+            renderer.PostProcessing.Add(new SinglePassPostProcess(Effects.CorrectHdr));
+            
+            
             sprites = new();
 
             atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048, 2);
@@ -285,19 +291,23 @@ namespace EngineTest
             globalLight.Intensity = 0.1f;
             scene.AddObject(globalLight);
 
-            var pointLight = new PointLight(renderer, Color.White, 1000f);
+            var pointLight = new PointLight(renderer, Color.Aqua, 1000f);
             pointLight.Transform.LocalPosition = new Vector2(0f, 0f);
             pointLight.OuterRadius = 10f;
-            pointLight.InnerRadius = 3f;
+            pointLight.InnerRadius = 0f;
             pointLight.LightHeight = 2f;
+            pointLight.Intensity = 0.5f;
             pointLight.OuterAngle = MathF.PI * 2f;
-            pointLight.InnerAngle = MathF.PI * 2f - 0.1f;
+            pointLight.InnerAngle = MathF.PI * 2f;
             pointLight.Transform.LocalRotation = MathHelper.Pi;
             
             var pointLight2 = new PointLight(renderer, Color.White, 1000f);
-            pointLight2.Transform.LocalPosition = new Vector2(2f,2f);
-            pointLight2.OuterRadius = 0f;
+            pointLight2.Transform.LocalPosition = new Vector2(2f, 2f);
+            pointLight2.OuterRadius = 20f;
             pointLight2.InnerRadius = 0f;
+            pointLight2.LightHeight = 2f;
+            pointLight2.Intensity = 1f;
+            pointLight2.InnerAngle = MathHelper.TwoPi;
             scene.AddObject(pointLight);
             scene.AddObject(pointLight2);
 

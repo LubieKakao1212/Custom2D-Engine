@@ -7,14 +7,7 @@
 	#define PS_SHADERMODEL ps_4_0
 #endif
 
-Texture2D Tex;
-
-sampler2D TexSampler = sampler_state
-{
-	Texture = <Tex>;
-};
-
-#include "Include/FullTexVS.fxh"
+#include "Include/SimpleTex.fxh"
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {

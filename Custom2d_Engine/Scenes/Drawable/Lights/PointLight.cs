@@ -57,6 +57,7 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
 
         public PointLight(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
         {
+            
         }
 
         protected override bool Cull()
@@ -71,8 +72,8 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
         protected override void UpdateParams(EffectParameterCollection parameters)
         {
             base.UpdateParams(parameters);
-            parameters[Effects.Lights.InnerRadiusRatio].SetValue(innerRadius / outerRadius);
-            parameters[Effects.Lights.OutInAngleRatio].SetValue(new Vector2(outerAngle / MathHelper.Tau, innerAngle / outerAngle));
+            parameters[Effects.Lights.InnerRadiusRatio]?.SetValue(innerRadius / outerRadius);
+            parameters[Effects.Lights.OutInAngleRatio]?.SetValue(new Vector2(outerAngle / MathHelper.Tau, innerAngle / outerAngle));
         }
 
         protected override void DoLight(Effect effect)
@@ -82,7 +83,7 @@ namespace Custom2d_Engine.Scenes.Drawable.Lights
             effect.Parameters[Effects.Lights.Direction]?.SetValue(dir);
             effect.Parameters[Effects.Lights.ObjWorldPos].SetValue(Transform.GlobalPosition);
             
-            Pipeline.Rendering.DrawQuad(Transform.LocalToWorld * new Matrix2x2(outerRadius));
+            Pipeline.Rendering.DrawQuad(Transform.LocalToWorld * new Matrix2x2(outerRadius), innerAngle >= MathHelper.TwoPi ? 0 : 1);
         }
 
         protected override Effect InitEffect()
