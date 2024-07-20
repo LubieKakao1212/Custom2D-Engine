@@ -41,7 +41,7 @@ namespace Custom2d_Engine.Tilemap
             var chunkSize = Chunk<InstanceSpriteData>.chunkSize;
             
             var gridWtL = Matrix2x2.Scale((grid.CellSize * spacing) * 2f).Inverse() * grid.Transform.WorldToLocal;
-            gridWtL = gridWtL.Translate(Vector2.One * (chunkSize / 4f));
+            //gridWtL = gridWtL.Translate(Vector2.One * (chunkSize / 4f));
 
             var state = Pipeline.CurrentState;
             var projection = state.CurrentProjection;
@@ -98,14 +98,14 @@ namespace Custom2d_Engine.Tilemap
 
             var bufferData = new InstanceTransformData[tileCount];
 
-            var offset = new Vector2(chunkSize / 2f, chunkSize / 2f); 
+            //var offset = new Vector2(chunkSize / 2f, chunkSize / 2f); 
 
             for (int y = 0; y < chunkSize; y++)
                 for (int x = 0; x < chunkSize; x++)
                 {
                     var data = default(InstanceTransformData);
                     data.rotScale = rotScale;
-                    data.pos = (new Vector2(x, y) * 2f) - offset;
+                    data.pos = (new Vector2(x, y) * 2f);// - offset;
                     bufferData[y * chunkSize + x] = data;
                 }
 

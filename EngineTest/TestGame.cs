@@ -148,7 +148,8 @@ namespace EngineTest
 
 
             inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
-            //inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
+            inputManager.GetMouse(MouseButton.Right).Performed += (input) => tilemap.SetTile(grid.WorldToCell(MousePosWorld()), new InstanceSpriteData() { atlasPos = Sprite.Unlit.AtlasPos, color = Color.Beige.ToVector4()});
+            inputManager.GetMouse(MouseButton.Right).Performed += (input) => grid.GridToCellCornerWorld(grid.WorldToCell(MousePosWorld().LogThis("World: "))).LogThis("Corner World: ");
 
             /*inputManager.GetKey(Keys.Space).Started += (input) =>
             {
@@ -171,6 +172,8 @@ namespace EngineTest
 
             grid = new Grid(Vector2.One);
 
+            grid.Transform.LocalPosition = new Vector2(5f, 5f);
+            
             scene.AddObject(grid);
 
             tilemap = new Tilemap<InstanceSpriteData>();
@@ -244,7 +247,7 @@ namespace EngineTest
 
             FIllTilemap(tilemap, new Rectangle(-2048, -2048, 4096, 4096));
 
-            map1.ProcessTileLayer("Tiles", TileLayerProcessors<Color>.FillTilemap(tilemap, new Point(Chunk<Color>.chunkSize / 4), NullTileHandling.Empty));
+            map1.ProcessTileLayer("Tiles", TileLayerProcessors<Color>.FillTilemap(tilemap, new Point(0), NullTileHandling.Empty));
             map2.ProcessTileLayer("Tiles", TileLayerProcessors<Color>.FillTilemap(tilemap, new Point(-5, -5), NullTileHandling.Skip));
 
             Effects.Default.CurrentTechnique = Effects.Default.Techniques["Lit"];

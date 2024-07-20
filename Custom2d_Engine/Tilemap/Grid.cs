@@ -19,10 +19,11 @@ namespace Custom2d_Engine.Tilemap
             CellSize = cellSize;
         }
 
-        public Point WorldToCell(Vector2 worldPos)
-        {
+        public Point WorldToCell(Vector2 worldPos) {
             var localPos = Transform.WorldToLocal.TransformPoint(worldPos);
-
+            localPos += Vector2.One;
+            localPos /= 2f;
+            
             return LocalToCell(localPos);
         }
 
@@ -38,9 +39,13 @@ namespace Custom2d_Engine.Tilemap
             return new Vector2(gridPos.X * CellSize.X, gridPos.Y * CellSize.Y);
         }
 
-        public Vector2 GridToCellCornerWorld(Point gridPos)
-        {
-            return Transform.LocalToWorld.TransformPoint(GridToCellCornerLocal(gridPos));
+        public Vector2 GridToCellCornerWorld(Point gridPos) {
+            //TODO make sure this works
+            var localPos = GridToCellCornerLocal(gridPos);
+            localPos *= 2f;
+            localPos -= Vector2.One;
+            
+            return Transform.LocalToWorld.TransformPoint(localPos);
         }
 
         public Vector2 GridToCellCenterLocal(Point gridPos)
@@ -48,9 +53,12 @@ namespace Custom2d_Engine.Tilemap
             return GridToCellCornerLocal(gridPos) + (CellSize / 2f);
         }
 
-        public Vector2 GridToCellCenterWorld(Point gridPos)
-        {
-            return Transform.LocalToWorld.TransformPoint(GridToCellCenterLocal(gridPos));
+        public Vector2 GridToCellCenterWorld(Point gridPos) {
+            //TODO make sure this works
+            var localPos = GridToCellCenterLocal(gridPos);
+            localPos *= 2f;
+            localPos -= Vector2.One;
+            return Transform.LocalToWorld.TransformPoint(localPos);
         }
 
     }
