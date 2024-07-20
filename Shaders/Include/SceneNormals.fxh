@@ -9,8 +9,9 @@ sampler2D SceneNormalsSampler = sampler_state
 float3 sceneNormal(float2 screenPos)
 {
     float3 sceneNormal = tex2D(SceneNormalsSampler, screenPos).xyz;
-    sceneNormal.y = 1 - sceneNormal.y;
-    return normalize((sceneNormal * 2.0f) - 1.0f);
+    sceneNormal.y = -sceneNormal.y;
+    //(sceneNormal * 2.0f) - 1.0f
+    return normalize(sceneNormal);
 }
 
 #endif

@@ -7,19 +7,20 @@
 
 float4 LitNormalPS(PSInput input) : COLOR 
 {
+	float4 rawNormal = normal(input.AtlasPos);
+	//clip(rawNormal.a - 0.5f);
+
 	float2x2 tangents = float2x2(input.Tangents);
 	tangents = tangents / sqrt(determinant(tangents));
 	tangents = transpose(tangents);
-	float4 rawNormal = normal(input.AtlasPos);
-
-	clip(rawNormal.a - 0.5f);
-
+	
 	float3 surfaceNormal = (rawNormal.xyz * 2.0f) - 1.0f;
 	surfaceNormal.y = -surfaceNormal.y;
 	surfaceNormal = float3(mul(tangents, surfaceNormal.xy), surfaceNormal.z);
-	surfaceNormal = (surfaceNormal + 1.0f) * 0.5f;
+	//surfaceNormal = (surfaceNormal + 1.0f) * 0.5f;
 
-	return float4(surfaceNormal, 1.0f);
+	//Using premultiplied blending
+	return float4(surfaceNormal * rawNormal.a, rawNormal.a);
 }
 
 float4 LitFinalPS(PSInput input) : COLOR

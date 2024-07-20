@@ -122,11 +122,12 @@ namespace Custom2d_Engine.Rendering
             RenderTarget.Swap();
 
             var col = new Color(128, 128, 255);
-            var result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
-
+            Texture2D result;
             using (var _ = new BlendStateScope(this, BlendState.AlphaBlend)) {
-                result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+               result = RenderPass(scene, RenderPasses.Normals, null, new Color(128, 128, 255));
             }
+            result = RenderPass(scene, RenderPasses.Lights, result, Color.Black);
+            
             Effects.Default.Parameters[Effects.SceneLights].SetValue(result);
             result = RenderPass(scene, RenderPasses.Final, result, baseColor);
 
