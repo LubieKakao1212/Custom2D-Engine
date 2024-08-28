@@ -37,24 +37,6 @@
 /processorParam:DebugMode=Auto
 /build:../../Shaders/Blur/Blur7.fx;Blur/Blur7.fx
 
-#begin ../../Shaders/CorrectHDR.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:../../Shaders/CorrectHDR.fx;CorrectHDR.fx
-
-#begin ../../Shaders/Default.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:../../Shaders/Default.fx;Default.fx
-
-#begin ../../Shaders/DepthMarchedColor.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:../../Shaders/DepthMarchedColor.fx;DepthMarchedColor.fx
-
 #begin ../../Shaders/Lights/GlobalLight.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -66,18 +48,6 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:../../Shaders/Lights/PointLight.fx;Lights/PointLight.fx
-
-#begin ../../Shaders/RawTex.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:../../Shaders/RawTex.fx;RawTex.fx
-
-#begin ../../Shaders/Tilemap.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:../../Shaders/Tilemap.fx;Tilemap.fx
 
 #begin sprites/debug/emission.png
 /importer:TextureImporter
