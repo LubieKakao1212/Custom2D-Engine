@@ -1,21 +1,16 @@
-﻿using static System.Math;
+﻿using System;
+using static System.Math;
 
 namespace Custom2d_Engine.Ticking
 {
     public class TimeMachine
     {
-        private double time;
-
-        public TimeMachine()
-        {
-            time = 0;
-        }
-
+        private TimeSpan time = TimeSpan.Zero;
         /// <summary>
         /// Adds time into the TimeMachine
         /// </summary>
         /// <param name="time">Amount of time to be added</param>
-        public void Accumulate(double time) 
+        public void Accumulate(TimeSpan time) 
         {
             this.time += time;
         }
@@ -25,17 +20,12 @@ namespace Custom2d_Engine.Ticking
         /// </summary>
         /// <param name="maxTime"></param>
         /// <returns>Amount of time retrievend</returns>
-        public double Retrieve(double maxTime) 
+        public TimeSpan Retrieve(TimeSpan maxTime) 
         {
-            if(!double.IsFinite(maxTime))
-            {
-                double timeRetrieved = time;
-                time = 0;
-                return timeRetrieved;
-            }
-            double timeLeft = time - maxTime;
-            time = Max(timeLeft, 0);
-            return Min(maxTime + timeLeft, maxTime);
+            AssertPositive(time);
+            TimeSpan timeLeft = time - maxTime;
+            time = timeLeft > TimeSpan.Zero ? timeLeft : TimeSpan.Zero;
+            return maxTime + (timeLeft < TimeSpan.Zero ? timeLeft : TimeSpan.Zero);
         }
 
         /// <summary>
@@ -43,8 +33,9 @@ namespace Custom2d_Engine.Ticking
         /// If there is enough <paramref name="time"/> accumulated in this machine subtructs that amount and returns true, otherwise returns false
         /// </summary>
         /// <param name="time"></param>
-        public bool TryRetrieve(double time)
+        public bool TryRetrieve(TimeSpan time)
         {
+            AssertPositive(time);
             if (this.time >= time)
             {
                 this.time -= time;
@@ -59,12 +50,18 @@ namespace Custom2d_Engine.Ticking
         /// <param name="interval">Single unit of warp time, must be positive/param>
         /// <param name="limit">Maximum amount of warps, must be positive</param>
         /// <returns>Amount of warps</returns>
-        public int RetrieveAll(double interval, int limit = int.MaxValue)
-        {
+        public int RetrieveAll(TimeSpan interval, int limit = int.MaxValue) {
+            AssertPositive(interval);
             int result = (int)Floor(time / interval);
             result = Clamp(result, 0, limit);
             time -= result * interval;
             return result;
+        }
+
+        public void AssertPositive(TimeSpan time) {
+            if (time < TimeSpan.Zero) {
+                throw new ApplicationException();
+            }
         }
     }
 }

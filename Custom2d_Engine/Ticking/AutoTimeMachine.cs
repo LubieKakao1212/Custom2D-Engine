@@ -4,12 +4,12 @@ namespace Custom2d_Engine.Ticking
 { 
     public class AutoTimeMachine
     {
-        public double Interval { get; set; }
+        public TimeSpan Interval { get; set; }
         public Action Action { get; set; }
         
         private readonly TimeMachine machine;
         
-        public AutoTimeMachine(Action action, double interval)
+        public AutoTimeMachine(Action action, TimeSpan interval)
         {
             Action = action;
             Interval = interval;
@@ -20,7 +20,7 @@ namespace Custom2d_Engine.Ticking
         /// Forwards the time by given amount, triggers assigned action relevant amount of times
         /// </summary>
         /// <param name="time">Amount of time to forward by</param>
-        public void Forward(double time)
+        public void Forward(TimeSpan time)
         {
             machine.Accumulate(time);
             int rolls = machine.RetrieveAll(Interval);

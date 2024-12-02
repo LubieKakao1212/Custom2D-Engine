@@ -5,23 +5,23 @@ using System.Collections.Generic;
 
 namespace Custom2d_Engine.Ticking
 {
-    //Concider adding update order
+    //Consider adding update order
     public class TickManager
     {
-        public Dictionary<object, List<ITickMachine>> actions = new();
-        private List<(object Owner, ITickMachine Ticker)> additionList = new();
-        private bool isUpdating;
+        private readonly Dictionary<object, List<ITickMachine>> _actions = new();
+        private readonly List<(object Owner, ITickMachine Ticker)> _additionList = new();
+        private bool _isUpdating;
 
         public TickManager(bool global = false) 
         {
-            isUpdating = false;
+            _isUpdating = false;
         }
 
         public void Forward(TimeSpan deltaTime)
         {
-            isUpdating = true;
+            _isUpdating = true;
             Dictionary<object, List<ITickMachine>> toRemove = new();
-            foreach (var entry in actions.EnumerateNestedEntries())
+            foreach (var entry in _actions.EnumerateNestedEntries())
             {
                 var ticker = entry.Value;
                 if (ticker.Disposed)
@@ -30,17 +30,17 @@ namespace Custom2d_Engine.Ticking
                 }
                 ticker.Forward(deltaTime);
             }
-            isUpdating = false;
+            _isUpdating = false;
 
             //May be optimised (if needed) by caching lists from each object
             foreach (var entry in toRemove.EnumerateNestedEntries())
             {
-                actions.RemoveNested(entry.Key, entry.Value);
+                _actions.RemoveNested(entry.Key, entry.Value);
             }
 
-            foreach (var entry in additionList)
+            foreach (var entry in _additionList)
             {
-                actions.AddNested(entry.Owner, entry.Ticker);
+                _actions.AddNested(entry.Owner, entry.Ticker);
             }
         }
 
@@ -58,7 +58,7 @@ namespace Custom2d_Engine.Ticking
         {
             return AddAccurateRepeatingAction(owner, action, TimeSpan.FromSeconds(repeateInterval), TimeSpan.FromSeconds(phase));
         }
-
+        
         public TickMachineBase AddAccurateRepeatingAction(object owner, Action action, TimeSpan repeateInterval, TimeSpan phase = default)
         {
             return AddTicker(owner, new AccurateRepeatingTickMachine(action, repeateInterval, phase));
@@ -69,31 +69,31 @@ namespace Custom2d_Engine.Ticking
             return AddTicker(owner, new SequenceTickMachine(sequence, TimeSpan.Zero, phase));
         }
 
-        public TickMachineBase AddRepeetingActionSequence(object owner, IEnumerable<TimeSpan> sequence, TimeSpan phase = default)
+        public TickMachineBase AddRepeatingActionSequence(object owner, IEnumerable<TimeSpan> sequence, TimeSpan phase = default)
         {
             throw new NotImplementedException("This is on TODO list");
         }
 
         public void RemoveTicker(object owner, ITickMachine ticker)
         {
-            actions.GetValueOrDefault(owner, null)?.Remove(ticker);
+            _actions.GetValueOrDefault(owner, null)?.Remove(ticker);
         }
 
         public List<ITickMachine> RemoveAllTickers(object owner)
         {
-            actions.Remove(owner, out var list);
+            _actions.Remove(owner, out var list);
             return list ?? new List<ITickMachine>();
         }
 
         public TickMachineBase AddTicker(object owner, TickMachineBase ticker)
         {
-            if (isUpdating)
+            if (_isUpdating)
             {
-                additionList.Add((owner, ticker));
+                _additionList.Add((owner, ticker));
             }
             else
             {
-                actions.AddNested(owner, ticker);
+                _actions.AddNested(owner, ticker);
             }
             return ticker;
         }

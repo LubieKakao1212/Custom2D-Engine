@@ -36,7 +36,7 @@ namespace Custom2d_Engine.Ticking
 
         public static TickMachineBase AddRepeetingActionSequence<T>(this T owner, IEnumerable<TimeSpan> sequence, TimeSpan phase = default) where T : IManagedTicker
         {
-            return owner.TickManager.AddRepeetingActionSequence(owner, sequence, phase);
+            return owner.TickManager.AddRepeatingActionSequence(owner, sequence, phase);
         }
 
     }
