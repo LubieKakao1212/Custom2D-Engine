@@ -27,6 +27,11 @@
     <ProjectReference Include="..\Custom2d_Engine\Custom2d_Engine.csproj" />
     <ProjectReference Include="..\MarchingSquares\MarchingSquares.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="..\Shaders\Shaders.Content.mgcb">
+      <Link>Content\Shaders.Content.mgcb</Link>
+    </MonoGameContentReference>
+  </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
