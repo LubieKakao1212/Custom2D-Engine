@@ -1,71 +1,63 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
-namespace Custom2d_Engine.Math
-{
-    public struct BoundingRect : IEquatable<BoundingRect>
-    {
+namespace Custom2d_Engine.Math {
+    public struct BoundingRect : IEquatable<BoundingRect> {
         public static BoundingRect Normal { get; } = new BoundingRect(new Vector2(-1, -1), new Vector2(2, 2));
 
-        public Vector2 Min => new Vector2(X, Y);
-        public Vector2 Max => new Vector2(X + Width, Y + Height);
-        public Vector4 Flat => new Vector4(X, Y, Width, Height);
+        public Vector2 Min => new Vector2(x, y);
+        public Vector2 Max => new Vector2(x + width, y + height);
+        public Vector4 Flat => new Vector4(x, y, width, height);
 
-        public float X;
-        public float Y;
-        public float Width;
-        public float Height;
+        public float x;
+        public float y;
+        public float width;
+        public float height;
 
-        public BoundingRect(Vector2 pos, Vector2 size)
-        {
-            X = pos.X;
-            Y = pos.Y;
+        public BoundingRect(Vector2 pos, Vector2 size) {
+            x = pos.X;
+            y = pos.Y;
 
-            Width = size.X;
-            Height = size.Y;
+            width = size.X;
+            height = size.Y;
         }
 
-        public void Inflate(float amount)
-        {
-            X -= amount;
-            Y -= amount;
-
-            Width += 2 * amount;
-            Height += 2 * amount;
+        public BoundingRect(float y) {
+            this.y = y;
         }
 
-        public void Inflate(Vector2 amount)
-        {
-            X -= amount.X;
-            Y -= amount.Y;
+        public void Inflate(float amount) {
+            x -= amount;
+            y -= amount;
 
-            Width += 2 * amount.X;
-            Height += 2 * amount.Y;
+            width += 2 * amount;
+            height += 2 * amount;
         }
 
-        public void Scale(float amount)
-        {
-            X = -((Width  / 2f) * amount) - (X + Width  / 2f);
-            Y = -((Height / 2f) * amount) - (Y + Height / 2f);
+        public void Inflate(Vector2 amount) {
+            x -= amount.X;
+            y -= amount.Y;
 
-            Width *= amount;
-            Height *= amount;
+            width += 2 * amount.X;
+            height += 2 * amount.Y;
         }
 
-        public BoundingRect Scaled(float amount)
-        {
+        public void Scale(float amount) {
+            x = -((width / 2f) * amount) - (x + width / 2f);
+            y = -((height / 2f) * amount) - (y + height / 2f);
+
+            width *= amount;
+            height *= amount;
+        }
+
+        public BoundingRect Scaled(float amount) {
             var rect = this;
             rect.Scale(amount);
             return rect;
         }
 
-        public void Transform(in TransformMatrix mat)
-        {
+        public void Transform(in TransformMatrix mat) {
             var min = Min;
             var max = Max;
 
@@ -75,74 +67,67 @@ namespace Custom2d_Engine.Math
             var rectMax = rectPos;
 
             for (int i = 0; i < 2; i++)
-                for (int j = 0; j < 2; j++)
-                {
-                    float a = mat[i, j] * min.Get(j);
-                    float b = mat[i, j] * max.Get(j);
-                    var minI = rectMin.Get(i);
-                    var maxI = rectMax.Get(i);
-                    rectMin.Set(i, minI + (a < b ? a : b));
-                    rectMax.Set(i, maxI + (a < b ? b : a));
-                }
+            for (int j = 0; j < 2; j++) {
+                float a = mat[i, j] * min.Get(j);
+                float b = mat[i, j] * max.Get(j);
+                var minI = rectMin.Get(i);
+                var maxI = rectMax.Get(i);
+                rectMin.Set(i, minI + (a < b ? a : b));
+                rectMax.Set(i, maxI + (a < b ? b : a));
+            }
 
-            X = rectMin.X;
-            Y = rectMin.Y;
+            x = rectMin.X;
+            y = rectMin.Y;
 
-            Width = rectMax.X - rectMin.X;
-            Height = rectMax.Y - rectMin.Y;
+            width = rectMax.X - rectMin.X;
+            height = rectMax.Y - rectMin.Y;
         }
 
-        public BoundingRect Transformed(in TransformMatrix mat)
-        {
+        public BoundingRect Transformed(in TransformMatrix mat) {
             var br = this;
             br.Transform(mat);
             return br;
         }
 
-        public bool Intersects(in BoundingRect other)
-        {
+        public bool Intersects(in BoundingRect other) {
             var min1 = Min;
             var max1 = Max;
 
             var min2 = other.Min;
             var max2 = other.Max;
 
-            return 
-                min2.X < max1.X && min1.X < max2.X && 
+            return
+                min2.X < max1.X && min1.X < max2.X &&
                 min2.Y < max1.Y && min1.Y < max2.Y;
         }
 
-        public Rectangle ToInt()
-        {
+        public Rectangle ToInt() {
             return new Rectangle(
-                (int) MathF.Floor(X),
-                (int) MathF.Floor(Y),
-                (int) MathF.Ceiling(Width),
-                (int) MathF.Ceiling(Height)
-                );
+                (int)MathF.Floor(x),
+                (int)MathF.Floor(y),
+                (int)MathF.Ceiling(width),
+                (int)MathF.Ceiling(height)
+            );
         }
 
-        public bool Equals(BoundingRect other)
-        {
-            if (X == other.X && Y == other.Y && Width == other.Width)
-            {
-                return Height == other.Height;
+        //TODO do epsilon comparison
+        public bool Equals(BoundingRect other) {
+            if (x == other.x && y == other.y && width == other.width) {
+                return height == other.height;
             }
+
             return false;
         }
 
-        public override bool Equals([NotNullWhen(true)] object obj)
-        {
-            return obj is BoundingRect rect ? rect.Equals(this) : false;
+        public override bool Equals([NotNullWhen(true)] object? obj) {
+            return obj is BoundingRect rect && rect.Equals(this);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(X.GetHashCode(), Y.GetHashCode(), Width.GetHashCode(), Height.GetHashCode());
+        public override int GetHashCode() {
+            return HashCode.Combine(x.GetHashCode(), y.GetHashCode(), width.GetHashCode(), height.GetHashCode());
         }
 
-        public static BoundingRect MinMaxRect(Vector2 min, Vector2 max)
-        {
+        public static BoundingRect MinMaxRect(Vector2 min, Vector2 max) {
             return new BoundingRect(min, max - min);
         }
     }

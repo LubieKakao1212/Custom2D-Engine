@@ -5,19 +5,14 @@ using Custom2d_Engine.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace MarchingSquares.MarchingSquares
-{
-    public class Marcher2D
-    {
-        public static void MarchDepthGrid(FiniteGrid<float> gridIn, out VertexPosition[] verticies, out int[] indicies)
-        {
+namespace MarchingSquares.MarchingSquares {
+    public class Marcher2D {
+        public static void MarchDepthGrid(FiniteGrid<float> gridIn, out VertexPosition[] verticies,
+            out int[] indicies) {
             var vCount = (gridIn.Bounds.Width - 1) * (gridIn.Bounds.Height - 1) * 4;
             verticies = new VertexPosition[vCount];
-            
+
             var iCount = (gridIn.Bounds.Width - 1) * (gridIn.Bounds.Height - 1) * 6;
             indicies = new int[iCount];
 
@@ -25,79 +20,70 @@ namespace MarchingSquares.MarchingSquares
             var iI = 0;
             var vertex = new VertexPosition();
             for (int y = 0; y < gridIn.Bounds.Height - 1; y++)
-                for (int x = 0; x < gridIn.Bounds.Width - 1; x++)
-                {
-                    vertex.Position = new Vector3(x    , y    , gridIn[x    , y    ]); //-4
-                    verticies[iV++] = vertex;
-                    vertex.Position = new Vector3(x + 1, y    , gridIn[x + 1, y    ]); //-3  
-                    verticies[iV++] = vertex;
-                    vertex.Position = new Vector3(x + 1, y + 1, gridIn[x + 1, y + 1]); //-2
-                    verticies[iV++] = vertex;
-                    vertex.Position = new Vector3(x    , y + 1, gridIn[x    , y + 1]); //-1
-                    verticies[iV++] = vertex;
+            for (int x = 0; x < gridIn.Bounds.Width - 1; x++) {
+                vertex.Position = new Vector3(x, y, gridIn[x, y]); //-4
+                verticies[iV++] = vertex;
+                vertex.Position = new Vector3(x + 1, y, gridIn[x + 1, y]); //-3  
+                verticies[iV++] = vertex;
+                vertex.Position = new Vector3(x + 1, y + 1, gridIn[x + 1, y + 1]); //-2
+                verticies[iV++] = vertex;
+                vertex.Position = new Vector3(x, y + 1, gridIn[x, y + 1]); //-1
+                verticies[iV++] = vertex;
 
-                    //-4, -1, -2
-                    indicies[iI++] = iV - 4;
-                    indicies[iI++] = iV - 1;
-                    indicies[iI++] = iV - 2;
-                    
-                    //-2, -3, -4
-                    indicies[iI++] = iV - 2;
-                    indicies[iI++] = iV - 3;
-                    indicies[iI++] = iV - 4;
-                }
-        } 
+                //-4, -1, -2
+                indicies[iI++] = iV - 4;
+                indicies[iI++] = iV - 1;
+                indicies[iI++] = iV - 2;
 
-        public struct RawEdges
-        {
-            private FiniteGrid<(Edge?, Edge?)> edges;
+                //-2, -3, -4
+                indicies[iI++] = iV - 2;
+                indicies[iI++] = iV - 3;
+                indicies[iI++] = iV - 4;
+            }
+        }
 
-            public RawEdges(FiniteGrid<(Edge?, Edge?)> edges)
-            {
-                this.edges = edges;
+        public readonly struct RawEdges {
+            private readonly FiniteGrid<(Edge?, Edge?)> _edges;
+
+            public RawEdges(FiniteGrid<(Edge?, Edge?)> edges) {
+                this._edges = edges;
             }
 
-            public List<List<Vector2>> GetPaths()
-            {
+            public List<List<Vector2>> GetPaths() {
                 var paths = new List<List<Vector2>>();
 
-                var size = edges.Bounds.Size;
+                var size = _edges.Bounds.Size;
 
                 var visited = new FiniteGrid<int>(size,
-                    edges.Content.Select((e) => (e.Item1 == null ? 0 : 1) + (e.Item2 == null ? 0 : 1)).ToArray()
-                    );
+                    _edges.Content.Select((e) => (e.Item1 == null ? 0 : 1) + (e.Item2 == null ? 0 : 1)).ToArray()
+                );
 
-                var grid = new FiniteGrid<(Edge?, Edge?)>(size, edges.Content.ToArray());
+                var grid = new FiniteGrid<(Edge?, Edge?)>(size, _edges.Content.ToArray());
 
-                foreach (var startPos in edges.Bounds.AllPositionsIn())
-                {
+                foreach (var startPos in _edges.Bounds.AllPositionsIn()) {
                     var vIdx = visited.PosToIndex(startPos);
-                    if (visited[vIdx] <= 0)
-                    {
+                    if (visited[vIdx] <= 0) {
                         continue;
                     }
-                    else
-                    {
-                        var idx = grid.PosToIndex(startPos);
-                        var startDualEdge = grid[idx];
 
-                        foreach (var startEdge in startDualEdge.EnumerateNotNull())
-                        {
-                            //Check needed for dual edge tiles
-                            if (visited[vIdx] <= 0)
-                            {
-                                break;
-                            }
-                            paths.Add(Path(startEdge, startPos, visited, grid));
+                    var idx = grid.PosToIndex(startPos);
+                    var startDualEdge = grid[idx];
+
+                    foreach (var startEdge in startDualEdge.EnumerateNotNull()) {
+                        //Check needed for dual edge tiles
+                        if (visited[vIdx] <= 0) {
+                            break;
                         }
+
+                        paths.Add(Path(startEdge, startPos, visited, grid));
                     }
                 }
 
                 return paths;
             }
 
-            private List<Vector2> Path(Edge startEdge, Point startPos, FiniteGrid<int> visited, FiniteGrid<(Edge?, Edge?)> grid)
-            {
+            private List<Vector2> Path(Edge startEdge, Point startPos, FiniteGrid<int> visited,
+                FiniteGrid<(Edge?, Edge?)> grid) {
                 List<Vector2> path = new List<Vector2>();
 
                 path.Add(startEdge.p1 / 2f + startPos.ToVector2());
@@ -107,8 +93,7 @@ namespace MarchingSquares.MarchingSquares
                 //--Forward Pass--
                 var res = PathPass(startPos, startEdge.p1Side, visited, grid, out var looped, out var interupted);
 
-                if (interupted)
-                {
+                if (interupted) {
                     throw new ApplicationException("Edge generation error");
                 }
 
@@ -116,13 +101,11 @@ namespace MarchingSquares.MarchingSquares
                 path.AddRange(res);
 
                 //--Backward Pass--
-                if (!looped)
-                {
+                if (!looped) {
                     path.Insert(0, startEdge.p2 / 2f + startPos.ToVector2());
                     res = PathPass(startPos, startEdge.p2Side, visited, grid, out looped, out interupted);
 
-                    if (interupted)
-                    {
+                    if (interupted) {
                         throw new ApplicationException("Edge generation error");
                     }
 
@@ -132,8 +115,7 @@ namespace MarchingSquares.MarchingSquares
                     res.Reverse();
                     path.InsertRange(0, res);
                 }
-                else
-                {
+                else {
                     path.Add(startEdge.p1 / 2f + startPos.ToVector2());
                 }
 
@@ -150,8 +132,8 @@ namespace MarchingSquares.MarchingSquares
             /// <param name="looped"></param>
             /// <param name="interupted"></param>
             /// <returns></returns>
-            private List<Vector2> PathPass(Point startPos, CardinalDirection dir, FiniteGrid<int> visited, FiniteGrid<(Edge?, Edge?)> grid, out bool looped, out bool interupted)
-            {
+            private List<Vector2> PathPass(Point startPos, CardinalDirection dir, FiniteGrid<int> visited,
+                FiniteGrid<(Edge?, Edge?)> grid, out bool looped, out bool interupted) {
                 var size = grid.Bounds.Size;
 
                 //next iteration position
@@ -162,24 +144,21 @@ namespace MarchingSquares.MarchingSquares
                 looped = false;
                 interupted = false;
 
-                while (true)
-                {
+                while (true) {
                     if (
                         pos1.X < 0 || pos1.X >= size.X ||
-                        pos1.Y < 0 || pos1.Y >= size.Y)
-                    {
+                        pos1.Y < 0 || pos1.Y >= size.Y) {
                         //We reached map edge
                         break;
                     }
 
-                    if (visited[pos1] <= 0)
-                    {
+                    if (visited[pos1] <= 0) {
                         //We looped back to the beginning
-                        if (pos1 == startPos)
-                        {
+                        if (pos1 == startPos) {
                             looped = true;
                             break;
                         }
+
                         //We didn't loop back, there is an error
                         interupted = true;
                         break;
@@ -190,13 +169,12 @@ namespace MarchingSquares.MarchingSquares
 
                     //second exit condidion check
                     //for cells with dual edge
-                    if (solved == null)
-                    {
-                        if (pos1 == startPos)
-                        {
+                    if (solved == null) {
+                        if (pos1 == startPos) {
                             looped = true;
                             break;
                         }
+
                         interupted = true;
                         break;
                     }
@@ -214,18 +192,16 @@ namespace MarchingSquares.MarchingSquares
                 return path;
             }
 
-            private (Vector2 exitPoint, CardinalDirection exitSide)? SolveEdge(CardinalDirection entryDirection, ref (Edge? e1, Edge? e2) dualEdge)
-            {
+            private (Vector2 exitPoint, CardinalDirection exitSide)? SolveEdge(CardinalDirection entryDirection,
+                ref (Edge? e1, Edge? e2) dualEdge) {
                 var v = dualEdge.e1?.GetExit(entryDirection);
-                if (v != null && v.Value.exitSide != CardinalDirection.None)
-                {
+                if (v != null && v.Value.exitSide != CardinalDirection.None) {
                     dualEdge.e1 = null;
                     return v;
                 }
 
                 v = dualEdge.e2?.GetExit(entryDirection);
-                if (v != null && v.Value.exitSide != CardinalDirection.None)
-                {
+                if (v != null && v.Value.exitSide != CardinalDirection.None) {
                     dualEdge.e2 = null;
                     return v;
                 }

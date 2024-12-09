@@ -1,60 +1,52 @@
-﻿using Microsoft.Xna.Framework;
-using Custom2d_Engine.Scenes;
+﻿using Custom2d_Engine.Scenes;
 using Custom2d_Engine.Scenes.Events;
+using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Common;
 using nkast.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework.Graphics;
 
-namespace Custom2d_Engine.Physics
-{
-    public class PhysicsBodyObject : HierarchyObject, IUpdatable
-    {
+namespace Custom2d_Engine.Physics {
+    public class PhysicsBodyObject : HierarchyObject, IUpdatable {
         public float Order { get; set; }
 
         public Body PhysicsBody { get; protected set; }
 
-        private bool dirty;
-        private bool isUpdating;
+        private bool _dirty;
+        private bool _isUpdating;
 
-        public PhysicsBodyObject(Body physicsBody)
-        {
+        public PhysicsBodyObject(Body physicsBody) {
             PhysicsBody = physicsBody;
-            Transform.Changed += () =>
-            {
-                if (isUpdating)
-                {
+            Transform.Changed += () => {
+                if (_isUpdating) {
                     return;
                 }
-                dirty = true;
+
+                _dirty = true;
             };
         }
 
-        public virtual void Update(GameTime time)
-        {
-            if (PhysicsBody.World == null)
-            {
+        public virtual void Update(GameTime time) {
+            if (PhysicsBody.World == null) {
                 return;
             }
 
-            if (dirty)
-            {
+            if (_dirty) {
                 var p = Transform.LocalPosition;
                 PhysicsBody.SetTransformIgnoreContacts(ref p, Transform.LocalRotation);
-                dirty = false;
+                _dirty = false;
             }
 
-            isUpdating = true;
+            _isUpdating = true;
             var bodyTransform = PhysicsBody.GetTransform();
 
             var angle = bodyTransform.q.Phase;
             var pos = bodyTransform.p;
             Transform.LocalRotation = angle;
             Transform.LocalPosition = pos;
-            isUpdating = false;
+            _isUpdating = false;
         }
 
-        public DrawableObject AddDrawableRectFixture(Vector2 size, Vector2 offset, float rotation, out Fixture fixture, float density = 1f)
-        {
+        public DrawableObject AddDrawableRectFixture(Vector2 size, Vector2 offset, float rotation, out Fixture fixture,
+            float density = 1f) {
             var verts = PolygonTools.CreateRectangle(size.X / 2f, size.Y / 2f);
             verts.Rotate(rotation);
             verts.Translate(offset);
@@ -67,16 +59,14 @@ namespace Custom2d_Engine.Physics
             return drawable;
         }
 
-        public Fixture AddRectFixture(Vector2 size, Vector2 offset, float rotation, float density = 1f)
-        {
+        public Fixture AddRectFixture(Vector2 size, Vector2 offset, float rotation, float density = 1f) {
             var verts = PolygonTools.CreateRectangle(size.X / 2f, size.Y / 2f);
             verts.Rotate(rotation);
             verts.Translate(offset);
             return PhysicsBody.CreatePolygon(verts, density);
         }
 
-        public void RemoveFixture(Fixture fixture)
-        {
+        public void RemoveFixture(Fixture fixture) {
             PhysicsBody.Remove(fixture);
         }
     }

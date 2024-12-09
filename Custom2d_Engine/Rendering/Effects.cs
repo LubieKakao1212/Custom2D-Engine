@@ -1,17 +1,11 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Rendering
-{
-    public static class Effects
-    {
-        public static Effect TilemapDefault { get; private set; }
-        public static Effect Default { get; private set; }
+namespace Custom2d_Engine.Rendering {
+    public static class Effects {
+        [NotNull] public static Effect? TilemapDefault { get; private set; }
+        [NotNull] public static Effect? Default { get; private set; }
 
         //TODO refactor to RSS
         public const string CameraRS = "CameraRS";
@@ -31,8 +25,7 @@ namespace Custom2d_Engine.Rendering
         private const string TilemapDefaultEffectPath = "Tilemap";
         private const string DefaultEffectPath = "Default";
 
-        public static void Init(ContentManager content)
-        {
+        public static void Init(ContentManager content) {
             TilemapDefault = content.Load<Effect>(TilemapDefaultEffectPath);
             Default = content.Load<Effect>(DefaultEffectPath);
         }

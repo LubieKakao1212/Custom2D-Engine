@@ -1,48 +1,38 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Input.Binding
-{
-    //TODO
-    public class Vector2BindingInput : ValueInputBase<Vector2>
-    {
-        /// <summary>
-        /// Temporary
-        /// </summary>
-        public static readonly float deadzone = 0.01f;
+namespace Custom2d_Engine.Input.Binding;
 
-        public override string FriendlyName { get; }
+//TODO
+public class Vector2BindingInput : ValueInputBase<Vector2> {
+    /// <summary>
+    /// Temporary
+    /// </summary>
+    public const float Deadzone = 0.01f;
 
-        protected override Vector2 Value
-        {
-            get
-            {
-                var raw = new Vector2(horizontal.GetCurrentValue<float>(), vertical.GetCurrentValue<float>());
-                var mag = raw.LengthSquared();
-                if (mag > deadzone)
-                {
-                    return normalize ? Vector2.Normalize(raw) : raw;
-                }
-                return Vector2.Zero;
+    public override string FriendlyName { get; }
+
+    protected override Vector2 Value {
+        get {
+            var raw = new Vector2(_horizontal.GetCurrentValue<float>(), _vertical.GetCurrentValue<float>());
+            var mag = raw.LengthSquared();
+            if (mag > Deadzone) {
+                return _normalize ? Vector2.Normalize(raw) : raw;
             }
+
+            return Vector2.Zero;
         }
+    }
 
-        private ValueInputBase<float> horizontal;
-        private ValueInputBase<float> vertical;
+    private readonly ValueInputBase<float> _horizontal;
+    private readonly ValueInputBase<float> _vertical;
 
-        private bool normalize;
+    private readonly bool _normalize;
 
-        public Vector2BindingInput(string name, ValueInputBase<float> horizontal, ValueInputBase<float> vertical, bool normalize = false)
-        {
-            FriendlyName = name;
-            this.horizontal = horizontal;
-            this.vertical = vertical;
-            this.normalize = normalize;
-        }
+    public Vector2BindingInput(string name, ValueInputBase<float> horizontal, ValueInputBase<float> vertical,
+        bool normalize = false) {
+        FriendlyName = name;
+        this._horizontal = horizontal;
+        this._vertical = vertical;
+        this._normalize = normalize;
     }
 }

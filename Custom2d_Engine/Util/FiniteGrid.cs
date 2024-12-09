@@ -2,78 +2,63 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Util
-{
+namespace Custom2d_Engine.Util {
     /// <remarks>No size checks!!!</remarks>
-    public class FiniteGrid<T>
-    {
-        public Rectangle Bounds => new Rectangle(Point.Zero, size);
+    public class FiniteGrid<T> {
+        public Rectangle Bounds => new Rectangle(Point.Zero, _size);
 
-        public IEnumerable<T> Content => content;
+        public IEnumerable<T> Content => _content;
 
-        public T this[Point pos]
-        {
-            get => content[PosToIndex(pos)];
-            set => content[PosToIndex(pos)] = value;
+        public T this[Point pos] {
+            get => _content[PosToIndex(pos)];
+            set => _content[PosToIndex(pos)] = value;
         }
 
-        public T this[int x, int y]
-        {
-            get => content[PosToIndex(x, y)];
-            set => content[PosToIndex(x, y)] = value;
+        public T this[int x, int y] {
+            get => _content[PosToIndex(x, y)];
+            set => _content[PosToIndex(x, y)] = value;
         }
 
-        public T this[int index]
-        {
-            get => content[index];
-            set => content[index] = value;
+        public T this[int index] {
+            get => _content[index];
+            set => _content[index] = value;
         }
 
-        private T[] content;
-        private Point size;
+        private readonly T[] _content;
+        private readonly Point _size;
 
-        public FiniteGrid(Point size) : this(size, Enumerable.Repeat(default(T), size.X * size.Y).ToArray())
-        {
-
+        public FiniteGrid(Point size, Func<T> defaultSupplier) : this(size,
+            Enumerable.Repeat(defaultSupplier(), size.X * size.Y).ToArray()) {
         }
 
-        public FiniteGrid(Point size, T[] content)
-        {
-            this.size = size;
-            this.content = content;
+        public FiniteGrid(Point size, T[] content) {
+            this._size = size;
+            this._content = content;
         }
 
-        public FiniteGrid(FiniteGrid<T> other)
-        {
-            size = other.size;
-            content = new T[other.content.Length];
-            other.content.CopyTo(content, 0);
+        public FiniteGrid(FiniteGrid<T> other) {
+            _size = other._size;
+            _content = new T[other._content.Length];
+            other._content.CopyTo(_content, 0);
         }
 
-        public void Fill(Func<Vector2, T> filler)
-        {
-            for (int i = 0; i < content.Length; i++)
-            {
-                content[i] = filler(IndexToPos(i).ToVector2());
+        public void Fill(Func<Vector2, T> filler) {
+            for (int i = 0; i < _content.Length; i++) {
+                _content[i] = filler(IndexToPos(i).ToVector2());
             }
         }
 
-        public int PosToIndex(Point pos)
-        {
+        public int PosToIndex(Point pos) {
             return PosToIndex(pos.X, pos.Y);
         }
 
-        public int PosToIndex(int x, int y)
-        {
-            return size.X * y + x;
+        public int PosToIndex(int x, int y) {
+            return _size.X * y + x;
         }
 
-        public Point IndexToPos(int idx)
-        {
-            return new Point(idx % size.X, idx / size.X);
+        public Point IndexToPos(int idx) {
+            return new Point(idx % _size.X, idx / _size.X);
         }
     }
 }

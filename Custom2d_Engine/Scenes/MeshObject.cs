@@ -1,76 +1,68 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Custom2d_Engine.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Custom2d_Engine.Scenes
-{
-    public class MeshObject : SpecialRenderedObject
-    {
-        private Effect effect;
-        private DepthStencilState depthStencilState;
-        private IndexBuffer ib;
-        private VertexBuffer vb;
-        private int pCount;
-        
-        public static MeshObject CreateNew<T>(RenderPipeline pipeline, VertexDeclaration vertexDeclaration, T[] verticies, int[] indicies, Color color, float drawOrder, Effect effect, DepthStencilState depthStencilState) where T : struct
-        {
-            var mo = new MeshObject(pipeline, color, drawOrder);
-            mo.vb = new VertexBuffer(pipeline.Graphics, vertexDeclaration, verticies.Length, BufferUsage.WriteOnly);
-            mo.vb.SetData(verticies);
-            
-            mo.ib = new IndexBuffer(pipeline.Graphics, IndexElementSize.ThirtyTwoBits, indicies.Length, BufferUsage.WriteOnly);
-            mo.ib.SetData(indicies);
+namespace Custom2d_Engine.Scenes {
+    public class MeshObject : SpecialRenderedObject {
+        [NotNull] private Effect? Effect { get; set; }
+        [NotNull] private DepthStencilState? DepthStencilState { get; set; }
+        [NotNull] private IndexBuffer? Ib { get; set; }
+        [NotNull] private VertexBuffer? Vb { get; set; }
+        private int PCount { get; set; }
 
-            mo.pCount = indicies.Length / 3;
+        public static MeshObject CreateNew<T>(RenderPipeline pipeline, VertexDeclaration vertexDeclaration,
+            T[] verticies, int[] indicies, Color color, float drawOrder, Effect effect,
+            DepthStencilState depthStencilState) where T : struct {
+            var mo = new MeshObject(pipeline, color, drawOrder) {
+                Vb = new VertexBuffer(pipeline.Graphics, vertexDeclaration, verticies.Length, BufferUsage.WriteOnly),
+                Ib = new IndexBuffer(pipeline.Graphics, IndexElementSize.ThirtyTwoBits, indicies.Length,
+                    BufferUsage.WriteOnly)
+            };
+            mo.Vb.SetData(verticies);
 
-            mo.effect = effect;
-            mo.depthStencilState = depthStencilState;
+            mo.Ib.SetData(indicies);
+
+            mo.PCount = indicies.Length / 3;
+
+            mo.Effect = effect;
+            mo.DepthStencilState = depthStencilState;
 
             return mo;
         }
 
-        private MeshObject(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder)
-        {
+        private MeshObject(RenderPipeline pipeline, Color color, float drawOrder) : base(pipeline, color, drawOrder) {
         }
-        
-        public override void Render(Camera camera)
-        {
-            effect.CurrentTechnique = effect.Techniques[0];
+
+        public override void Render(Camera camera) {
+            Effect.CurrentTechnique = Effect.Techniques[0];
 
             //TODO integrate into pipeline
             var proj = camera.ProjectionMatrix;
-            effect.Parameters[Effects.CameraRS].SetValue(proj.RS.Flat);
-            effect.Parameters[Effects.CameraT].SetValue(proj.T);
+            Effect.Parameters[Effects.CameraRS].SetValue(proj.RS.Flat);
+            Effect.Parameters[Effects.CameraT].SetValue(proj.T);
 
             var ltw = Transform.LocalToWorld;
-            effect.Parameters[Effects.ObjRSS].SetValue(ltw.RS.Flat);
-            effect.Parameters[Effects.ObjT].SetValue(ltw.T);
+            Effect.Parameters[Effects.ObjRSS].SetValue(ltw.RS.Flat);
+            Effect.Parameters[Effects.ObjT].SetValue(ltw.T);
 
             var dss = Pipeline.Graphics.DepthStencilState;
-            
+
             Pipeline.Graphics.BlendState = BlendState.AlphaBlend;
-            Pipeline.Graphics.DepthStencilState = depthStencilState;
-            Pipeline.Graphics.Indices = ib;
+            Pipeline.Graphics.DepthStencilState = DepthStencilState;
+            Pipeline.Graphics.Indices = Ib;
 
-            effect.CurrentTechnique.Passes[0].Apply();
+            Effect.CurrentTechnique.Passes[0].Apply();
 
-            Pipeline.Graphics.SetVertexBuffer(vb);
+            Pipeline.Graphics.SetVertexBuffer(Vb);
 
-            Pipeline.Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, pCount);
+            Pipeline.Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, PCount);
             Pipeline.Graphics.DepthStencilState = dss;
         }
 
-        public void UpdateMesh<T>(T[] verticies, int[] indicies) where T : struct
-        {
-            vb.SetData(verticies);
-            ib.SetData(indicies);
+        public void UpdateMesh<T>(T[] verticies, int[] indicies) where T : struct {
+            Vb.SetData(verticies);
+            Ib.SetData(indicies);
         }
     }
 }

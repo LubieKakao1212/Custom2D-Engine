@@ -1,14 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Custom2d_Engine.Math;
-using System;
-using System.Data;
 
-namespace Custom2d_Engine.Scenes
-{
-    public class Camera : HierarchyObject
-    {
-        /*public BoundingRect WorldBounds 
-        { 
+namespace Custom2d_Engine.Scenes {
+    public class Camera : HierarchyObject {
+        /*public BoundingRect WorldBounds
+        {
             get
             {
                 if (!worldBounds.HasValue)
@@ -24,38 +20,49 @@ namespace Custom2d_Engine.Scenes
             //.Scaled(0.2f);
             ;
 
-        public TransformMatrix ProjectionMatrix
-        {
-            get
-            {
-                if (!projectionMatrix.HasValue)
-                {
-                    projectionMatrix = /*TransformMatrix.TranslationRotationShearScale(Vector2.One * 8f, MathF.PI / 2f, 0f, Vector2.One * 8f).Inverse();*/(Transform.LocalToWorld * Matrix2x2.Scale(new Vector2(ViewSize * aspectRatio, ViewSize))).Inverse();
+        public TransformMatrix ProjectionMatrix {
+            get {
+                if (!_projectionMatrix.HasValue) {
+                    _projectionMatrix = /*TransformMatrix.TranslationRotationShearScale(Vector2.One * 8f, MathF.PI / 2f, 0f, Vector2.One * 8f).Inverse();*/
+                        (Transform.LocalToWorld * Matrix2x2.Scale(new Vector2(ViewSize * _aspectRatio, ViewSize)))
+                        .Inverse();
                 }
-                return projectionMatrix.Value;
+
+                return _projectionMatrix.Value;
             }
         }
 
-        public float ViewSize { get => viewSize; set { viewSize = value; projectionMatrix = null; } }
+        public float ViewSize {
+            get => _viewSize;
+            set {
+                _viewSize = value;
+                _projectionMatrix = null;
+            }
+        }
 
-        public float AspectRatio { get => aspectRatio; set { aspectRatio = value; projectionMatrix = null; } }
+        public float AspectRatio {
+            get => _aspectRatio;
+            set {
+                _aspectRatio = value;
+                _projectionMatrix = null;
+            }
+        }
 
-        private TransformMatrix? projectionMatrix;
-        private BoundingRect? worldBounds;
-        private float viewSize = 1f;
-        private float aspectRatio = 1f;
+        private TransformMatrix? _projectionMatrix;
 
-        public Camera()
-        {
-            Transform.Changed += () =>
-            {
-                projectionMatrix = null;
-                worldBounds = null;
+        ///private BoundingRect? _worldBounds;
+        private float _viewSize = 1f;
+
+        private float _aspectRatio = 1f;
+
+        public Camera() {
+            Transform.Changed += () => {
+                _projectionMatrix = null;
+                //_worldBounds = null;
             };
         }
 
-        public bool Cull(BoundingRect rect)
-        {
+        public bool Cull(BoundingRect rect) {
             rect = rect.Transformed(ProjectionMatrix);
 
             rect.Intersects(CullingRect);
@@ -63,8 +70,7 @@ namespace Custom2d_Engine.Scenes
             return false;
         }
 
-        public Vector2 ViewToWorldPos(Vector2 viewPos)
-        {
+        public Vector2 ViewToWorldPos(Vector2 viewPos) {
             //TODO Cache inverse?
             return ProjectionMatrix.Inverse().TransformPoint(viewPos);
         }

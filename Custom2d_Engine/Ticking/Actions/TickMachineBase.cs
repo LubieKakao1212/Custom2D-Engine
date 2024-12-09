@@ -1,39 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Ticking.Actions
-{
-    public abstract class TickMachineBase : ITickMachine
-    {
+namespace Custom2d_Engine.Ticking.Actions {
+    public abstract class TickMachineBase : ITickMachine {
         public TimeSpan CurrentTime { get; protected set; }
         public TimeSpan Cooldown { get; protected set; }
 
         public bool Disposed { get; protected set; } = false;
 
-        public TickMachineBase(TimeSpan cooldown, TimeSpan phase = default)
-        {
-            this.Cooldown = cooldown;
-            this.CurrentTime = phase;
+        public TickMachineBase(TimeSpan cooldown, TimeSpan phase = default) {
+            Cooldown = cooldown;
+            CurrentTime = phase;
         }
 
-        public void Forward(TimeSpan deltaTime)
-        {
+        public void Forward(TimeSpan deltaTime) {
             CurrentTime += deltaTime;
-            do
-            {
-                if (CurrentTime < Cooldown)
-                {
+            do {
+                if (CurrentTime < Cooldown) {
                     break;
                 }
-            }
-            while (Execute(deltaTime));
+            } while (Execute(deltaTime));
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Disposed = true;
         }
 

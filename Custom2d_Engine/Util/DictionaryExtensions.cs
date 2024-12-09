@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Custom2d_Engine.Util
-{
+namespace Custom2d_Engine.Util {
     //One of my premade utilities
-    public static class DictionaryExtensions
-    {
+    public static class DictionaryExtensions {
         /// <summary>
-        /// Adds given value to a dictionary if there was no element at given <paramref name="key"/>, replaces element with <paramref name="value"> otherwise.
+        /// Adds given value to a dictionary if there was no element at given <paramref name="key"/>, replaces element with <paramref name="value"/> otherwise.
         /// </summary>
         /// <returns>true if element was added, false if it was replaced</returns>
-        public static bool AddOrUpdate<K, V>(this IDictionary<K, V> dict, K key, V value)
-        {
-            if (dict.ContainsKey(key))
-            {
+        public static bool AddOrUpdate<K, V>(this IDictionary<K, V> dict, K key, V value) {
+            if (dict.ContainsKey(key)) {
                 dict[key] = value;
                 return false;
             }
-            else
-            {
+            else {
                 dict.Add(key, value);
                 return true;
             }
@@ -27,15 +22,14 @@ namespace Custom2d_Engine.Util
 
         /// <summary>
         /// Gets a value from the dictionary under a specified key or adds it if did not exist and returns <paramref name="defaultValue"/>.
-        /// For complex objects use <see cref="GetOrSetToDefaultLazy{K, V}(IDictionary{K, V}, K, Func{V})"/>
+        /// For complex objects use <see cref="GetOrSetToDefaultLazy{K, V}(IDictionary{K, V}, K, Func{K, V})"/>
         /// </summary>
         /// <returns>value under a given <paramref name="key"/> if it exists, <paramref name="defaultValue"/> otherwise</returns>
-        public static V GetOrSetToDefault<K, V>(this IDictionary<K, V> dict, K key, V defaultValue)
-        {
-            if (dict.TryGetValue(key, out V value))
-            {
+        public static V GetOrSetToDefault<K, V>(this IDictionary<K, V> dict, K key, V defaultValue) {
+            if (dict.TryGetValue(key, out var value)) {
                 return value;
             }
+
             dict.Add(key, defaultValue);
 
             return defaultValue;
@@ -45,12 +39,11 @@ namespace Custom2d_Engine.Util
         /// Alternative overload to <see cref="GetOrSetToDefault{K, V}(IDictionary{K, V}, K, V)"/>, with lazy object construction
         /// </summary>
         /// <returns>value under a given <paramref name="key"/> if it exists, result of <paramref name="defaultValue"/> otherwise</returns>
-        public static V GetOrSetToDefaultLazy<K, V>(this IDictionary<K, V> dict, K key, Func<K, V> defaultValue)
-        {
-            if (dict.TryGetValue(key, out V value))
-            {
+        public static V GetOrSetToDefaultLazy<K, V>(this IDictionary<K, V> dict, K key, Func<K, V> defaultValue) {
+            if (dict.TryGetValue(key, out var value)) {
                 return value;
             }
+
             var val = defaultValue(key);
             dict.Add(key, val);
 
@@ -64,12 +57,9 @@ namespace Custom2d_Engine.Util
         /// <typeparam name="V"></typeparam>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static IEnumerable<(K Key, V Value)> EnumerateNestedEntries<K, V>(this IDictionary<K, List<V>> dict)
-        {
-            foreach (var (key, list) in dict)
-            {
-                foreach (var element in list)
-                {
+        public static IEnumerable<(K Key, V Value)> EnumerateNestedEntries<K, V>(this IDictionary<K, List<V>> dict) {
+            foreach (var (key, list) in dict) {
+                foreach (var element in list) {
                     yield return (key, element);
                 }
             }
@@ -82,12 +72,9 @@ namespace Custom2d_Engine.Util
         /// <typeparam name="V"></typeparam>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public static IEnumerable<V> EnumerateNestedValues<K, V>(this IDictionary<K, List<V>> dict)
-        {
-            foreach (var list in dict.Values)
-            {
-                foreach (var element in list)
-                {
+        public static IEnumerable<V> EnumerateNestedValues<K, V>(this IDictionary<K, List<V>> dict) {
+            foreach (var list in dict.Values) {
+                foreach (var element in list) {
                     yield return element;
                 }
             }
@@ -101,9 +88,8 @@ namespace Custom2d_Engine.Util
         /// <param name="dict"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static void AddNested<K, V>(this IDictionary<K, List<V>> dict, K key, V value)
-        {
-            var list = dict.GetOrSetToDefaultLazy(key, (k) => new());
+        public static void AddNested<K, V>(this IDictionary<K, List<V>> dict, K key, V value) {
+            var list = dict.GetOrSetToDefaultLazy(key, _ => new());
             list.Add(value);
         }
 
@@ -116,12 +102,10 @@ namespace Custom2d_Engine.Util
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="cleanup">Should the nested list be removed if empty</param>
-        public static void RemoveNested<K, V>(this IDictionary<K, List<V>> dict, K key, V value, bool cleanup = true)
-        {
+        public static void RemoveNested<K, V>(this IDictionary<K, List<V>> dict, K key, V value, bool cleanup = true) {
             var l = dict[key];
             l.Remove(value);
-            if (cleanup && l.Count == 0)
-            {
+            if (cleanup && l.Count == 0) {
                 dict.Remove(key);
             }
         }

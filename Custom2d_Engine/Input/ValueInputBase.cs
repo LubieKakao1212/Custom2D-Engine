@@ -1,55 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Input
-{
-    public abstract class ValueInputBase<T> : IInput
-    {
-        public event Action<IInput> Started;
-        public event Action<IInput> Performed;
-        public event Action<IInput> Canceled;
+namespace Custom2d_Engine.Input;
 
-        protected abstract T Value { get; }
+public abstract class ValueInputBase<T> : IInput {
+    public event Action<IInput> Started = delegate { };
+    public event Action<IInput> Performed = delegate { };
+    public event Action<IInput> Canceled = delegate { };
 
-        public abstract string FriendlyName { get; }
+    protected abstract T Value { get; }
 
-        public T1 GetCurrentValue<T1>()
-        {
-            var v = Value;
-            if (v is T1 v1)
-            {
-                return v1;
-            }
-            else
-            {
-                throw new ArgumentException($"Cannot get ${typeof(T1).Name} from input of with value type ${typeof(T).Name}");
-            }
+    public abstract string FriendlyName { get; }
+
+    public T1 GetCurrentValue<T1>() {
+        var v = Value;
+        if (v is T1 v1) {
+            return v1;
         }
-
-        protected void InvokeEvents(bool state, bool changed)
-        {
-            if (!state && changed)
-            {
-                Canceled?.Invoke(this);
-            }
-            else if(state)
-            {
-                if (changed)
-                {
-                    Started?.Invoke(this);
-                }
-                else
-                {
-                    Performed?.Invoke(this);
-                }
-            }
+        else {
+            throw new ArgumentException(
+                $"Cannot get ${typeof(T1).Name} from input of with value type ${typeof(T).Name}");
         }
-
-        protected void PassStarted(IInput _) => Started?.Invoke(this);
-        protected void PassPerformed(IInput _) => Performed?.Invoke(this);
-        protected void PassCanceled(IInput _) => Canceled?.Invoke(this);
     }
+
+    protected void InvokeEvents(bool state, bool changed) {
+        if (!state && changed) {
+            Canceled(this);
+        }
+        else if (state) {
+            if (changed) {
+                Started.Invoke(this);
+            }
+            else {
+                Performed.Invoke(this);
+            }
+        }
+    }
+
+    protected void PassStarted(IInput _) => Started(this);
+    protected void PassPerformed(IInput _) => Performed(this);
+    protected void PassCanceled(IInput _) => Canceled(this);
 }

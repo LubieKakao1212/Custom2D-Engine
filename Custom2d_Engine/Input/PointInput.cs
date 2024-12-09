@@ -1,37 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Custom2d_Engine.Rendering.RenderPipeline;
 
-namespace Custom2d_Engine.Input
-{
-    public class PointInput : ValueInputBase<Point>
-    {
-        public override string FriendlyName => name;
+namespace Custom2d_Engine.Input {
+    public class PointInput : ValueInputBase<Point> {
+        public override string FriendlyName { get; }
 
-        protected override Point Value => state;
+        protected override Point Value => _state;
 
-        private Point state;
-        private bool changedPreviously;
+        private Point _state;
+        private bool _changedPreviously;
 
-        private string name;
-
-        internal PointInput(string name)
-        {
-            this.name = name;
+        internal PointInput(string name) {
+            this.FriendlyName = name;
         }
 
         /// <param name="newState">new State of this input</param>
-        internal void UpdateState(Point newState)
-        {
-            var changed = state != newState;
-            state = newState;
-            InvokeEvents(changed, changedPreviously != changed);
+        internal void UpdateState(Point newState) {
+            var changed = _state != newState;
+            _state = newState;
+            InvokeEvents(changed, _changedPreviously != changed);
 
-            changedPreviously = changed;
+            _changedPreviously = changed;
         }
     }
 }

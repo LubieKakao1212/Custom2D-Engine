@@ -1,3 +1,2 @@
-﻿
-using var game = new EngineTest.TestGame();
+﻿using var game = new EngineTest.TestGame();
 game.Run();

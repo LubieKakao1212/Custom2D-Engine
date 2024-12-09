@@ -1,3 +1,2 @@
-﻿
-using var game = new AudioTest.AudioGame();
+﻿using var game = new AudioTest.AudioGame();
 game.Run();

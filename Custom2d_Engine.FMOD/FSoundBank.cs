@@ -1,46 +1,36 @@
-﻿using FMOD.Studio;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FMOD.Studio;
 
-namespace Custom2d_Engine.FMOD_Audio
-{
-    public class FSoundBank : IDisposable
-    {
-        internal Bank raw;
+namespace Custom2d_Engine.FMOD_Audio;
 
-        internal FMODSystem FSystem { get; private set; }
+public class FSoundBank : IDisposable {
+    internal Bank raw;
 
-        private EventDescription[] eventsRaw;
-        private FSound[] sounds;
+    internal FMODSystem FSystem { get; }
 
-        internal FSoundBank(FMODSystem sys)
-        {
-            this.FSystem = sys;
-        }
+    private EventDescription[]? _eventsRaw;
+    private FSound[]? _sounds;
 
-        internal void Init()
-        {
-            raw.getEventList(out eventsRaw);
-            sounds = eventsRaw.Select((raw) =>
-            {
-                var sound = new FSound(FSystem) { raw = raw };
-                sound.Init();
-                return sound;
-            }).ToArray();
-        }
+    internal FSoundBank(FMODSystem sys) {
+        FSystem = sys;
+    }
 
-        public FSound GetSound(string path)
-        {
-            return sounds.Where((sound) => sound.Path == path).First();
-        }
+    internal void Init() {
+        raw.getEventList(out _eventsRaw);
+        _sounds = _eventsRaw.Select(rawSound => {
+            var sound = new FSound(FSystem) { raw = rawSound };
+            sound.Init();
+            return sound;
+        }).ToArray();
+    }
 
-        public void Dispose()
-        {
-            //TODO
-            raw.unload();
-        }
+    public FSound? GetSound(string path) {
+        return _sounds?.First(sound => sound.Path == path);
+    }
+
+    public void Dispose() {
+        //TODO
+        raw.unload();
     }
 }

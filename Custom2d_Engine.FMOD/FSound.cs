@@ -1,55 +1,41 @@
-﻿using FMOD.Studio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using FMOD.Studio;
 
-namespace Custom2d_Engine.FMOD_Audio
-{
-    public class FSound : IDisposable
-    {
-        public TimeSpan Duration { get; private set; }
-        public int Length => length;
-        public string Path => path;
-        
-        private int length;
-        private string path;
+namespace Custom2d_Engine.FMOD_Audio;
 
-        internal FMODSystem FSystem { get; private set; }
-        internal EventDescription raw;
+public class FSound : IDisposable {
+    public TimeSpan Duration { get; private set; }
+    public int Length => _length;
+    public string Path => _path;
 
-        internal FSound(FMODSystem system)
-        {
-            this.FSystem = system;
-        }
+    private int _length;
+    private string _path;
 
-        internal void Init()
-        {
-            raw.getLength(out length).AssertOk();
-            raw.getPath(out path).AssertOk();
-            var sRate = (double)FSystem.SampleRate;
+    internal FMODSystem FSystem { get; private set; }
+    internal EventDescription raw;
 
-            Duration = TimeSpan.FromSeconds(length / sRate);
+    internal FSound(FMODSystem system) {
+        FSystem = system;
+    }
 
-            
-        }
+    internal void Init() {
+        raw.getLength(out _length).AssertOk();
+        raw.getPath(out _path).AssertOk();
+        var sRate = (double)FSystem.SampleRate;
 
-        public FSoundInstance CreateInstance()
-        {
-            var instance = new FSoundInstance(this);
-            raw.createInstance(out instance.raw).AssertOk();
-            return instance;
-        }
+        Duration = TimeSpan.FromSeconds(_length / sRate);
+    }
 
-        public void Load()
-        {
-            raw.loadSampleData().AssertOk();
-        }
+    public FSoundInstance CreateInstance() {
+        var instance = new FSoundInstance(this);
+        raw.createInstance(out instance.raw).AssertOk();
+        return instance;
+    }
 
-        public void Dispose()
-        {
-            
-        }
+    public void Load() {
+        raw.loadSampleData().AssertOk();
+    }
+
+    public void Dispose() {
     }
 }

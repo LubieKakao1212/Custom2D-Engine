@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Custom2d_Engine.Math;
 using Custom2d_Engine.Rendering.Sprites;
@@ -7,78 +6,76 @@ using Custom2d_Engine.Scenes;
 using Custom2d_Engine.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Linq;
 
-namespace Custom2d_Engine.Rendering
-{
-    public class RenderPipeline
-    {
-        public Texture3D SpriteAtlas
-        {
-            get => CurrentState.SpriteAtlas;
-            set => CurrentState.SpriteAtlas = value;
+namespace Custom2d_Engine.Rendering {
+    public class RenderPipeline {
+        public Texture3D SpriteAtlas {
+            get => _currentState.SpriteAtlas;
+            set => _currentState.SpriteAtlas = value;
         }
-        private State CurrentState;
+
+        private State _currentState;
         public Renderer Rendering { get; }
-        public GraphicsDevice Graphics { get; private set; }
+        [NotNull] public GraphicsDevice? Graphics { get; private set; }
 
         public const int MaxInstanceCount = 4096 * 4;
 
-        private Vector2 quadScale = new Vector2(0.5f, 0.5f);
-        private VertexBuffer quadVerts;
-        private IndexBuffer quadInds;
+        private readonly Vector2 _quadScale = new Vector2(0.5f, 0.5f);
+        [NotNull] public VertexBuffer? QuadVerts { get; private set; }
+        [NotNull] public IndexBuffer? QuadInds { get; private set; }
+        [NotNull] public DynamicVertexBuffer? InstanceBuffer { get; private set; }
 
-        private DynamicVertexBuffer instanceBuffer;
-       
-        public readonly VertexDeclaration InstanceVertexDeclaration = new VertexDeclaration(
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
-                new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
-                new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
-                );
+        public readonly VertexDeclaration instanceVertexDeclaration = new VertexDeclaration(
+            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
+            new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector2, VertexElementUsage.Position, 2),
+            new VertexElement(sizeof(float) * 6, VertexElementFormat.Vector4, VertexElementUsage.Color, 0),
+            new VertexElement(sizeof(float) * (6 + 4), VertexElementFormat.Vector4,
+                VertexElementUsage.TextureCoordinate, 1)
+        );
 
-        public RenderPipeline()
-        {
-            CurrentState = new State();
+        public RenderPipeline() {
+            _currentState = new State();
             Rendering = new Renderer(this);
         }
 
-        public void Init(GraphicsDevice graphicsDevice)
-        {
+        public void Init(GraphicsDevice graphicsDevice) {
             Graphics = graphicsDevice;
 
             //CurrentState.CurrentEffect = Effects.Default;
 
             #region quad
-            quadVerts = new VertexBuffer(Graphics, VertexPositionTexture.VertexDeclaration, 4, BufferUsage.WriteOnly);
 
-            quadVerts.SetData(new VertexPositionTexture[4] 
-            {
+            QuadVerts = new VertexBuffer(Graphics, VertexPositionTexture.VertexDeclaration, 4, BufferUsage.WriteOnly);
+
+            QuadVerts.SetData(new[] {
                 new VertexPositionTexture(
-                    new Vector3(-quadScale.X, -quadScale.Y, 0), 
+                    new Vector3(-_quadScale.X, -_quadScale.Y, 0),
                     new Vector2(0f, 0f)),
                 new VertexPositionTexture(
-                    new Vector3(quadScale.X, -quadScale.Y, 0),
+                    new Vector3(_quadScale.X, -_quadScale.Y, 0),
                     new Vector2(1f, 0f)),
                 new VertexPositionTexture(
-                    new Vector3(quadScale.X, quadScale.Y, 0),
+                    new Vector3(_quadScale.X, _quadScale.Y, 0),
                     new Vector2(1f, 1f)),
                 new VertexPositionTexture(
-                    new Vector3(-quadScale.X, quadScale.Y, 0),
+                    new Vector3(-_quadScale.X, _quadScale.Y, 0),
                     new Vector2(0f, 1f)),
             });
 
-            quadInds = new IndexBuffer(Graphics, typeof(short), 6, BufferUsage.WriteOnly);
-            quadInds.SetData(new short[6]
-            {
+            QuadInds = new IndexBuffer(Graphics, typeof(short), 6, BufferUsage.WriteOnly);
+            QuadInds.SetData(new short[] {
                 1, 0, 2, 2, 0, 3
             });
+
             #endregion
 
             #region Instances
 
-            instanceBuffer = new DynamicVertexBuffer(Graphics, InstanceVertexDeclaration, MaxInstanceCount, BufferUsage.WriteOnly);
+            InstanceBuffer = new DynamicVertexBuffer(Graphics, instanceVertexDeclaration, MaxInstanceCount,
+                BufferUsage.WriteOnly);
 
             /*InstanceData[] instanceData = new InstanceData[MaxInstanceCount];
 
@@ -93,77 +90,67 @@ namespace Custom2d_Engine.Rendering
             }
 
             //instanceBuffer.SetData(instanceData);*/
+
             #endregion
         }
 
-        public void RenderScene(Hierarchy scene, Camera camera)
-        {
+        public void RenderScene(Hierarchy scene, Camera camera) {
             using var camScope = new CameraScope(this, camera);
             using var effectScope = new EffectScope(this, Effects.Default);
-            foreach (var instanceCount in SetupSceneInstances(scene, camera))
-            {
-                Rendering.DrawInstancedQuads(instanceBuffer, instanceCount);
+            foreach (var instanceCount in SetupSceneInstances(scene, camera)) {
+                Rendering.DrawInstancedQuads(InstanceBuffer, instanceCount);
             }
         }
 
         //TODO find a better name or merge with render scene
-        public IEnumerable<int> SetupSceneInstances(Hierarchy scene, Camera camera)
-        {
+        public IEnumerable<int> SetupSceneInstances(Hierarchy scene, Camera camera) {
             int i = 0;
             var drawables = scene.Drawables;
             var instances = new InstanceData[MathHelper.Min(drawables.Count, MaxInstanceCount)];
-            foreach (var drawable in drawables)
-            {
-                if(drawable.InteruptQueue) 
-                {
-                    if (i != 0)
-                    {
-                        instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
+            foreach (var drawable in drawables) {
+                if (drawable.InteruptQueue) {
+                    if (i != 0) {
+                        InstanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
                         yield return i;
                         i = 0;
                     }
 
-                    if (drawable is SpecialRenderedObject special)
-                    {
+                    if (drawable is SpecialRenderedObject special) {
                         special.Render(camera);
                         continue;
                     }
                 }
+
                 var ltw = drawable.Transform.LocalToWorld;
-                InstanceData data = new InstanceData(ltw, drawable.Color) { sprite = drawable.Sprite };
+                InstanceData data = new InstanceData(ltw, drawable.Color) { Sprite = drawable.Sprite };
                 instances[i++] = data;
-                if (i == MaxInstanceCount)
-                {
-                    instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
+                if (i == MaxInstanceCount) {
+                    InstanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
                     yield return i;
                     i = 0;
                 }
             }
-            if (i != 0)
-            {
-                instanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
+
+            if (i != 0) {
+                InstanceBuffer.SetData(instances, 0, i, SetDataOptions.None);
                 yield return i;
             }
-            yield break;
         }
 
-        public class Renderer
-        {
-            private RenderPipeline pipeline;
+        public class Renderer {
+            private readonly RenderPipeline _pipeline;
 
-            internal Renderer(RenderPipeline pipeline)
-            {
-                this.pipeline = pipeline;
+            internal Renderer(RenderPipeline pipeline) {
+                this._pipeline = pipeline;
             }
-            
+
             /// <summary>
             /// Draws instances from given buffer as quads, setting camera parameters and sprite parameters if needed
             /// </summary>
-            /// <param name="InstanceBuffer"></param>
+            /// <param name="instanceBuffer"></param>
             /// <param name="instanceCount"></param>
-            public void DrawInstancedQuads(VertexBuffer InstanceBuffer, int instanceCount)
-            {
-                DrawInstancedQuads(instanceCount, new VertexBufferBinding(InstanceBuffer, 0, 1));
+            public void DrawInstancedQuads(VertexBuffer instanceBuffer, int instanceCount) {
+                DrawInstancedQuads(instanceCount, new VertexBufferBinding(instanceBuffer, 0, 1));
             }
 
             /// <summary>
@@ -171,20 +158,20 @@ namespace Custom2d_Engine.Rendering
             /// </summary>
             /// <param name="instanceCount"></param>
             /// <param name="vertexBuffers"></param>
-            public void DrawInstancedQuads(int instanceCount, params VertexBufferBinding[] vertexBuffers)
-            {
-                VertexBufferBinding[] bindings = vertexBuffers.Prepend(new VertexBufferBinding(pipeline.quadVerts)).ToArray();
+            public void DrawInstancedQuads(int instanceCount, params VertexBufferBinding[] vertexBuffers) {
+                VertexBufferBinding[] bindings =
+                    vertexBuffers.Prepend(new VertexBufferBinding(_pipeline.QuadVerts)).ToArray();
 
-                var graphics = pipeline.Graphics;
-                var effect = pipeline.CurrentState.CurrentEffect;
-                var cameraMatrixInv = pipeline.CurrentState.CurrentProjection;
+                var graphics = _pipeline.Graphics;
+                var effect = _pipeline._currentState.CurrentEffect;
+                var cameraMatrixInv = _pipeline._currentState.CurrentProjection;
                 graphics.BlendState = BlendState.AlphaBlend;
 
                 //effect.CurrentTechnique = effect.Techniques["Unlit"];
 
                 //We don't know if sprite atlas is used
-                effect.Parameters[Effects.SpriteAtlas]?.SetValue(pipeline.CurrentState.SpriteAtlas);
-                effect.Parameters[Effects.AtlasSize]?.SetValue(pipeline.CurrentState.SpriteAtlas.Depth);
+                effect.Parameters[Effects.SpriteAtlas]?.SetValue(_pipeline._currentState.SpriteAtlas);
+                effect.Parameters[Effects.AtlasSize]?.SetValue(_pipeline._currentState.SpriteAtlas.Depth);
                 //Camera parameters are always used
                 effect.Parameters[Effects.CameraRS].SetValue(cameraMatrixInv.RS.Flat);
                 effect.Parameters[Effects.CameraT].SetValue(cameraMatrixInv.T);
@@ -192,9 +179,9 @@ namespace Custom2d_Engine.Rendering
 
                 effect.CurrentTechnique.Passes[0].Apply();
 
-                graphics.Indices = pipeline.quadInds;
+                graphics.Indices = _pipeline.QuadInds;
 
-                pipeline.Graphics.SamplerStates[1] = SamplerState.PointClamp;
+                _pipeline.Graphics.SamplerStates[1] = SamplerState.PointClamp;
                 //pipeline.Graphics.Textures[0] = pipeline.CurrentState.SpriteAtlas;
 
                 graphics.SetVertexBuffers(bindings);
@@ -202,9 +189,9 @@ namespace Custom2d_Engine.Rendering
             }
 
 
-            public void DrawSortedLayerQuads<T>(DynamicVertexBuffer buffer, Ordered<T>[] instances) where T : struct
-            {
-                DrawSortedLayerQuadsNoAlloc(buffer, instances, new T[MathHelper.Min(buffer.VertexCount, instances.Length)]);
+            public void DrawSortedLayerQuads<T>(DynamicVertexBuffer buffer, Ordered<T>[] instances) where T : struct {
+                DrawSortedLayerQuadsNoAlloc(buffer, instances,
+                    new T[MathHelper.Min(buffer.VertexCount, instances.Length)]);
             }
 
             /// <summary>
@@ -214,8 +201,8 @@ namespace Custom2d_Engine.Rendering
             /// <param name="buffer">Vertex buffer, does not need to be the same length as <paramref name="instances"/>, but must be compatible with T</param>
             /// <param name="sortedInstancesArr">Must be the same length as <paramref name="buffer"/></param>
             /// <param name="instances"></param>
-            public void DrawSortedLayerQuadsNoAlloc<T>(DynamicVertexBuffer buffer, Ordered<T>[] instances, T[] sortedInstancesArr) where T : struct
-            {
+            public void DrawSortedLayerQuadsNoAlloc<T>(DynamicVertexBuffer buffer, Ordered<T>[] instances,
+                T[] sortedInstancesArr) where T : struct {
                 var sorted = Ordered<T>.SortByOrder(instances);
 
                 var stripSize = MathHelper.Min(buffer.VertexCount, instances.Length);
@@ -225,12 +212,10 @@ namespace Custom2d_Engine.Rendering
 
                 var i = 0;
 
-                foreach (var value in sorted.EnumerateNestedValues())
-                {
+                foreach (var value in sorted.EnumerateNestedValues()) {
                     data[i++] = value;
 
-                    if (i == stripSize)
-                    {
+                    if (i == stripSize) {
                         buffer.SetData(data, 0, i, SetDataOptions.None);
 
                         DrawInstancedQuads(buffer, i);
@@ -239,41 +224,33 @@ namespace Custom2d_Engine.Rendering
                     }
                 }
 
-                if (i != 0)
-                {
+                if (i != 0) {
                     buffer.SetData(data, 0, i, SetDataOptions.None);
                     DrawInstancedQuads(buffer, i);
                 }
             }
         }
 
-        public struct State
-        {
+        public struct State {
             public TransformMatrix CurrentProjection { get; set; }
             public Effect CurrentEffect { get; set; }
 
             public Texture3D SpriteAtlas { get; set; }
 
-            public void SetCamera(Camera cam)
-            {
+            public void SetCamera(Camera cam) {
                 CurrentProjection = cam.ProjectionMatrix;
             }
 
-            public void SetCameraMatrix(TransformMatrix cam)
-            {
+            public void SetCameraMatrix(TransformMatrix cam) {
                 CurrentProjection = cam.Inverse();
             }
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct InstanceData
-        {
-            public Sprite sprite 
-            { 
-                init
-                {
-                    atlasPos = new Vector4(value.TextureRect.X + value.TextureIndex, value.TextureRect.Y, value.TextureRect.Width, value.TextureRect.Height);
-                } 
+        public struct InstanceData {
+            public Sprite Sprite {
+                init => atlasPos = new Vector4(value.TextureRect.x + value.TextureIndex, value.TextureRect.y,
+                    value.TextureRect.width, value.TextureRect.height);
             }
 
             public Vector4 rotScale;
@@ -281,54 +258,44 @@ namespace Custom2d_Engine.Rendering
             public Vector4 color;
             public Vector4 atlasPos;
 
-            public InstanceData(TransformMatrix transform, Color color)
-            {
-                this.rotScale = transform.RS.Flat;
-                this.pos = transform.T;
+            public InstanceData(TransformMatrix transform, Color color) {
+                rotScale = transform.RS.Flat;
+                pos = transform.T;
                 this.color = color.ToVector4();
             }
         }
 
-        public class CameraScope : IDisposable 
-        {
-            private TransformMatrix restoreProj;
-            private RenderPipeline renderPipeline;
+        public class CameraScope : IDisposable {
+            private readonly TransformMatrix _restoreProj;
+            private readonly RenderPipeline _renderPipeline;
 
-            public CameraScope(RenderPipeline pipeline, Camera cam) : this(pipeline, cam.ProjectionMatrix)
-            {
-
+            public CameraScope(RenderPipeline pipeline, Camera cam) : this(pipeline, cam.ProjectionMatrix) {
             }
 
-            public CameraScope(RenderPipeline pipeline, TransformMatrix cam)
-            {
-                renderPipeline = pipeline;
-                restoreProj = renderPipeline.CurrentState.CurrentProjection;
-                renderPipeline.CurrentState.CurrentProjection = cam;
+            public CameraScope(RenderPipeline pipeline, TransformMatrix cam) {
+                _renderPipeline = pipeline;
+                _restoreProj = _renderPipeline._currentState.CurrentProjection;
+                _renderPipeline._currentState.CurrentProjection = cam;
             }
 
-            public void Dispose()
-            {
-                renderPipeline.CurrentState.CurrentProjection = restoreProj;
+            public void Dispose() {
+                _renderPipeline._currentState.CurrentProjection = _restoreProj;
             }
         }
 
-        public class EffectScope : IDisposable
-        {
-            private RenderPipeline renderPipeline;
-            private Effect oldEffect;
+        public class EffectScope : IDisposable {
+            private readonly RenderPipeline _renderPipeline;
+            private readonly Effect _oldEffect;
 
-            public EffectScope(RenderPipeline pipeline, Effect effect)
-            {
-                oldEffect = pipeline.CurrentState.CurrentEffect;
-                pipeline.CurrentState.CurrentEffect = effect;
-                renderPipeline = pipeline;
+            public EffectScope(RenderPipeline pipeline, Effect effect) {
+                _oldEffect = pipeline._currentState.CurrentEffect;
+                pipeline._currentState.CurrentEffect = effect;
+                _renderPipeline = pipeline;
             }
 
-            public void Dispose()
-            {
-                renderPipeline.CurrentState.CurrentEffect = oldEffect;
+            public void Dispose() {
+                _renderPipeline._currentState.CurrentEffect = _oldEffect;
             }
         }
-
     }
 }

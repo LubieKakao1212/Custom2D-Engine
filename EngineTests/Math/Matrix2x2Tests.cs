@@ -4,16 +4,13 @@ using NUnit.Framework;
 using System;
 using static Custom2d_Engine.Math.MathUtil;
 
-namespace Custom2d_Engine.Tests.Math
-{
+namespace Custom2d_Engine.Tests.Math {
     [TestFixture]
-    internal class Matrix2x2Deconstruct
-    {
+    internal class Matrix2x2Deconstruct {
         float epsilon = 1f / 1024f;
 
         [Test]
-        public void Rotation()
-        {
+        public void Rotation() {
             var r = MathF.PI / 8f;
 
             var mat = Matrix2x2.Rotation(r);
@@ -24,8 +21,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void DeconstructRSS()
-        {
+        public void DeconstructRSS() {
             var r = MathF.PI / 8f;
             var sk = MathF.PI / 8f;
             var sc = new Vector2(2f, 0.5f);
@@ -38,8 +34,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void DeconstructRSR()
-        {
+        public void DeconstructRSR() {
             var scale = new Vector2(1f, 0.5f);
             var r = Matrix2x2.Rotation(MathF.PI / 2f);
             var rs = Matrix2x2.RotationScale(MathF.PI / 4f, scale);
@@ -66,8 +61,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void RSSMulInverse()
-        {
+        public void RSSMulInverse() {
             var r = MathF.PI / 8f;
             var sk = MathF.PI / 8f;
             var sc = new Vector2(2f, 0.5f);
@@ -80,8 +74,7 @@ namespace Custom2d_Engine.Tests.Math
             TestHelper.AssertIdentity(result);
         }
 
-        private void ValidateParams(float r, float rD, float sk, float skD, Vector2 sc, Vector2 scD)
-        {
+        private void ValidateParams(float r, float rD, float sk, float skD, Vector2 sc, Vector2 scD) {
             Assert.AreEqual(0f, AngleDistance(r, rD), epsilon, $"Theta: {LoopAngle(rD)}, expected {LoopAngle(r)}");
             Assert.AreEqual(0f, AngleDistance(sk, skD), epsilon, $"xShear: {LoopAngle(skD)}, expected {LoopAngle(sk)}");
             Assert.AreEqual(sc.X, scD.X, epsilon, $"Scale X: {scD.X}, expected {sc.X}");

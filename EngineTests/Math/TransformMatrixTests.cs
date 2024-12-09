@@ -6,11 +6,9 @@ using NUnit.Framework;
 using System;
 using static Custom2d_Engine.Tests.Math.TestHelper;
 
-namespace Custom2d_Engine.Tests.Math
-{
+namespace Custom2d_Engine.Tests.Math {
     [TestFixture]
-    internal class TransformMatrixTests
-    {
+    internal class TransformMatrixTests {
         Vector2 testVect1 = Vector2.One;
         Vector2 testVect2 = new(2f, -1f);
 
@@ -26,22 +24,20 @@ namespace Custom2d_Engine.Tests.Math
         Matrix2x2 scale2 = Matrix2x2.Scale(scaleVect2);
 
         [Test]
-        public void Translation()
-        {
+        public void Translation() {
             var trans = new TransformMatrix(new Matrix2x2(1f), translation1);
 
             var v11 = Vector2.One;
 
             var o = trans.TransformPoint(v11);
             AssertVector(new(2f, 3f), o);
-            
+
             o = trans.TransformDirection(v11);
             AssertVector(new(1f, 1f), o);
         }
 
         [Test]
-        public void Rotation90()
-        {
+        public void Rotation90() {
             var trans = new TransformMatrix(rotation90, Vector2.Zero);
 
             var v11 = Vector2.One;
@@ -54,8 +50,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void Scale()
-        {
+        public void Scale() {
             var trans = new TransformMatrix(scale, Vector2.Zero);
 
             var v11 = Vector2.One;
@@ -68,11 +63,10 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void TranslationMulTranslation()
-        {
+        public void TranslationMulTranslation() {
             var trans1 = new TransformMatrix(new Matrix2x2(1f), translation1);
             var trans2 = new TransformMatrix(new Matrix2x2(1f), translation2)
-                * trans1;
+                         * trans1;
 
             var v11 = Vector2.One;
 
@@ -84,8 +78,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void Rotation90MulTranslation()
-        {
+        public void Rotation90MulTranslation() {
             var trans1 = new TransformMatrix(new Matrix2x2(1f), translation1);
 
             var trans2 = new TransformMatrix(rotation90, Vector2.Zero) * trans1;
@@ -104,12 +97,11 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void TranslationMulRotation90()
-        {
+        public void TranslationMulRotation90() {
             var trans1 = new TransformMatrix(rotation90, Vector2.Zero);
-            var trans2 = new TransformMatrix(new Matrix2x2(1f), translation1) 
-                * trans1;
-            
+            var trans2 = new TransformMatrix(new Matrix2x2(1f), translation1)
+                         * trans1;
+
             var v11 = Vector2.One;
 
             //(1f, 1f) rot 90 + (1f, 2f)
@@ -122,12 +114,11 @@ namespace Custom2d_Engine.Tests.Math
             o = trans2.TransformDirection(v11);
             AssertVector(new(-1f, 1f), o);
         }
-        
+
         [Test]
-        public void TRSSnoSkew()
-        {
+        public void TRSSnoSkew() {
             var trss = TransformMatrix.TranslationRotationShearScale(translation1, angle90, 0f, scaleVect);
-            
+
             //(1, 1) * (2, 3) rot 90 + (1, 2)
             //(2, 3) rot 90 + (1, 2)
             //(-3, 2) + (1, 2)
@@ -142,8 +133,7 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void TRSSnoSkewMulTRSSnoSkew()
-        {
+        public void TRSSnoSkewMulTRSSnoSkew() {
             var trss1 = TransformMatrix.TranslationRotationShearScale(translation1, angle90, 0f, scaleVect);
 
             var trss2 = TransformMatrix.TranslationRotationShearScale(translation2, -angle90, 0f, scaleVect2) * trss1;
@@ -180,11 +170,11 @@ namespace Custom2d_Engine.Tests.Math
         }
 
         [Test]
-        public void TRSSMulInverse()
-        {
+        public void TRSSMulInverse() {
             //var trss1 = TransformMatrix.TranslationRotationShearScale(translation1, angle90, 0f, scaleVect);
 
-            var trss2 = TransformMatrix.TranslationRotationShearScale(translation2, -angle90 / 2f, 0f, new(1f,1f));// scaleVect2);// * trss1;
+            var trss2 = TransformMatrix.TranslationRotationShearScale(translation2, -angle90 / 2f, 0f,
+                new(1f, 1f)); // scaleVect2);// * trss1;
 
             var inv = trss2.Inverse();
 
@@ -194,8 +184,8 @@ namespace Custom2d_Engine.Tests.Math
             AssertIdentity(trss2 * inv);
         }
 
-        private void TestTransform(Vector2 expectedPoint, Vector2 expectedDirection, TransformMatrix transform, Vector2 input)
-        {
+        private void TestTransform(Vector2 expectedPoint, Vector2 expectedDirection, TransformMatrix transform,
+            Vector2 input) {
             var o = transform.TransformPoint(input);
             AssertVector(expectedPoint, o);
 

@@ -1,40 +1,28 @@
 ﻿using Microsoft.Xna.Framework;
 using Custom2d_Engine.Rendering.Sprites;
-using Custom2d_Engine.Scenes.Events;
 
-namespace Custom2d_Engine.Scenes
-{
+namespace Custom2d_Engine.Scenes {
     using Math;
 
-    public class DrawableObject : HierarchyObject
-    {
+    public class DrawableObject : HierarchyObject {
         public Color Color { get; set; }
         public float DrawOrder { get; set; }
-        public long DrawLayerMask => drawLayerMask;
-        
-        public Sprite Sprite { get; set; } = new Sprite() { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.Zero) };
+
+        public Sprite Sprite { get; set; } = new Sprite()
+            { TextureIndex = 0, TextureRect = new BoundingRect(Vector2.Zero, Vector2.Zero) };
 
         /// <summary>
         /// Can this object be batched with other Objects?
         /// </summary>
-        public bool InteruptQueue
-        {
-            get;
-            protected set;
-        }
+        public bool InteruptQueue { get; protected set; }
 
-        //All
-        private long drawLayerMask = -1;
-
-        public DrawableObject(Color color, float drawOrder) : base()
-        {
+        public DrawableObject(Color color, float drawOrder) {
             Color = color;
             DrawOrder = drawOrder;
         }
 
-        public virtual DrawableObject SetInterupQueue(bool interuptQueue)
-        {
-            InteruptQueue = interuptQueue;
+        public DrawableObject SetInterruptQueue(bool interruptQueue) {
+            InteruptQueue = interruptQueue;
             return this;
         }
     }

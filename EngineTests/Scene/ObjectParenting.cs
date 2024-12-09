@@ -1,22 +1,16 @@
-﻿using Custom2d_Engine.Scenes;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Custom2d_Engine.Scenes;
+using NUnit.Framework;
 
-namespace Custom2d_Engine.Tests.Scene
-{
+namespace Custom2d_Engine.Tests.Scene {
     [TestFixture]
-    internal class SceneObjectTest
-    {
+    internal class SceneObjectTest {
         HierarchyObject parent;
         HierarchyObject child;
 
         [Test]
-        public void Parenting()
-        {
+        public void Parenting() {
             SetUpHierarchy();
 
             Assert.AreSame(parent, child.Parent);
@@ -28,8 +22,7 @@ namespace Custom2d_Engine.Tests.Scene
         }
 
         [Test]
-        public void TransformParenting() 
-        {
+        public void TransformParenting() {
             SetUpHierarchy();
 
             Assert.AreSame(parent.Transform, child.Transform.Parent);
@@ -37,19 +30,14 @@ namespace Custom2d_Engine.Tests.Scene
         }
 
         [Test]
-        public void ManualTransformChange()
-        {
+        public void ManualTransformChange() {
             SetUpHierarchy();
 
             Assert.Throws<InvalidOperationException>(
-                () =>
-                {
-                    parent.Transform.Parent = child.Transform.Parent;
-                });
-        }   
+                () => { parent.Transform.Parent = child.Transform.Parent; });
+        }
 
-        private void SetUpHierarchy()
-        {
+        private void SetUpHierarchy() {
             parent = new HierarchyObject();
             child = new HierarchyObject();
 

@@ -1,31 +1,21 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-
-namespace Custom2d_Engine.Util
-{
-    public static class DirectionUtil
-    {
-        public static Direction ToDirection(this CardinalDirection dir)
-        {
-            if (dir == CardinalDirection.None)
-            {
+namespace Custom2d_Engine.Util {
+    public static class DirectionUtil {
+        public static Direction ToDirection(this CardinalDirection dir) {
+            if (dir == CardinalDirection.None) {
                 return Direction.None;
             }
+
             return (Direction)(((byte)dir - 1) * 2);
         }
 
-        public static Directions ToDirections(this Direction dir)
-        {
+        public static Directions ToDirections(this Direction dir) {
             return (Directions)(1 << (byte)dir);
         }
 
-        public static CardinalDirection Invert(this CardinalDirection dir) => dir switch
-        {
+        public static CardinalDirection Invert(this CardinalDirection dir) => dir switch {
             CardinalDirection.Top => CardinalDirection.Bottom,
             CardinalDirection.Left => CardinalDirection.Right,
             CardinalDirection.Right => CardinalDirection.Left,
@@ -33,8 +23,7 @@ namespace Custom2d_Engine.Util
             _ => CardinalDirection.None
         };
 
-        public static Direction Invert(this Direction dir) => dir switch
-        {
+        public static Direction Invert(this Direction dir) => dir switch {
             Direction.Top => Direction.Bottom,
             Direction.Left => Direction.Right,
             Direction.Right => Direction.Left,
@@ -46,8 +35,7 @@ namespace Custom2d_Engine.Util
             _ => Direction.None
         };
 
-        public static Point ToVector(this CardinalDirection dir) => dir switch
-        {
+        public static Point ToVector(this CardinalDirection dir) => dir switch {
             CardinalDirection.Top => new Point(0, 1),
             CardinalDirection.Left => new Point(-1, 0),
             CardinalDirection.Right => new Point(1, 0),
@@ -55,8 +43,7 @@ namespace Custom2d_Engine.Util
             _ => Point.Zero
         };
 
-        public static Point ToVector(this Direction dir) => dir switch
-        {
+        public static Point ToVector(this Direction dir) => dir switch {
             Direction.Top => new Point(0, 1),
             Direction.Left => new Point(-1, 0),
             Direction.Right => new Point(1, 0),
@@ -69,8 +56,7 @@ namespace Custom2d_Engine.Util
         };
     }
 
-    public enum CardinalDirection : byte
-    {
+    public enum CardinalDirection : byte {
         None = 0,
         Top = 1,
         Right = 2,
@@ -78,8 +64,7 @@ namespace Custom2d_Engine.Util
         Left = 4
     }
 
-    public enum Direction : byte
-    {
+    public enum Direction : byte {
         Top = 0,
         TopRight = 1,
         Right = 2,
@@ -92,8 +77,7 @@ namespace Custom2d_Engine.Util
     }
 
     [Flags]
-    public enum Directions : byte
-    {
+    public enum Directions : byte {
         None = 0,
         Top = 1,
         TopRight = 2,

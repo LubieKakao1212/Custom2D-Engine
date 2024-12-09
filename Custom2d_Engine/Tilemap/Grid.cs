@@ -1,57 +1,41 @@
 ﻿using Microsoft.Xna.Framework;
 using Custom2d_Engine.Math;
 using Custom2d_Engine.Scenes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Tilemap
-{
-    public class Grid : HierarchyObject
-    {
-        public Vector2 CellSize;
-        
-        public Grid(Vector2 cellSize)
-        {
-            CellSize = cellSize;
+namespace Custom2d_Engine.Tilemap {
+    public class Grid : HierarchyObject {
+        public Vector2 cellSize;
+
+        public Grid(Vector2 cellSize) {
+            this.cellSize = cellSize;
         }
 
-        public Point WorldToCell(Vector2 worldPos)
-        {
+        public Point WorldToCell(Vector2 worldPos) {
             var localPos = Transform.WorldToLocal.TransformPoint(worldPos);
 
             return LocalToCell(localPos);
         }
 
-        public Point LocalToCell(Vector2 localPos)
-        {
-            localPos /= CellSize;
-            
+        public Point LocalToCell(Vector2 localPos) {
+            localPos /= cellSize;
+
             return localPos.FloorToInt();
         }
 
-        public Vector2 GridToCellCornerLocal(Point gridPos)
-        {
-            return new Vector2(gridPos.X * CellSize.X, gridPos.Y * CellSize.Y);
+        public Vector2 GridToCellCornerLocal(Point gridPos) {
+            return new Vector2(gridPos.X * cellSize.X, gridPos.Y * cellSize.Y);
         }
 
-        public Vector2 GridToCellCornerWorld(Point gridPos)
-        {
+        public Vector2 GridToCellCornerWorld(Point gridPos) {
             return Transform.LocalToWorld.TransformPoint(GridToCellCornerLocal(gridPos));
         }
 
-        public Vector2 GridToCellCenterLocal(Point gridPos)
-        {
-            return GridToCellCornerLocal(gridPos) + (CellSize / 2f);
+        public Vector2 GridToCellCenterLocal(Point gridPos) {
+            return GridToCellCornerLocal(gridPos) + (cellSize / 2f);
         }
 
-        public Vector2 GridToCellCenterWorld(Point gridPos)
-        {
+        public Vector2 GridToCellCenterWorld(Point gridPos) {
             return Transform.LocalToWorld.TransformPoint(GridToCellCenterLocal(gridPos));
         }
-
     }
 }

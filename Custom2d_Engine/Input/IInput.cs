@@ -1,14 +1,7 @@
-﻿using Custom2d_Engine.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace Custom2d_Engine.Input
-{
-    public interface IInput
-    {
+namespace Custom2d_Engine.Input {
+    public interface IInput {
         public string FriendlyName { get; }
 
         event Action<IInput> Started;

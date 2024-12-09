@@ -1,31 +1,19 @@
-﻿using Custom2d_Engine.Input;
-using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Custom2d_Engine.Rendering.RenderPipeline;
+﻿namespace Custom2d_Engine.Input;
 
-namespace Custom2d_Engine.Input
-{
-    public abstract class SettableValueInputBase<T> : ValueInputBase<T>
-    {
-        protected override T Value => value;
+public abstract class SettableValueInputBase<T> : ValueInputBase<T> {
+    protected override T Value => _value!;
 
-        private bool state;
-        private T value;
-
-        internal bool UpdateState(T newValue)
-        {
-            value = newValue;
-            var newState = IsActive(newValue);
-            var changed = state != newState;
-            state = newState;
-            InvokeEvents(newState, changed);
-            return changed;
-        }
-
-        protected abstract bool IsActive(T value);
+    private bool _state;
+    private T? _value;
+    
+    internal bool UpdateState(T newValue) {
+        _value = newValue;
+        var newState = IsActive(newValue);
+        var changed = _state != newState;
+        _state = newState;
+        InvokeEvents(newState, changed);
+        return changed;
     }
+
+    protected abstract bool IsActive(T value);
 }

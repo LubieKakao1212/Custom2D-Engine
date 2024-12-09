@@ -1,68 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Custom2d_Engine.Input.Binding
-{
-    public class ProcessorInput<I, O> : ValueInputBase<O>
-    {
-        public override string FriendlyName => name;
+namespace Custom2d_Engine.Input.Binding {
+    public class ProcessorInput<I, O> : ValueInputBase<O> {
+        public override string FriendlyName => _name;
 
-        protected override O Value
-        {
-            get
-            {
-                if (input == null)
-                {
+        protected override O Value {
+            get {
+                if (_input == null) {
                     //TODO Binding Exception
                     throw new Exception("Unbound");
                 }
-                return processor(input.GetCurrentValue<I>());
+
+                return _processor(_input.GetCurrentValue<I>());
             }
         }
 
-        private Func<I, O> processor;
-        private ValueInputBase<I> input;
-        private string name;
+        private readonly Func<I, O> _processor;
+        private ValueInputBase<I>? _input;
+        private string _name;
 
-        public ProcessorInput(Func<I, O> processor, string name)
-        {
-            this.processor = processor;
-            this.name = name;
+        public ProcessorInput(Func<I, O> processor, string name) {
+            this._processor = processor;
+            this._name = name;
         }
 
-        public ProcessorInput<I, O> Bind(ValueInputBase<I> binding, bool inheritName = false)
-        {
+        public ProcessorInput<I, O> Bind(ValueInputBase<I> binding, bool inheritName = false) {
             UnbindCallbacks();
-            this.input = binding;
+            _input = binding;
             BindCallbacks();
-            if (inheritName && binding != null)
-            {
-                name = binding.FriendlyName;
+            if (inheritName) {
+                _name = binding.FriendlyName;
             }
+
             return this;
         }
 
-
-        private void UnbindCallbacks()
-        {
-            if (input != null)
-            {
-                input.Started -= PassStarted;
-                input.Performed -= PassPerformed;
-                input.Canceled -= PassCanceled;
+        private void UnbindCallbacks() {
+            if (_input != null) {
+                _input.Started -= PassStarted;
+                _input.Performed -= PassPerformed;
+                _input.Canceled -= PassCanceled;
             }
         }
 
-        private void BindCallbacks()
-        {
-            if (input != null)
-            {
-                input.Started += PassStarted;
-                input.Performed += PassPerformed;
-                input.Canceled += PassCanceled;
+        private void BindCallbacks() {
+            if (_input != null) {
+                _input.Started += PassStarted;
+                _input.Performed += PassPerformed;
+                _input.Canceled += PassCanceled;
             }
         }
     }
