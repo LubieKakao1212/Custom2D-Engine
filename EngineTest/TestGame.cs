@@ -1,401 +1,398 @@
-﻿using MarchingSquares.MarchingSquares;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Custom2d_Engine.Input;
 using Custom2d_Engine.Input.Binding;
 using Custom2d_Engine.Math;
+using Custom2d_Engine.Physics;
 using Custom2d_Engine.Rendering;
 using Custom2d_Engine.Rendering.Sprites;
 using Custom2d_Engine.Rendering.Sprites.Atlas;
 using Custom2d_Engine.Scenes;
-using Custom2d_Engine.Scenes.Events;
+using Custom2d_Engine.Ticking;
 using Custom2d_Engine.Tilemap;
 using Custom2d_Engine.Util;
+using MarchingSquares.MarchingSquares;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using nkast.Aether.Physics2D.Diagnostics;
 using nkast.Aether.Physics2D.Dynamics;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Custom2d_Engine.Physics;
-using Custom2d_Engine.Ticking;
 
-namespace EngineTest {
-    public class TestGame : Game {
-        private GraphicsDeviceManager graphics;
+namespace EngineTest;
 
-        private RenderPipeline renderer;
-        private InputManager inputManager;
+public class TestGame : Game {
+    private GraphicsDeviceManager graphics;
 
-        private Hierarchy scene;
+    private RenderPipeline renderer;
+    private InputManager inputManager;
 
-        private List<HierarchyObject> Tips = new List<HierarchyObject>();
+    private Hierarchy scene;
 
-        private Camera Camera;
+    private List<HierarchyObject> Tips = new List<HierarchyObject>();
 
-        private CompoundAxixBindingInput input_horizontal;
-        private CompoundAxixBindingInput input_vertical;
-        private CompoundAxixBindingInput input_scale;
-        private CompoundAxixBindingInput input_rotation;
-        private CompoundAxixBindingInput input_shear;
-        private CompoundAxixBindingInput input_aspect;
+    private Camera Camera;
 
-        private float cameraShear;
+    private CompoundAxixBindingInput input_horizontal;
+    private CompoundAxixBindingInput input_vertical;
+    private CompoundAxixBindingInput input_scale;
+    private CompoundAxixBindingInput input_rotation;
+    private CompoundAxixBindingInput input_shear;
+    private CompoundAxixBindingInput input_aspect;
 
-        private float CameraSpeed = 1f;
-        private float CameraZoomSpeed = 1f;
-        private float CameraRotSpeed = MathHelper.ToRadians(90f);
+    private float cameraShear;
 
-        private float TipRotationSpeed = MathHelper.PiOver2;
+    private float CameraSpeed = 1f;
+    private float CameraZoomSpeed = 1f;
+    private float CameraRotSpeed = MathHelper.ToRadians(90f);
 
-        private float bladeLength = 1f;
+    private float TipRotationSpeed = MathHelper.PiOver2;
 
-        private const int WindmillCount = 1;
+    private float bladeLength = 1f;
 
-        private List<Sprite> sprites;
+    private const int WindmillCount = 1;
 
-        private Tilemap tilemap;
-        private Grid grid;
+    private List<Sprite> sprites;
 
-        private SpriteAtlas<Color> atlas;
+    private Tilemap tilemap;
+    private Grid grid;
 
-        private Stopwatch timer = new Stopwatch();
-        private TimeSpan lastFrameStamp;
+    private SpriteAtlas<Color> atlas;
 
-        private double smoothDelta;
+    private Stopwatch timer = new Stopwatch();
+    private TimeSpan lastFrameStamp;
 
-        private GameTime GameTime;
+    private double smoothDelta;
 
-        private Effect DepthMarchedColor;
+    private GameTime GameTime;
 
-        private World physicsWorld;
+    private Effect DepthMarchedColor;
 
-        private DebugView debug;
+    private World physicsWorld;
 
-        private TickManager tickManager = new TickManager();
+    private DebugView debug;
 
-        public TestGame() {
-            graphics = new GraphicsDeviceManager(this);
+    private TickManager tickManager = new TickManager();
 
-            //graphics.PreferredBackBufferWidth = 1920;
-            //graphics.PreferredBackBufferHeight = 1080;
+    public TestGame() {
+        graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = 512;
-            graphics.PreferredBackBufferHeight = 512;
+        //graphics.PreferredBackBufferWidth = 1920;
+        //graphics.PreferredBackBufferHeight = 1080;
 
-            //graphics.ToggleFullScreen();
+        graphics.PreferredBackBufferWidth = 512;
+        graphics.PreferredBackBufferHeight = 512;
 
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-            renderer = new RenderPipeline();
+        //graphics.ToggleFullScreen();
 
-            IsFixedTimeStep = true;
-            graphics.SynchronizeWithVerticalRetrace = true;
-        }
+        Content.RootDirectory = "Content";
+        IsMouseVisible = true;
+        renderer = new RenderPipeline();
 
-        protected override void Initialize() {
-            renderer.Init(GraphicsDevice);
+        IsFixedTimeStep = true;
+        graphics.SynchronizeWithVerticalRetrace = true;
+    }
 
-            #region Inputs
+    protected override void Initialize() {
+        renderer.Init(GraphicsDevice);
 
-            inputManager = new InputManager(Window);
+        #region Inputs
 
-            input_horizontal = inputManager.CreateSimpleAxisBinding("Horizontal", Keys.A, Keys.D);
-            input_vertical = inputManager.CreateSimpleAxisBinding("Vertical", Keys.S, Keys.W);
-            input_scale = inputManager.CreateSimpleAxisBinding("Scale", Keys.Subtract, Keys.Add);
-            //Rotation is counterclockwise
-            input_rotation = inputManager.CreateSimpleAxisBinding("Rotation", Keys.E, Keys.Q);
-            input_shear = inputManager.CreateSimpleAxisBinding("Shear", Keys.Left, Keys.Right);
-            input_aspect = inputManager.CreateSimpleAxisBinding("Aspect", Keys.Down, Keys.Up);
+        inputManager = new InputManager(Window);
 
-            inputManager.RegisterBinding(input_horizontal);
-            inputManager.RegisterBinding(input_vertical);
-            inputManager.RegisterBinding(input_scale);
-            inputManager.RegisterBinding(input_rotation);
-            inputManager.RegisterBinding(input_shear);
-            inputManager.RegisterBinding(input_aspect);
+        input_horizontal = inputManager.CreateSimpleAxisBinding("Horizontal", Keys.A, Keys.D);
+        input_vertical = inputManager.CreateSimpleAxisBinding("Vertical", Keys.S, Keys.W);
+        input_scale = inputManager.CreateSimpleAxisBinding("Scale", Keys.Subtract, Keys.Add);
+        //Rotation is counterclockwise
+        input_rotation = inputManager.CreateSimpleAxisBinding("Rotation", Keys.E, Keys.Q);
+        input_shear = inputManager.CreateSimpleAxisBinding("Shear", Keys.Left, Keys.Right);
+        input_aspect = inputManager.CreateSimpleAxisBinding("Aspect", Keys.Down, Keys.Up);
 
-            #region BindCallbacks
+        inputManager.RegisterBinding(input_horizontal);
+        inputManager.RegisterBinding(input_vertical);
+        inputManager.RegisterBinding(input_scale);
+        inputManager.RegisterBinding(input_rotation);
+        inputManager.RegisterBinding(input_shear);
+        inputManager.RegisterBinding(input_aspect);
 
-            input_horizontal.Performed += (input) => Camera.Transform.GlobalPosition += Camera.Transform.Right *
-                (CamMoveSpeed(GameTime) * input.GetCurrentValue<float>() /*.LogThis("Horizongtal: ")*/);
+        #region BindCallbacks
 
-            input_vertical.Performed += (input) => Camera.Transform.GlobalPosition += Camera.Transform.Up *
-                (CamMoveSpeed(GameTime) * input.GetCurrentValue<float>() /*.LogThis("Vertical: ")*/);
+        input_horizontal.Performed += (input) => Camera.Transform.GlobalPosition += Camera.Transform.Right *
+            (CamMoveSpeed(GameTime) * input.GetCurrentValue<float>() /*.LogThis("Horizongtal: ")*/);
 
-            input_scale.Performed += (input) => Camera.ViewSize *= 1f + (CameraZoomSpeed *
+        input_vertical.Performed += (input) => Camera.Transform.GlobalPosition += Camera.Transform.Up *
+            (CamMoveSpeed(GameTime) * input.GetCurrentValue<float>() /*.LogThis("Vertical: ")*/);
+
+        input_scale.Performed += (input) => Camera.ViewSize *= 1f + (CameraZoomSpeed *
+                                                                     input.GetCurrentValue<
+                                                                         float>() /*.LogThis("Zoom: ")*/ *
+                                                                     (float)GameTime.ElapsedGameTime.TotalSeconds);
+
+        input_rotation.Performed += (input) => Camera.Transform.LocalRotation += CameraRotSpeed *
+            input.GetCurrentValue<float>() /*.LogThis("Rotation: ")*/ *
+            (float)GameTime.ElapsedGameTime.TotalSeconds;
+
+        input_shear.Performed += (input) => {
+            cameraShear += input.GetCurrentValue<float>() * (float)GameTime.ElapsedGameTime.TotalSeconds;
+            Camera.Transform.LocalShear = MathF.Atan(cameraShear);
+        };
+
+        input_aspect.Performed += (input) => Camera.AspectRatio *= 1f + (CameraZoomSpeed *
                                                                          input.GetCurrentValue<
                                                                              float>() /*.LogThis("Zoom: ")*/ *
-                                                                         (float)GameTime.ElapsedGameTime.TotalSeconds);
-
-            input_rotation.Performed += (input) => Camera.Transform.LocalRotation += CameraRotSpeed *
-                input.GetCurrentValue<float>() /*.LogThis("Rotation: ")*/ *
-                (float)GameTime.ElapsedGameTime.TotalSeconds;
-
-            input_shear.Performed += (input) => {
-                cameraShear += input.GetCurrentValue<float>() * (float)GameTime.ElapsedGameTime.TotalSeconds;
-                Camera.Transform.LocalShear = MathF.Atan(cameraShear);
-            };
-
-            input_aspect.Performed += (input) => Camera.AspectRatio *= 1f + (CameraZoomSpeed *
-                                                                             input.GetCurrentValue<
-                                                                                 float>() /*.LogThis("Zoom: ")*/ *
-                                                                             (float)GameTime.ElapsedGameTime
-                                                                                 .TotalSeconds);
+                                                                         (float)GameTime.ElapsedGameTime
+                                                                             .TotalSeconds);
 
 
-            inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
-            inputManager.GetMouse(MouseButton.Right).Performed += (input) =>
-                tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
+        inputManager.GetMouse(MouseButton.Left).Performed += (input) => CreateBox(MousePosWorld());
+        inputManager.GetMouse(MouseButton.Right).Performed += (input) =>
+            tilemap.SetTile(grid.WorldToCell(MousePosWorld()), Tiles.bucket[0]);
 
-            #endregion
+        #endregion
 
-            #endregion
+        #endregion
 
-            Camera = new Camera() { ViewSize = 16 };
-            scene = new Hierarchy(tickManager);
+        Camera = new Camera() { ViewSize = 16 };
+        scene = new Hierarchy(tickManager);
 
-            grid = new Grid(Vector2.One);
+        grid = new Grid(Vector2.One);
 
-            scene.AddObject(grid);
+        scene.AddObject(grid);
 
-            tilemap = new Tilemap();
+        tilemap = new Tilemap();
 
-            //FIllTilemap(tilemap, new Rectangle(-128, -128, 256, 256));
+        //FIllTilemap(tilemap, new Rectangle(-128, -128, 256, 256));
 
-            var mapRenderer = new TilemapRenderer(tilemap, grid, renderer, Color.White, -11f);
+        var mapRenderer = new TilemapRenderer(tilemap, grid, renderer, Color.White, -11f);
 
-            mapRenderer.Parent = grid;
-            //var val = new Reference<float>(0f);
-            // mapRenderer.AddAccurateRepeatingAction(() => {
-            //     val.Value += MathF.Tau / 120f;
-            //     mapRenderer.spacing = new Vector2(MathF.Cos(val), MathF.Sin(val)) + (Vector2.One * 2f);
-            // }, 1f / 60f);
+        mapRenderer.Parent = grid;
+        //var val = new Reference<float>(0f);
+        // mapRenderer.AddAccurateRepeatingAction(() => {
+        //     val.Value += MathF.Tau / 120f;
+        //     mapRenderer.spacing = new Vector2(MathF.Cos(val), MathF.Sin(val)) + (Vector2.One * 2f);
+        // }, 1f / 60f);
 
-            timer.Start();
+        timer.Start();
 
-            base.Initialize();
+        base.Initialize();
+    }
+
+    protected override void LoadContent() {
+        Effects.Init(Content);
+
+        sprites = new();
+
+        atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048);
+
+        var tex = Content.Load<Texture2D>("Texture");
+
+        for (int i = 0; i < 16; i++) {
+            var x = Random.Shared.Next(0, tex.Width - 5);
+            var y = Random.Shared.Next(0, tex.Height - 5);
+            var w = Random.Shared.Next(1, tex.Width - x);
+            var h = Random.Shared.Next(1, tex.Height - y);
+
+            sprites.AddRange(atlas.AddTextureRects(tex, new Rectangle(x, y, w, h)));
         }
 
-        protected override void LoadContent() {
-            Effects.Init(Content);
+        atlas.Compact();
 
-            sprites = new();
+        renderer.SpriteAtlas = atlas.AtlasTextures;
+        // TODO: use this.Content to load your game content here
+        DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
+        DepthMarchedColor.Parameters["Color"].SetValue(Color.Green.ToVector4());
 
-            atlas = new SpriteAtlas<Color>(GraphicsDevice, 2048);
+        var marchingDSS = new DepthStencilState();
+        marchingDSS.DepthBufferWriteEnable = true;
+        marchingDSS.DepthBufferEnable = true;
+        marchingDSS.DepthBufferFunction = CompareFunction.Less;
 
-            var tex = Content.Load<Texture2D>("Texture");
+        var effect2 = DepthMarchedColor.Clone();
+        effect2.Parameters["Color"].SetValue(Color.YellowGreen.ToVector4());
 
-            for (int i = 0; i < 16; i++) {
-                var x = Random.Shared.Next(0, tex.Width - 5);
-                var y = Random.Shared.Next(0, tex.Height - 5);
-                var w = Random.Shared.Next(1, tex.Width - x);
-                var h = Random.Shared.Next(1, tex.Height - y);
+        var random = new Random(1337);
 
-                sprites.AddRange(atlas.AddTextureRects(tex, new Rectangle(x, y, w, h)));
-            }
+        //Green
+        var scalars = new FiniteGrid<float>(new Point(32, 32), () => 0f);
+        scalars.Fill((v) =>
+            (v - new Vector2(15.5f, 15.5f)).Length() / 16f - 1.1f + random.NextSingle() * 0.5f - 0.25f);
 
-            atlas.Compact();
+        Marcher2D.MarchDepthGrid(scalars, out var verts, out var inds);
 
-            renderer.SpriteAtlas = atlas.AtlasTextures;
-            // TODO: use this.Content to load your game content here
-            DepthMarchedColor = Content.Load<Effect>("DepthMarchedColor");
-            DepthMarchedColor.Parameters["Color"].SetValue(Color.Green.ToVector4());
+        var mesh = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10,
+            DepthMarchedColor, marchingDSS);
 
-            var marchingDSS = new DepthStencilState();
-            marchingDSS.DepthBufferWriteEnable = true;
-            marchingDSS.DepthBufferEnable = true;
-            marchingDSS.DepthBufferFunction = CompareFunction.Less;
+        //Yellow
+        scalars.Fill((v) =>
+            (v - new Vector2(15.5f, 15.5f)).Length() / 16f - 0.9f + random.NextSingle() * 0.5f - 0.25f);
+        Marcher2D.MarchDepthGrid(scalars, out verts, out inds);
 
-            var effect2 = DepthMarchedColor.Clone();
-            effect2.Parameters["Color"].SetValue(Color.YellowGreen.ToVector4());
+        var mesh2 = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10,
+            effect2, marchingDSS);
 
-            var random = new Random(1337);
+        mesh2.Transform.LocalPosition = new Vector2(5f, 5f);
 
-            //Green
-            var scalars = new FiniteGrid<float>(new Point(32, 32), () => 0f);
-            scalars.Fill((v) =>
-                (v - new Vector2(15.5f, 15.5f)).Length() / 16f - 1.1f + random.NextSingle() * 0.5f - 0.25f);
+        scene.AddObject(mesh);
+        scene.AddObject(mesh2);
 
-            Marcher2D.MarchDepthGrid(scalars, out var verts, out var inds);
+        scene.AddAccurateRepeatingAction(
+            () => {
+                CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f);
+            }, 0.1f, 10f);
 
-            var mesh = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10,
-                DepthMarchedColor, marchingDSS);
+        CreateWorld();
+    }
 
-            //Yellow
-            scalars.Fill((v) =>
-                (v - new Vector2(15.5f, 15.5f)).Length() / 16f - 0.9f + random.NextSingle() * 0.5f - 0.25f);
-            Marcher2D.MarchDepthGrid(scalars, out verts, out inds);
+    protected override void Update(GameTime gameTime) {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Exit();
 
-            var mesh2 = MeshObject.CreateNew(renderer, VertexPosition.VertexDeclaration, verts, inds, Color.White, -10,
-                effect2, marchingDSS);
+        GameTime = gameTime;
 
-            mesh2.Transform.LocalPosition = new Vector2(5f, 5f);
+        inputManager.UpdateState();
 
-            scene.AddObject(mesh);
-            scene.AddObject(mesh2);
+        //HandleKeyBinding();
 
-            scene.AddAccurateRepeatingAction(
-                () => {
-                    CreateBox(new Vector2(random.RandomNormalised(), random.RandomNormalised()) * 3f);
-                }, 0.1f, 10f);
-
-            CreateWorld();
+        foreach (var windmill in Tips) {
+            windmill.Transform.LocalRotation += TipRotationSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        protected override void Update(GameTime gameTime) {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+        //HandleCameraControls(gameTime);
+        HandlePlaceControls();
 
-            GameTime = gameTime;
+        //var t = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            inputManager.UpdateState();
+        /*Tiles.OversizedRed.Transform = TransformMatrix.TranslationRotationScale(
+            Vector2.Zero, 0f,
+            new Vector2(MathF.Cos(t) + 1f, MathF.Sin(t) / 2f + 1f));*/
 
-            //HandleKeyBinding();
+        physicsWorld.Step(gameTime.ElapsedGameTime);
 
-            foreach (var windmill in Tips) {
-                windmill.Transform.LocalRotation += TipRotationSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
+        scene.Update(gameTime);
 
-            //HandleCameraControls(gameTime);
-            HandlePlaceControls();
+        tickManager.Forward(gameTime.ElapsedGameTime);
 
-            //var t = (float)gameTime.TotalGameTime.TotalSeconds;
+        //grid.Transform.LocalScale = new Vector2(
+        //    MathF.Cos((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f,
+        //    MathF.Sin((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f);
+        base.Update(gameTime);
+    }
 
-            /*Tiles.OversizedRed.Transform = TransformMatrix.TranslationRotationScale(
-                Vector2.Zero, 0f,
-                new Vector2(MathF.Cos(t) + 1f, MathF.Sin(t) / 2f + 1f));*/
+    protected override void Draw(GameTime gameTime) {
+        GraphicsDevice.Clear(Color.Cyan);
+        renderer.RenderScene(scene, Camera);
 
-            physicsWorld.Step(gameTime.ElapsedGameTime);
+        //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
 
-            foreach (var updatable in scene.OrderedInstancesOf<IUpdatable>()) {
-                updatable.Update(gameTime);
-            }
+        //var newStamp = timer.Elapsed;
 
-            tickManager.Forward(gameTime.ElapsedGameTime);
+        //var delta = newStamp - lastFrameStamp;
 
-            //grid.Transform.LocalScale = new Vector2(
-            //    MathF.Cos((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f,
-            //    MathF.Sin((float)gameTime.TotalGameTime.TotalSeconds) / 2f + 0.5f);
-            base.Update(gameTime);
+        //lastFrameStamp = newStamp;
+
+        //smoothDelta = smoothDelta * 0.95 + delta.TotalSeconds * 0.05;
+
+        //delta.TotalMilliseconds.LogThis("Frame Duration: ");
+
+        /*Console.WriteLine($"Smooth Fps: {1.0 / smoothDelta}");
+        Console.WriteLine($"Fps: {1.0 / delta.TotalSeconds}");*/
+
+        base.Draw(gameTime);
+    }
+
+    private void CreateWorld() {
+        physicsWorld = new(new Vector2(0, 0f));
+
+        debug = new DebugView(physicsWorld);
+
+        debug.LoadContent(GraphicsDevice, Content);
+
+        CreateBox(Vector2.Zero);
+    }
+
+    private void CreateBox(Vector2 pos) {
+        var box = physicsWorld.CreateBody(Vector2.Zero, 1f, BodyType.Dynamic);
+        var boxObj = new PhysicsBodyObject(box);
+        var drawable = boxObj.AddDrawableRectFixture(new(1.5f, 1f), Vector2.Zero, 0f, out var fixture, 1f);
+
+        drawable.Sprite = sprites[Random.Shared.Next(0, sprites.Count)];
+        boxObj.Transform.LocalPosition = pos;
+        box.AngularVelocity = 5f; //.ApplyTorque(50f);
+        box.LinearDamping = 0.0f;
+
+        scene.AddObject(boxObj);
+    }
+
+    private HierarchyObject CreateWindmill(Hierarchy hierarchy, float rotation, Vector2 position) {
+        var root = new HierarchyObject();
+
+        root.Transform.LocalRotation = rotation;
+        root.Transform.LocalPosition = position;
+
+        var bar = new DrawableObject(Color.AliceBlue, -1f);
+        var bar2 = new DrawableObject(Color.GreenYellow, 0f);
+        var origin = new DrawableObject(Color.Black, 0f);
+        var blade1 = new DrawableObject(Color.BurlyWood, -0.5f);
+        var blade2 = new DrawableObject(Color.BurlyWood, 0f);
+
+        var tip = new DrawableObject(Color.Red, 0f);
+
+        //Hierarchy RotationRoot -> bar -> bar2 -> tip -> blade1, blade2
+        blade1.Parent = tip;
+        blade2.Parent = tip;
+        tip.Parent = bar2;
+        bar2.Parent = bar;
+        bar.Parent = root;
+
+        bar.Transform.LocalPosition = new Vector2(0f, 0.5f);
+        bar2.Transform.LocalPosition = new Vector2(0f, 1f);
+        bar2.Transform.LocalScale = new Vector2(1f, 2f);
+
+        blade1.Transform.LocalScale = new Vector2(0.25f, bladeLength);
+        blade2.Transform.LocalScale = new Vector2(bladeLength, 0.25f);
+
+        blade1.Transform.LocalPosition = new Vector2(2f, 2f);
+
+        tip.Transform.LocalScale = new Vector2(0.5f, 0.5f);
+        origin.Transform.LocalScale = new Vector2(0.1f, 0.1f);
+
+        hierarchy.AddObject(root);
+
+        return tip;
+    }
+
+    public void FIllTilemap(Tilemap tilemap, Rectangle bounds) {
+        for (int x = 0; x < bounds.Width; x++)
+        for (int y = 0; y < bounds.Height; y++) {
+            tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y),
+                Tiles.bucket[Random.Shared.Next(Tiles.bucket.Length)]);
         }
+    }
 
-        protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.Cyan);
-            renderer.RenderScene(scene, Camera);
+    private void HandlePlaceControls() {
+        //var targetGridPos = ;
 
-            //debug.RenderDebugData(Camera.ProjectionMatrix.ToMatrixXNA(), Matrix.Identity);
-
-            //var newStamp = timer.Elapsed;
-
-            //var delta = newStamp - lastFrameStamp;
-
-            //lastFrameStamp = newStamp;
-
-            //smoothDelta = smoothDelta * 0.95 + delta.TotalSeconds * 0.05;
-
-            //delta.TotalMilliseconds.LogThis("Frame Duration: ");
-
-            /*Console.WriteLine($"Smooth Fps: {1.0 / smoothDelta}");
-            Console.WriteLine($"Fps: {1.0 / delta.TotalSeconds}");*/
-
-            base.Draw(gameTime);
+        if (Mouse.GetState(Window).LeftButton == ButtonState.Pressed) {
+            //Tiles.bucket[Random.Shared.Next(Tiles.bucket.Length)]);
         }
-
-        private void CreateWorld() {
-            physicsWorld = new(new Vector2(0, 0f));
-
-            debug = new DebugView(physicsWorld);
-
-            debug.LoadContent(GraphicsDevice, Content);
-
-            CreateBox(Vector2.Zero);
+        else if (Mouse.GetState(Window).RightButton == ButtonState.Pressed) {
+            //tilemap.SetTile(targetGridPos, new TileInstance(null, new Matrix2x2(1f)));
         }
+    }
 
-        private void CreateBox(Vector2 pos) {
-            var box = physicsWorld.CreateBody(Vector2.Zero, 1f, BodyType.Dynamic);
-            var boxObj = new PhysicsBodyObject(box);
-            var drawable = boxObj.AddDrawableRectFixture(new(1.5f, 1f), Vector2.Zero, 0f, out var fixture, 1f);
+    private Vector2 MousePosView() {
+        var screenPos = inputManager.CursorPosition.GetCurrentValue<Point>();
 
-            drawable.Sprite = sprites[Random.Shared.Next(0, sprites.Count)];
-            boxObj.Transform.LocalPosition = pos;
-            box.AngularVelocity = 5f; //.ApplyTorque(50f);
-            box.LinearDamping = 0.0f;
+        return new Vector2((screenPos.X / (float)Window.ClientBounds.Width) * 2f - 1f,
+            -((screenPos.Y / (float)Window.ClientBounds.Height) * 2f - 1f));
+    }
 
-            scene.AddObject(boxObj);
-        }
+    private Vector2 MousePosWorld() {
+        return Camera.ViewToWorldPos(MousePosView());
+    }
 
-        private HierarchyObject CreateWindmill(Hierarchy hierarchy, float rotation, Vector2 position) {
-            var root = new HierarchyObject();
-
-            root.Transform.LocalRotation = rotation;
-            root.Transform.LocalPosition = position;
-
-            var bar = new DrawableObject(Color.AliceBlue, -1f);
-            var bar2 = new DrawableObject(Color.GreenYellow, 0f);
-            var origin = new DrawableObject(Color.Black, 0f);
-            var blade1 = new DrawableObject(Color.BurlyWood, -0.5f);
-            var blade2 = new DrawableObject(Color.BurlyWood, 0f);
-
-            var tip = new DrawableObject(Color.Red, 0f);
-
-            //Hierarchy RotationRoot -> bar -> bar2 -> tip -> blade1, blade2
-            blade1.Parent = tip;
-            blade2.Parent = tip;
-            tip.Parent = bar2;
-            bar2.Parent = bar;
-            bar.Parent = root;
-
-            bar.Transform.LocalPosition = new Vector2(0f, 0.5f);
-            bar2.Transform.LocalPosition = new Vector2(0f, 1f);
-            bar2.Transform.LocalScale = new Vector2(1f, 2f);
-
-            blade1.Transform.LocalScale = new Vector2(0.25f, bladeLength);
-            blade2.Transform.LocalScale = new Vector2(bladeLength, 0.25f);
-
-            blade1.Transform.LocalPosition = new Vector2(2f, 2f);
-
-            tip.Transform.LocalScale = new Vector2(0.5f, 0.5f);
-            origin.Transform.LocalScale = new Vector2(0.1f, 0.1f);
-
-            hierarchy.AddObject(root);
-
-            return tip;
-        }
-
-        public void FIllTilemap(Tilemap tilemap, Rectangle bounds) {
-            for (int x = 0; x < bounds.Width; x++)
-            for (int y = 0; y < bounds.Height; y++) {
-                tilemap.SetTile(new Point(bounds.X + x, bounds.Y + y),
-                    Tiles.bucket[Random.Shared.Next(Tiles.bucket.Length)]);
-            }
-        }
-
-        private void HandlePlaceControls() {
-            //var targetGridPos = ;
-
-            if (Mouse.GetState(Window).LeftButton == ButtonState.Pressed) {
-                //Tiles.bucket[Random.Shared.Next(Tiles.bucket.Length)]);
-            }
-            else if (Mouse.GetState(Window).RightButton == ButtonState.Pressed) {
-                //tilemap.SetTile(targetGridPos, new TileInstance(null, new Matrix2x2(1f)));
-            }
-        }
-
-        private Vector2 MousePosView() {
-            var screenPos = inputManager.CursorPosition.GetCurrentValue<Point>();
-
-            return new Vector2((screenPos.X / (float)Window.ClientBounds.Width) * 2f - 1f,
-                -((screenPos.Y / (float)Window.ClientBounds.Height) * 2f - 1f));
-        }
-
-        private Vector2 MousePosWorld() {
-            return Camera.ViewToWorldPos(MousePosView());
-        }
-
-        private float CamMoveSpeed(GameTime time) {
-            return Camera.ViewSize * CameraSpeed * (float)time.ElapsedGameTime.TotalSeconds;
-        }
+    private float CamMoveSpeed(GameTime time) {
+        return Camera.ViewSize * CameraSpeed * (float)time.ElapsedGameTime.TotalSeconds;
     }
 }

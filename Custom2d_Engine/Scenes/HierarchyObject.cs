@@ -2,6 +2,7 @@
 using Custom2d_Engine.Ticking;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Custom2d_Engine.Scenes {
     public class HierarchyObject : IManagedTicker {
@@ -35,6 +36,10 @@ namespace Custom2d_Engine.Scenes {
 
         public Transform Transform { get; } = new();
 
+        public bool EnableUpdates { get; set; } = false;
+        public float UpdateOrder { get; set; } = 0;
+        public bool UseTickManager { get; set; } = true;
+        
         public IReadOnlyList<HierarchyObject> Children => _children;
 
         /// <summary>
@@ -63,25 +68,39 @@ namespace Custom2d_Engine.Scenes {
                 return children;
             }
         }
-
-        public void ChildrenDeepAndSelfBuffered(List<HierarchyObject> buffer) {
-            buffer.Add(this);
-            foreach (var child in Children) {
-                child.ChildrenDeepAndSelfBuffered(buffer);
-            }
-        }
-
+        
         //TODO remove
-        TickManager IManagedTicker.TickManager => _currentHierarchy!.TickManager;
-
+        TickManager IManagedTicker.TickManager => _localTickManager;
+        
         //Not optimal for larege amount of children
         private readonly List<HierarchyObject> _children = new();
 
+        private readonly TickManager _localTickManager = new TickManager();
         private Hierarchy? _currentHierarchy;
         private HierarchyObject? _parent;
 
         public HierarchyObject() {
             Transform.Changed += OnTransformChanged;
+        }
+
+        public void Update(GameTime gameTime) {
+            CustomUpdate(gameTime);
+            if (UseTickManager) {
+                _localTickManager.Forward(gameTime.ElapsedGameTime);
+            }
+        }
+
+        /// <summary>
+        /// Used to perform custom update logic even while not using local <see cref="TickManager"/> <br/>
+        /// Called before local TickManager
+        /// </summary>
+        protected virtual void CustomUpdate(GameTime time) { }
+        
+        public void ChildrenDeepAndSelfBuffered(List<HierarchyObject> buffer) {
+            buffer.Add(this);
+            foreach (var child in Children) {
+                child.ChildrenDeepAndSelfBuffered(buffer);
+            }
         }
 
         private void OnTransformChanged() {

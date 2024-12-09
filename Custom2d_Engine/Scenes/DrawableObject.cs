@@ -6,6 +6,7 @@ namespace Custom2d_Engine.Scenes {
 
     public class DrawableObject : HierarchyObject {
         public Color Color { get; set; }
+        public bool EnableDraw { get; set; } = true;
         public float DrawOrder { get; set; }
 
         public Sprite Sprite { get; set; } = new Sprite()

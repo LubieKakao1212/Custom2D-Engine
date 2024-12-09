@@ -1,13 +1,10 @@
-﻿using Custom2d_Engine.Scenes.Events;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Custom2d_Engine.Scenes {
     /// <summary>
     /// Used for keeping a global-space offset between two objects as well as keeping global rotation
     /// </summary>
-    public class OffsetObject : HierarchyObject, IUpdatable {
-        public float Order { get; } = 0;
-
+    public class OffsetObject : HierarchyObject {
         /// <summary>
         /// If not null will keep objects global position at parent global position + this value
         /// </summary>
@@ -18,7 +15,11 @@ namespace Custom2d_Engine.Scenes {
         /// </summary>
         public float? Rotation { get; set; } = null;
 
-        public void Update(GameTime time) {
+        public OffsetObject() {
+            EnableUpdates = true;
+        }
+
+        protected override void CustomUpdate(GameTime time) {
             if (Parent == null) {
                 return;
             }
