@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine", "Custom2d
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudioTest", "AudioTest\AudioTest.csproj", "{49B032E5-964C-4177-9C12-0C286986CB30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.FMOD_Audio", "Custom2d_Engine.FMOD\Custom2d_Engine.FMOD_Audio.csproj", "{2189382E-31B4-4782-BCAA-A71421A4B7A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.FMOD", "Custom2d_Engine.FMOD\Custom2d_Engine.FMOD.csproj", "{2189382E-31B4-4782-BCAA-A71421A4B7A1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Custom2d_Engine.Physics", "Custom2d_Engine.Physics\Custom2d_Engine.Physics.csproj", "{6593BD10-48F7-4412-8147-D9B4B3DC88A3}"
 EndProject
