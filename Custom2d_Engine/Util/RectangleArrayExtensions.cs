@@ -36,5 +36,22 @@ namespace Custom2d_Engine.Util {
                 sourceSpan.CopyTo(destinationSpan);
             }
         }
+
+        public static void FlipYUnchecked2d<T>(this T[] array2d, int arrayWidth, int arrayHeight) {
+            var ySize = arrayHeight / 2; //Rounded down, for odd heights we do not need to swap the bottom row
+            var buffer = new T[arrayWidth];
+            var bufferSpan = new Span<T>(buffer);
+            
+            for (int y = 0; y < ySize; y++) {
+                var idx1 = y * arrayWidth;
+                var idx2 = (arrayHeight - y - 1) * arrayWidth;
+                var span1 = new Span<T>(array2d, idx1, arrayWidth);
+                var span2 = new Span<T>(array2d, idx2, arrayWidth);
+
+                span1.CopyTo(bufferSpan);
+                span2.CopyTo(span1);
+                bufferSpan.CopyTo(span2);
+            }
+        }
     }
 }

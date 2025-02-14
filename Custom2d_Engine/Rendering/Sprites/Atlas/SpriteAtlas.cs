@@ -179,7 +179,9 @@ namespace Custom2d_Engine.Rendering.Sprites.Atlas {
 
                 #region Fill Atlas
 
-                var rawData = GetTextureData(region.SourceTexture, region.sourceRect);
+                var sourceRect = region.sourceRect;
+                var rawData = GetTextureData(region.SourceTexture, sourceRect);
+                rawData.FlipYUnchecked2d(sourceRect.Width, sourceRect.Height);
                 var data = new T[rawData.Length];
                 if (data is Vector4[] vArr) {
                     rawData.CopyTo(vArr, 0);
