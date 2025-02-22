@@ -174,8 +174,9 @@ public class Hierarchy : IManagedTicker {
         if (!_rootsSet.Contains(obj)) {
             throw new InvalidOperationException("Invalid object removal");
         }
-
         _rootsSet.Remove(obj);
         _roots.Remove(obj);
+        
+        obj.RemovedFromScene();
     }
 }

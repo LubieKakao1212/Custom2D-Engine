@@ -1,7 +1,7 @@
-﻿using Custom2d_Engine.Math;
-using Custom2d_Engine.Ticking;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Custom2d_Engine.Math;
+using Custom2d_Engine.Ticking;
 using Microsoft.Xna.Framework;
 
 namespace Custom2d_Engine.Scenes {
@@ -11,13 +11,14 @@ namespace Custom2d_Engine.Scenes {
             set {
                 _parent?.RemoveChild(this);
 
-                if (IsRootInHierarchy && value != null) {
-                    CurrentHierarchy!.RemoveObject(this);
+                var newHierarchy = value?._currentHierarchy;
+                
+                if (CurrentHierarchy != newHierarchy) {
+                    PrivateSetScene(newHierarchy);
                 }
-
+                
                 _parent = value;
                 if (_parent != null) {
-                    PrivateSetScene(_parent._currentHierarchy);
                     Transform.Parent = _parent.Transform;
                     _parent.AddChild(this);
                 }
@@ -114,19 +115,18 @@ namespace Custom2d_Engine.Scenes {
             if (scene == _currentHierarchy) {
                 return;
             }
-
+            
             if (scene != null) {
+                if (IsRootInHierarchy) {
+                    CurrentHierarchy!.RemoveObject(this);
+                }
+                
                 _currentHierarchy = scene;
                 AddedToScene();
             }
 
             foreach (var child in _children) {
                 child.PrivateSetScene(_currentHierarchy);
-            }
-
-            if (scene == null) {
-                RemovedFromScene();
-                _currentHierarchy = null;
             }
         }
 
@@ -149,7 +149,8 @@ namespace Custom2d_Engine.Scenes {
         protected virtual void AddedToScene() {
         }
 
-        protected virtual void RemovedFromScene() {
+        public virtual void RemovedFromScene() {
+            _currentHierarchy = null;
             ((IManagedTicker)this).TickManager.RemoveAllTickers(this);
         }
     }

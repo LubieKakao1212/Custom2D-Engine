@@ -75,8 +75,8 @@ namespace Custom2d_Engine.Math {
             return new Matrix(
                 new Vector4(RS.m00, RS.m10, 0, 0),
                 new Vector4(RS.m01, RS.m11, 0, 0),
-                new Vector4(T.X, T.Y, 0, 0),
-                new Vector4(0, 0, 0, 1)
+                new Vector4(0     , 0     , 0, 0),
+                new Vector4(T.X   , T.Y   , 0, 1)
             );
         }
 
