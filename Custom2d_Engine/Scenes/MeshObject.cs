@@ -48,7 +48,7 @@ namespace Custom2d_Engine.Scenes {
 
             var dss = Pipeline.Graphics.DepthStencilState;
 
-            Pipeline.Graphics.BlendState = BlendState.AlphaBlend;
+            Pipeline.Graphics.BlendState = BlendState.NonPremultiplied;
             Pipeline.Graphics.DepthStencilState = DepthStencilState;
             Pipeline.Graphics.Indices = Ib;
 

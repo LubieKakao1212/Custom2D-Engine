@@ -165,7 +165,7 @@ namespace Custom2d_Engine.Rendering {
                 var graphics = _pipeline.Graphics;
                 var effect = _pipeline._currentState.CurrentEffect;
                 var cameraMatrixInv = _pipeline._currentState.CurrentProjection;
-                graphics.BlendState = BlendState.AlphaBlend;
+                graphics.BlendState = BlendState.NonPremultiplied;
 
                 //effect.CurrentTechnique = effect.Techniques["Unlit"];
 
